@@ -4,36 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0a0c">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="theme-color" content="#000000">
   <title>zy playlist</title>
 
-  <!-- 引入復古典雅英文字型與古典風格中文字型 -->
+  <!-- 回復原先喜愛的字體 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&family=Cinzel:wght@600;800;900&family=Noto+Serif+TC:wght@400;600;900&family=Playfair+Display:ital,wght@0,600;1,400&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Syne:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
   <style>
-    /* 指定字型定義: Cossette Titre 風格替代/備選 & Chocolate Classical 典雅中文風格 */
-    @font-face {
-      font-family: 'CossetteTitreCustom';
-      src: local('Cossette Titre'), local('Cossette-Titre');
-    }
-    @font-face {
-      font-family: 'ChocolateClassicalCustom';
-      src: local('Chocolate Classical Sans'), local('ChocolateClassicalSans');
-    }
-
     :root {
-      --bg: #090a0d;
-      --card-bg: #121318;
-      --brass: #c5a47e;
-      --brass-dark: #8c6f4e;
-      --brass-light: #edd8be;
-      --brass-glow: rgba(197, 164, 126, 0.35);
-      --text: #eae8e3;
-      --text-muted: #6b6e79;
-      --border-engraved: #23252e;
+      --bg: #000000;
+      --card-bg: #0c0d11;
+      --steel: #e4e4e7;       /* 低飽和冷銀白 */
+      --steel-dim: #71717a;   /* 暗夜灰 */
+      --steel-border: #27272a;
+      --accent-glow: rgba(228, 228, 231, 0.2);
     }
 
     * {
@@ -44,61 +31,68 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
-      width: 100%;
+    html {
+      background-color: #000000 !important;
       height: 100%;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
       height: 100dvh;
-      background-color: #000000;
-      background: radial-gradient(ellipse at 50% 30%, #15161d 0%, #060709 100%);
-      color: var(--text);
-      font-family: 'ChocolateClassicalCustom', 'Shippori Mincho', 'Noto Serif TC', serif;
+      background-color: #000000 !important;
+      background: radial-gradient(circle at 50% 25%, #131418 0%, #000000 85%);
+      color: var(--steel);
+      font-family: 'Syne', 'Noto Sans TC', sans-serif;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: fixed; /* 徹底杜絕 iOS Safari 彈跳下拉露白 */
+      inset: 0;
     }
 
-    /* 頂部 Header - 經典雕刻字樣 */
+    /* 頂部 Header - 回到原先科技感/冷光字體 */
     header {
-      padding: calc(12px + env(safe-area-inset-top)) 24px 10px;
+      padding: calc(10px + env(safe-area-inset-top, 0px)) 20px 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      z-index: 20;
-      background: linear-gradient(180deg, rgba(6,7,9,0.95) 0%, transparent 100%);
+      z-index: 30;
+      background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
     }
 
     .brand-title {
-      font-family: 'CossetteTitreCustom', 'Castoro Titling', 'Cinzel', serif;
-      font-size: 1.35rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.15rem;
       font-weight: 800;
-      letter-spacing: 3.5px;
-      color: var(--brass-light);
-      text-shadow: 0 1px 2px rgba(0,0,0,0.8), 0 0 12px var(--brass-glow);
+      letter-spacing: 2.5px;
+      color: #f4f4f5;
+      text-shadow: 0 0 10px rgba(255,255,255,0.15);
       cursor: pointer;
     }
 
-    .admin-trigger-dot {
-      background: transparent;
+    .admin-dot-btn {
+      background: none;
       border: none;
       outline: none;
       cursor: pointer;
       display: flex;
-      gap: 5px;
+      gap: 4px;
       padding: 8px;
     }
-    .admin-trigger-dot span {
+    .admin-dot-btn span {
       width: 4px;
       height: 4px;
-      background: #474a56;
+      background: #52525b;
       border-radius: 50%;
       transition: background 0.2s;
     }
-    .admin-trigger-dot:hover span {
-      background: var(--brass);
+    .admin-dot-btn:hover span {
+      background: #e4e4e7;
     }
 
-    /* 中央一體化舞台 */
+    /* 主舞台一體整合 */
     main {
       flex: 1;
       display: flex;
@@ -110,7 +104,7 @@
 
     #threejs-box {
       width: 100%;
-      height: 52%;
+      height: 50%;
       position: relative;
       cursor: grab;
     }
@@ -118,46 +112,46 @@
       cursor: grabbing;
     }
 
+    /* 歌曲資訊與歌詞區 */
     .info-lyrics-container {
-      height: 48%;
+      height: 50%;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
-      padding: 0 20px;
-      mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+      padding: 0 16px;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
     }
 
     .track-meta {
       text-align: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       z-index: 10;
     }
     .track-meta h1 {
-      font-family: 'CossetteTitreCustom', 'Castoro Titling', 'Playfair Display', serif;
-      font-size: 1.25rem;
-      letter-spacing: 1.5px;
-      color: #fff;
+      font-family: 'Orbitron', 'Syne', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      color: #fafafa;
     }
     .track-meta p {
-      font-family: 'Playfair Display', 'Noto Serif TC', serif;
-      font-size: 0.85rem;
-      color: var(--brass);
-      font-style: italic;
+      font-size: 0.8rem;
+      color: #a1a1aa;
+      letter-spacing: 0.5px;
       margin-top: 2px;
     }
 
     .lyrics-view {
       width: 100%;
-      max-width: 650px;
+      max-width: 600px;
       flex: 1;
       overflow-y: auto;
       scroll-behavior: smooth;
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      padding: 50px 16px 80px;
+      gap: 16px;
+      padding: 40px 16px 80px;
       scrollbar-width: none;
     }
     .lyrics-view::-webkit-scrollbar {
@@ -167,54 +161,53 @@
     .lyric-row {
       text-align: center;
       font-size: 0.95rem;
-      color: #4b4e5b;
-      line-height: 1.7;
-      transition: all 0.35s ease;
+      color: #3f3f46;
+      line-height: 1.6;
+      transition: all 0.3s ease;
       cursor: pointer;
-      font-family: 'ChocolateClassicalCustom', 'Shippori Mincho', 'Noto Serif TC', serif;
     }
     .lyric-row.active {
-      color: var(--brass-light);
-      font-size: 1.2rem;
+      color: #f4f4f5;
+      font-size: 1.15rem;
       font-weight: 600;
-      text-shadow: 0 0 18px var(--brass-glow);
-      transform: scale(1.05);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+      transform: scale(1.04);
     }
 
-    /* 底部復古類比 CD / 黑膠播放器面板 */
+    /* 底部低飽和冷灰播放面板 (高度墊高，絕對不被 Safari 網址列遮擋) */
     footer.retro-deck {
-      background: linear-gradient(180deg, #16171f 0%, #090a0d 100%);
-      border-top: 1px solid var(--border-engraved);
-      padding: 10px 20px calc(24px + env(safe-area-inset-bottom));
-      box-shadow: 0 -8px 30px rgba(0,0,0,0.9);
+      background: linear-gradient(180deg, #101115 0%, #000000 100%);
+      border-top: 1px solid var(--steel-border);
+      padding: 8px 16px calc(24px + env(safe-area-inset-bottom, 20px));
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
       z-index: 25;
     }
 
     .timeline-strip {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       max-width: 640px;
-      margin: 0 auto 10px;
+      margin: 0 auto 8px;
     }
     .retro-time {
-      font-family: 'Castoro Titling', 'Courier New', monospace;
-      font-size: 0.75rem;
-      color: var(--brass);
-      letter-spacing: 1px;
-      min-width: 36px;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.72rem;
+      color: #a1a1aa;
+      letter-spacing: 0.5px;
+      min-width: 38px;
     }
     .seek-groove {
       flex: 1;
       height: 4px;
-      background: #1e2029;
+      background: #1e1e24;
       border-radius: 2px;
       cursor: pointer;
       position: relative;
     }
     .seek-bar {
       height: 100%;
-      background: linear-gradient(90deg, var(--brass-dark), var(--brass-light));
+      background: linear-gradient(90deg, #52525b, #e4e4e7);
       border-radius: 2px;
       width: 0%;
       pointer-events: none;
@@ -228,72 +221,69 @@
       margin: 0 auto;
     }
 
-    /* 復古仿金屬銘牌選單 */
-    .brass-select-group {
+    /* 復古深色冷金屬質感選單 */
+    .steel-select-group {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
-    .brass-select {
-      background: linear-gradient(180deg, #1b1c24 0%, #111218 100%);
-      border: 1px solid #363947;
-      color: #cfd1d8;
-      font-family: 'ChocolateClassicalCustom', 'Shippori Mincho', sans-serif;
-      font-size: 0.8rem;
-      padding: 7px 12px;
+    .steel-select {
+      background: #14151b;
+      border: 1px solid #2d2f3a;
+      color: #d4d4d8;
+      font-size: 0.75rem;
+      padding: 6px 10px;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
-      max-width: 125px;
-      box-shadow: inset 0 1px 2px rgba(255,255,255,0.06), 0 2px 5px rgba(0,0,0,0.4);
+      max-width: 120px;
     }
 
-    /* 復古實體金屬質感按鈕 (消除現代感扁平風) */
+    /* 冷灰金屬質感按鍵 */
     .buttons-group {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
-    .retro-knob-btn {
-      width: 44px;
-      height: 44px;
+    .steel-knob-btn {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #2d2f3c 0%, #171821 70%, #0d0e14 100%);
-      border: 1px solid #434759;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.25);
+      background: radial-gradient(circle at 35% 35%, #27272a 0%, #121215 100%);
+      border: 1px solid #3f3f46;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.15);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.15s ease;
     }
-    .retro-knob-btn:active {
+    .steel-knob-btn:active {
       transform: scale(0.92);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.9), inset 0 2px 4px rgba(0,0,0,0.6);
     }
-    .retro-knob-btn svg {
-      width: 16px;
-      height: 16px;
-      fill: #bcc0cb;
+    .steel-knob-btn svg {
+      width: 15px;
+      height: 15px;
+      fill: #a1a1aa;
     }
 
     .play-master-btn {
-      width: 52px;
-      height: 52px;
-      background: radial-gradient(circle at 35% 35%, #3d3429 0%, #1c1712 80%, #0f0c09 100%);
-      border: 1.5px solid var(--brass);
-      box-shadow: 0 0 15px var(--brass-glow), inset 0 1px 2px rgba(255,255,255,0.3);
+      width: 48px;
+      height: 48px;
+      background: radial-gradient(circle at 35% 35%, #3f3f46 0%, #18181b 100%);
+      border: 1.5px solid #71717a;
+      box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.2);
     }
     .play-master-btn svg {
-      width: 20px;
-      height: 20px;
-      fill: var(--brass-light);
+      width: 18px;
+      height: 18px;
+      fill: #fafafa;
     }
 
-    /* 彈窗外層 */
+    /* 彈出層 */
     .modal-veil {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.88);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
@@ -302,22 +292,21 @@
       padding: 16px;
     }
     .modal-inner {
-      background: #14151d;
-      border: 1px solid #303342;
-      border-radius: 14px;
+      background: #111216;
+      border: 1px solid #27272a;
+      border-radius: 12px;
       width: 100%;
-      max-width: 550px;
-      max-height: 88vh;
+      max-width: 520px;
+      max-height: 85vh;
       overflow-y: auto;
-      padding: 22px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+      padding: 20px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     .modal-inner h3 {
-      font-family: 'CossetteTitreCustom', 'Castoro Titling', serif;
-      font-size: 1.2rem;
-      color: var(--brass-light);
-      margin-bottom: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      color: #f4f4f5;
+      margin-bottom: 12px;
       letter-spacing: 1px;
     }
     .field-row {
@@ -325,39 +314,40 @@
     }
     .field-row label {
       display: block;
-      font-size: 0.8rem;
-      color: #8b8f9e;
-      margin-bottom: 5px;
+      font-size: 0.78rem;
+      color: #a1a1aa;
+      margin-bottom: 4px;
     }
     .field-row input, .field-row textarea, .field-row select {
       width: 100%;
-      background: #0b0c10;
-      border: 1px solid #282a36;
+      background: #09090b;
+      border: 1px solid #27272a;
       border-radius: 6px;
       color: #fff;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       padding: 8px 10px;
       outline: none;
     }
     .field-row textarea {
       font-family: monospace;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       resize: vertical;
     }
-    .btn-gold {
-      background: linear-gradient(145deg, #d8b790, #ad885f);
-      border: none;
-      color: #12100d;
-      font-weight: 700;
-      padding: 8px 16px;
+    .btn-steel {
+      background: #27272a;
+      border: 1px solid #3f3f46;
+      color: #fafafa;
+      font-weight: 600;
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
     }
-    .btn-dark {
-      background: #252733;
-      border: 1px solid #393c4e;
-      color: #b0b4c2;
-      padding: 8px 14px;
+    .btn-steel:hover { background: #3f3f46; }
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid #27272a;
+      color: #71717a;
+      padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
     }
@@ -366,10 +356,10 @@
       align-items: center;
       justify-content: space-between;
       padding: 6px 10px;
-      background: #0d0e14;
-      border: 1px solid #20222e;
+      background: #09090b;
+      border: 1px solid #1f1f23;
       margin-bottom: 4px;
-      border-radius: 5px;
+      border-radius: 4px;
       font-size: 0.8rem;
     }
     .song-actions {
@@ -383,8 +373,8 @@
       font-size: 0.72rem;
       cursor: pointer;
     }
-    .btn-edit { background: #3b82f6; color: #fff; }
-    .btn-del { background: #ef4444; color: #fff; }
+    .btn-edit { background: #3f3f46; color: #fff; }
+    .btn-del { background: #7f1d1d; color: #fca5a5; }
   </style>
 
   <script type="importmap">
@@ -398,15 +388,14 @@
 </head>
 <body>
 
-  <!-- 原生音訊引擎 (相容 MP3 與 GitHub Raw 播放) -->
-  <audio id="native-audio" playsinline preload="auto"></audio>
-  <!-- 隱藏 YouTube 播放器 -->
+  <!-- 原生音訊引擎 (增加 crossorigin 保證 GitHub 音訊權限) -->
+  <audio id="native-audio" playsinline preload="auto" crossorigin="anonymous"></audio>
   <div id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;"></div>
 
   <!-- Header -->
   <header>
     <div class="brand-title" id="logo-trigger">ZY PLAYLIST</div>
-    <button class="admin-trigger-dot" id="btn-open-auth" title="Settings">
+    <button class="admin-dot-btn" id="btn-open-auth" title="Settings">
       <span></span><span></span><span></span>
     </button>
   </header>
@@ -423,7 +412,7 @@
     </div>
   </main>
 
-  <!-- 底部復古播放台 -->
+  <!-- 底部冷冽低飽和播放台 -->
   <footer class="retro-deck">
     <div class="timeline-strip">
       <span class="retro-time" id="lbl-curr">00:00</span>
@@ -434,35 +423,35 @@
     </div>
 
     <div class="deck-controls">
-      <div class="brass-select-group">
-        <select class="brass-select" id="sel-playlist"></select>
-        <select class="brass-select" id="sel-song"></select>
+      <div class="steel-select-group">
+        <select class="steel-select" id="sel-playlist"></select>
+        <select class="steel-select" id="sel-song"></select>
       </div>
 
       <div class="buttons-group">
-        <button class="retro-knob-btn" id="btn-prev" title="Previous">
+        <button class="steel-knob-btn" id="btn-prev" title="Previous">
           <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </button>
-        <button class="retro-knob-btn play-master-btn" id="btn-play" title="Play / Pause">
+        <button class="steel-knob-btn play-master-btn" id="btn-play" title="Play / Pause">
           <svg id="play-svg-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <button class="retro-knob-btn" id="btn-next" title="Next">
+        <button class="steel-knob-btn" id="btn-next" title="Next">
           <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
         </button>
       </div>
     </div>
   </footer>
 
-  <!-- 密碼驗證視窗 (密碼 0401) -->
+  <!-- 密碼驗證視窗 (不出現密碼 0401) -->
   <div class="modal-veil" id="auth-modal">
-    <div class="modal-inner" style="max-width: 320px; text-align: center;">
+    <div class="modal-inner" style="max-width: 300px; text-align: center;">
       <h3>System Access</h3>
       <div class="field-row" style="margin-top: 14px;">
-        <input type="password" id="auth-input" placeholder="請輸入密碼 (0401)" autocomplete="off">
+        <input type="password" id="auth-input" placeholder="請輸入管理密碼" autocomplete="off">
       </div>
-      <div style="display:flex; justify-content:center; gap:8px; margin-top:16px;">
-        <button class="btn-dark" id="btn-auth-close">取消</button>
-        <button class="btn-gold" id="btn-auth-submit">驗證</button>
+      <div style="display:flex; justify-content:center; gap:8px; margin-top:14px;">
+        <button class="btn-cancel" id="btn-auth-close">取消</button>
+        <button class="btn-steel" id="btn-auth-submit">驗證</button>
       </div>
     </div>
   </div>
@@ -473,23 +462,32 @@
       <h3>歌單與曲目核心管理</h3>
 
       <!-- 導出與備份按鈕群 -->
-      <div style="display:flex; gap:8px; margin-bottom:16px;">
-        <button class="btn-gold" id="btn-copy-code" style="flex:1; font-size:0.75rem;">📋 複製當前更新程式碼</button>
-        <button class="btn-dark" id="btn-dl-html" style="font-size:0.75rem;">💾 下載更新 HTML</button>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <button class="btn-steel" id="btn-copy-code" style="flex:1; font-size:0.75rem;">📋 複製當前更新程式碼</button>
+        <button class="btn-cancel" id="btn-dl-html" style="font-size:0.75rem;">💾 下載更新 HTML</button>
+      </div>
+
+      <!-- 3D 尺寸微調滑桿 -->
+      <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
+        <label style="font-size:0.75rem; color:#a1a1aa; display:flex; justify-content:space-between;">
+          <span>黑膠與封面尺寸縮放</span>
+          <span id="scale-val-lbl">1.0x</span>
+        </label>
+        <input type="range" id="scale-slider" min="0.6" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:6px;">
       </div>
 
       <!-- 歌單分類管理 -->
-      <div style="background:#0a0b0e; padding:12px; border-radius:8px; border:1px solid #232532; margin-bottom:16px;">
-        <label style="font-size:0.8rem; color:var(--brass); font-weight:bold;">新增 / 管理歌單</label>
-        <div style="display:flex; gap:8px; margin-top:8px;">
+      <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
+        <label style="font-size:0.78rem; color:#e4e4e7; font-weight:bold;">新增歌單</label>
+        <div style="display:flex; gap:8px; margin-top:6px;">
           <input type="text" id="admin-new-pl-name" placeholder="歌單名稱...">
-          <button class="btn-gold" id="btn-add-pl">新增歌單</button>
+          <button class="btn-steel" id="btn-add-pl">新增</button>
         </div>
       </div>
 
       <!-- 歌曲編輯 / 新增表單 -->
-      <div style="background:#0a0b0e; padding:14px; border-radius:8px; border:1px solid #232532; margin-bottom:16px;">
-        <h4 id="form-mode-title" style="color:var(--brass-light); font-size:0.9rem; margin-bottom:10px;">✦ 新增歌曲</h4>
+      <div style="background:#09090b; padding:12px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
+        <h4 id="form-mode-title" style="color:#fafafa; font-size:0.85rem; margin-bottom:8px;">✦ 新增歌曲</h4>
         <input type="hidden" id="edit-song-id" value="">
 
         <div class="field-row">
@@ -505,18 +503,18 @@
           <input type="text" id="form-song-artist" placeholder="例如：aespa">
         </div>
         <div class="field-row">
-          <label>音訊來源 (支援 GitHub MP3 直連 或 YouTube 網址/ID)</label>
-          <input type="text" id="form-song-source" placeholder="如：https://...song.mp3 或 YouTube 網址">
+          <label>音訊來源 (支援 GitHub MP3 或 YouTube)</label>
+          <input type="text" id="form-song-source" placeholder="如：GitHub mp3 網址 或 YouTube 連結">
         </div>
 
-        <!-- 圖片直連轉換與手機圖庫上傳 -->
+        <!-- 封面網址與圖庫選擇 -->
         <div class="field-row">
-          <label>專輯封面 (支援 Google Drive 分享連結自動轉直連、網路圖或從手機圖庫選擇)</label>
-          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（Google Drive、Imgur 等自動轉直連）">
+          <label>專輯封面 (Google Drive、網路圖或從手機圖庫選擇)</label>
+          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（自動轉直連）">
           <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
             <input type="file" id="local-img-picker" accept="image/*" style="display:none;">
-            <button type="button" class="btn-dark" onclick="document.getElementById('local-img-picker').click()" style="font-size:0.75rem;">📁 從手機圖庫挑選圖片</button>
-            <span id="img-picker-status" style="font-size:0.72rem; color:#888;"></span>
+            <button type="button" class="btn-cancel" onclick="document.getElementById('local-img-picker').click()" style="font-size:0.72rem;">📁 從手機圖庫挑選圖片</button>
+            <span id="img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
           </div>
         </div>
 
@@ -525,20 +523,20 @@
           <textarea id="form-song-lyrics" rows="4" placeholder="[00:03] One look give 'em whiplash&#10;[00:08] Beat drop with a bad girl attitude&#10;[00:15] ..."></textarea>
         </div>
 
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <button class="btn-gold" id="btn-save-song" style="flex:1;">儲存歌曲</button>
-          <button class="btn-dark" id="btn-cancel-edit" style="display:none;">取消編輯</button>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button class="btn-steel" id="btn-save-song" style="flex:1;">儲存歌曲</button>
+          <button class="btn-cancel" id="btn-cancel-edit" style="display:none;">取消編輯</button>
         </div>
       </div>
 
       <!-- 歌單清單與特定編輯列表 -->
       <div>
-        <label style="font-size:0.8rem; color:#888; margin-bottom:6px; display:block;">歌單與歌曲細項 (點選編輯可修改特定歌曲)</label>
+        <label style="font-size:0.75rem; color:#71717a; margin-bottom:6px; display:block;">歌單與歌曲細項 (點選編輯可修改特定歌曲)</label>
         <div id="admin-tree-view"></div>
       </div>
 
-      <div style="text-align:right; margin-top:16px;">
-        <button class="btn-dark" id="btn-close-admin">關閉管理後台</button>
+      <div style="text-align:right; margin-top:14px;">
+        <button class="btn-cancel" id="btn-close-admin">關閉管理後台</button>
       </div>
     </div>
   </div>
@@ -550,7 +548,7 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     /* -------------------------------------------------------------
-     * 1. 核心資料結構 (支援 MP3 直連與 YouTube)
+     * 1. 核心資料結構
      * ------------------------------------------------------------*/
     const DEFAULT_DATA = [
       {
@@ -561,7 +559,6 @@
             id: "s_whiplash",
             title: "Whiplash",
             artist: "aespa",
-            // 可放 mp3 直連或 YouTube
             source: "jWQx2f-CErU",
             cover: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
             lyrics: [
@@ -593,50 +590,59 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v3')) || DEFAULT_DATA;
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v4')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale')) || 1.0;
+
     function persistData() {
-      localStorage.setItem('zy_playlist_v3', JSON.stringify(store));
+      localStorage.setItem('zy_playlist_v4', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale', modelScale);
     }
 
     let plIdx = 0;
     let trackIdx = 0;
     let isPlaying = false;
-    let playType = 'yt'; // 'mp3' or 'yt'
+    let playType = 'yt';
     let ytPlayer = null;
-    let isYtReady = false;
     let clockInterval = null;
 
     const nativeAudio = document.getElementById('native-audio');
 
     /* -------------------------------------------------------------
-     * 2. 雲端圖片網址自動直連轉換邏輯
+     * 2. 音訊與圖片網址自動正規化 (修復 GitHub MP3 直連)
      * ------------------------------------------------------------*/
-    function normalizeImageUrl(url) {
+    function normalizeAudioUrl(url) {
       if (!url) return '';
       url = url.trim();
 
-      // Google Drive 連結轉換 (如 drive.google.com/file/d/ID/view)
+      // 自動把 GitHub 網頁版連結轉成 Raw 直連
+      if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+      }
+      return url;
+    }
+
+    function normalizeImageUrl(url) {
+      if (!url) return '';
+      url = url.trim();
       const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
       if (driveMatch && (url.includes('drive.google.com') || url.includes('google.com'))) {
         return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
       }
-
-      // Dropbox 連結轉換
       if (url.includes('dropbox.com')) {
         return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '');
       }
-
-      // Imgur 頁面轉直連
       if (url.includes('imgur.com') && !url.includes('i.imgur.com')) {
         const id = url.split('/').pop().split('.')[0];
         return `https://i.imgur.com/${id}.jpg`;
       }
-
+      if (url.includes('github.com') && url.includes('/blob/')) {
+        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+      }
       return url;
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D 黑膠外殼與精緻唱片
+     * 3. Three.js 3D 黑膠外殼與唱片 (低飽和暗夜冷光)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -644,7 +650,7 @@
     const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
     function resizeCamera() {
       const isMobile = window.innerWidth < 600;
-      camera.position.set(0, isMobile ? 0.2 : 0.4, isMobile ? 5.6 : 4.8);
+      camera.position.set(0, isMobile ? 0.2 : 0.4, isMobile ? 5.8 : 5.0);
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);
@@ -661,30 +667,31 @@
     controls.dampingFactor = 0.05;
     controls.enableZoom = false;
 
-    // 典雅復古柔光
-    const amb = new THREE.AmbientLight(0xffffff, 1.5);
+    // 低飽和冷白微光 (無黃金感)
+    const amb = new THREE.AmbientLight(0xffffff, 1.4);
     scene.add(amb);
-    const goldLight = new THREE.DirectionalLight(0xf5d0a9, 2.2);
-    goldLight.position.set(4, 5, 5);
-    scene.add(goldLight);
-    const rim = new THREE.DirectionalLight(0x7c8cb3, 1.2);
-    rim.position.set(-4, -2, -3);
-    scene.add(rim);
+    const coolLight = new THREE.DirectionalLight(0xe4e4e7, 1.8);
+    coolLight.position.set(4, 5, 5);
+    scene.add(coolLight);
+    const backRim = new THREE.DirectionalLight(0x71717a, 1.0);
+    backRim.position.set(-4, -2, -3);
+    scene.add(backRim);
 
     const turntableGroup = new THREE.Group();
+    turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 黑膠溝槽
+    // 黑膠同心圓紋理
     function createVinylGrooveMap() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#0c0d12';
+      ctx.fillStyle = '#0a0a0d';
       ctx.fillRect(0, 0, 512, 512);
       for (let r = 40; r < 250; r += 2) {
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 6 === 0) ? '#1c1e28' : '#111218';
+        ctx.strokeStyle = (r % 6 === 0) ? '#18181f' : '#0e0f14';
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -693,7 +700,7 @@
 
     const texLoader = new THREE.TextureLoader();
 
-    // 外殼
+    // 唱片外殼
     const coverGeo = new THREE.BoxGeometry(2.2, 2.2, 0.05);
     function makeCoverMaterials(img) {
       const tex = texLoader.load(img);
@@ -710,7 +717,7 @@
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片
+    // 唱片本體
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
@@ -724,7 +731,7 @@
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
-    // 圓心貼紙
+    // 唱片中央貼紙
     const labelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.025, 32);
     const labelMat = new THREE.MeshStandardMaterial({
       map: texLoader.load(store[0]?.songs[0]?.cover || ''),
@@ -766,7 +773,7 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 音訊系統 (MP3 直連與 YouTube 雙核心)
+     * 4. 音訊系統 (MP3 直連與 YouTube 雙軌)
      * ------------------------------------------------------------*/
     window.onYouTubeIframeAPIReady = function() {
       const initSong = store[plIdx]?.songs[trackIdx];
@@ -777,7 +784,7 @@
         videoId: isYt ? extractYtId(initSong.source) : '',
         playerVars: { 'playsinline': 1, 'controls': 0, 'disablekb': 1 },
         events: {
-          'onReady': () => { isYtReady = true; renderUI(); },
+          'onReady': () => { renderUI(); },
           'onStateChange': (e) => {
             if (playType !== 'yt') return;
             if (e.data === YT.PlayerState.PLAYING) setPlayState(true);
@@ -790,7 +797,7 @@
 
     function isYouTubeSource(src) {
       if (!src) return false;
-      return src.includes('youtube.com') || src.includes('youtu.be') || (src.length === 11 && !src.includes('.'));
+      return src.includes('youtube.com') || src.includes('youtu.be') || (src.length === 11 && !src.includes('.') && !src.includes('/'));
     }
 
     function extractYtId(url) {
@@ -799,7 +806,6 @@
       return (m && m[2].length === 11) ? m[2] : url;
     }
 
-    // Native MP3 監聽
     nativeAudio.addEventListener('playing', () => setPlayState(true));
     nativeAudio.addEventListener('pause', () => setPlayState(false));
     nativeAudio.addEventListener('ended', () => playNext());
@@ -912,8 +918,9 @@
       } else {
         playType = 'mp3';
         if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
-        nativeAudio.src = song.source;
-        nativeAudio.play().catch(e => console.log('Audio autoplay prevented'));
+        nativeAudio.src = normalizeAudioUrl(song.source);
+        nativeAudio.load();
+        nativeAudio.play().catch(e => console.log('Audio autoplay prevented:', e));
       }
     }
 
@@ -943,7 +950,7 @@
       playActiveSong();
     }
 
-    // 按鍵操控
+    // 按鍵點擊事件
     document.getElementById('btn-play').onclick = () => {
       if (playType === 'mp3') {
         if (nativeAudio.paused) nativeAudio.play();
@@ -999,7 +1006,7 @@
     };
 
     /* -------------------------------------------------------------
-     * 5. 管理者模式 (指定歌曲/歌單編輯、相簿上傳、程式碼下載)
+     * 5. 管理者模式
      * ------------------------------------------------------------*/
     const authModal = document.getElementById('auth-modal');
     const adminModal = document.getElementById('admin-modal');
@@ -1020,7 +1027,7 @@
         adminModal.style.display = 'flex';
         renderAdminUI();
       } else {
-        alert('密碼錯誤！');
+        alert('驗證失敗！');
       }
     };
     document.getElementById('btn-close-admin').onclick = () => {
@@ -1029,7 +1036,17 @@
       renderUI();
     };
 
-    // 手機相簿圖片選取 (壓縮為 Data URL)
+    // 縮放滑桿監聽
+    const scaleSlider = document.getElementById('scale-slider');
+    scaleSlider.value = modelScale;
+    document.getElementById('scale-val-lbl').textContent = `${modelScale}x`;
+    scaleSlider.oninput = (e) => {
+      modelScale = parseFloat(e.target.value);
+      document.getElementById('scale-val-lbl').textContent = `${modelScale}x`;
+      turntableGroup.scale.set(modelScale, modelScale, modelScale);
+    };
+
+    // 手機相簿上傳
     document.getElementById('local-img-picker').onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -1042,7 +1059,6 @@
     };
 
     function renderAdminUI() {
-      // 填入所屬歌單選項
       const targetPlSel = document.getElementById('form-pl-target');
       targetPlSel.innerHTML = '';
       store.forEach((p, idx) => {
@@ -1052,15 +1068,14 @@
         targetPlSel.appendChild(opt);
       });
 
-      // 渲染歌單與歌曲列表
       const tree = document.getElementById('admin-tree-view');
       tree.innerHTML = '';
       store.forEach((p, pI) => {
         const pBox = document.createElement('div');
-        pBox.style.cssText = "margin-bottom:12px; background:#101117; padding:8px; border-radius:6px; border:1px solid #20222f;";
+        pBox.style.cssText = "margin-bottom:10px; background:#0e0f13; padding:8px; border-radius:6px; border:1px solid #1f2026;";
         pBox.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <strong style="color:var(--brass-light); font-size:0.85rem;">📁 ${p.name} (${p.songs.length})</strong>
+            <strong style="color:#e4e4e7; font-size:0.82rem;">📁 ${p.name} (${p.songs.length})</strong>
             <button class="btn-act btn-del" onclick="deletePlaylist(${pI})">刪除歌單</button>
           </div>
         `;
@@ -1083,7 +1098,7 @@
 
     window.deletePlaylist = function(pI) {
       if (store.length <= 1) return alert('請至少保留一個歌單！');
-      if (confirm(`確定要刪除歌單《${store[pI].name}》嗎？`)) {
+      if (confirm(`確定刪除歌單《${store[pI].name}》？`)) {
         store.splice(pI, 1);
         if (plIdx >= store.length) plIdx = 0;
         persistData();
@@ -1099,10 +1114,9 @@
       renderUI();
     };
 
-    // 編輯特定歌曲
     window.editSong = function(pI, sI) {
       const s = store[pI].songs[sI];
-      document.getElementById('form-mode-title').textContent = `✦ 正在編輯歌曲: ${s.title}`;
+      document.getElementById('form-mode-title').textContent = `✦ 編輯歌曲: ${s.title}`;
       document.getElementById('edit-song-id').value = `${pI}_${sI}`;
       document.getElementById('form-pl-target').value = pI;
       document.getElementById('form-song-title').value = s.title;
@@ -1121,9 +1135,7 @@
       document.getElementById('admin-modal').scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    document.getElementById('btn-cancel-edit').onclick = () => {
-      resetSongForm();
-    };
+    document.getElementById('btn-cancel-edit').onclick = resetSongForm;
 
     function resetSongForm() {
       document.getElementById('form-mode-title').textContent = '✦ 新增歌曲';
@@ -1137,7 +1149,6 @@
       document.getElementById('btn-cancel-edit').style.display = 'none';
     }
 
-    // 儲存（新增或更新）歌曲
     document.getElementById('btn-save-song').onclick = () => {
       const editKey = document.getElementById('edit-song-id').value;
       const targetPl = parseInt(document.getElementById('form-pl-target').value);
@@ -1163,13 +1174,12 @@
         id: editKey ? store[editKey.split('_')[0]].songs[editKey.split('_')[1]].id : 's_' + Date.now(),
         title,
         artist,
-        source,
+        source: normalizeAudioUrl(source),
         cover,
         lyrics: lyricsParsed
       };
 
       if (editKey) {
-        // 更新現有歌曲
         const [oldPI, oldSI] = editKey.split('_').map(Number);
         if (oldPI === targetPl) {
           store[oldPI].songs[oldSI] = songObj;
@@ -1178,7 +1188,6 @@
           store[targetPl].songs.push(songObj);
         }
       } else {
-        // 新增
         store[targetPl].songs.push(songObj);
       }
 
@@ -1189,7 +1198,6 @@
       alert(`歌曲《${title}》已成功儲存！`);
     };
 
-    // 新增歌單
     document.getElementById('btn-add-pl').onclick = () => {
       const name = document.getElementById('admin-new-pl-name').value.trim();
       if (!name) return alert('請輸入歌單名稱！');
@@ -1200,11 +1208,11 @@
       renderUI();
     };
 
-    // 程式碼複製與導出 (管理者可隨時將修改後完整代碼保存回 GitHub)
+    // 程式碼複製與導出
     document.getElementById('btn-copy-code').onclick = () => {
       const fullHtml = document.documentElement.outerHTML;
       navigator.clipboard.writeText(fullHtml).then(() => {
-        alert('已將當前完整 HTML 程式碼複製到剪貼簿！可直接覆蓋 GitHub index.html');
+        alert('已將當前完整 HTML 程式碼複製到剪貼簿！');
       });
     };
 
