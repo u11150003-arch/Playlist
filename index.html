@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#18191e">
   <title>zy playlist</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,11 +14,12 @@
 
   <style>
     :root {
-      --bg: #000000;
-      --steel: #e4e4e7;
-      --steel-dim: #71717a;
-      --steel-border: #27272a;
-      --accent-glow: rgba(228, 228, 231, 0.25);
+      --bg: #18191e;           /* 高級冷霧灰，完美烘托黑膠輪廓 */
+      --deck-bg: #131418;      /* 下方控制台微深層次 */
+      --steel: #f4f4f5;
+      --steel-dim: #9ca3af;
+      --steel-border: #2a2c35;
+      --accent-glow: rgba(244, 244, 245, 0.25);
     }
 
     * {
@@ -29,11 +30,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* 全域統一淺色階冷霧灰背景，杜絕死黑 */
     html, body {
       width: 100vw;
       height: 100vh;
       height: 100dvh;
-      background: #000000 !important;
+      background: var(--bg) !important;
       color: var(--steel);
       font-family: 'Syne', 'Noto Sans TC', sans-serif;
       overflow: hidden;
@@ -50,7 +52,7 @@
       align-items: center;
       justify-content: space-between;
       z-index: 30;
-      background: #000000 !important;
+      background: var(--bg) !important;
     }
 
     .brand-title {
@@ -58,7 +60,7 @@
       font-size: 1.15rem;
       font-weight: 800;
       letter-spacing: 2px;
-      color: #f4f4f5;
+      color: #ffffff;
       cursor: pointer;
     }
 
@@ -74,7 +76,7 @@
     .admin-dot-btn span {
       width: 4px;
       height: 4px;
-      background: #52525b;
+      background: #6b7280;
       border-radius: 50%;
     }
 
@@ -85,7 +87,7 @@
       position: relative;
       min-height: 0;
       overflow: hidden;
-      background: #000000 !important;
+      background: var(--bg) !important;
     }
 
     #threejs-box {
@@ -94,7 +96,7 @@
       position: relative;
       touch-action: none;
       cursor: grab;
-      background: #000000 !important;
+      background: transparent !important;
     }
     #threejs-box:active {
       cursor: grabbing;
@@ -120,11 +122,11 @@
       font-family: 'Orbitron', 'Syne', sans-serif;
       font-size: 1.05rem;
       letter-spacing: 1px;
-      color: #fafafa;
+      color: #ffffff;
     }
     .track-meta p {
       font-size: 0.75rem;
-      color: #a1a1aa;
+      color: var(--steel-dim);
       margin-top: 2px;
     }
 
@@ -147,13 +149,13 @@
     .lyric-row {
       text-align: center;
       font-size: 0.82rem;
-      color: #4b4d58;
+      color: #6b7280;
       line-height: 1.5;
       transition: all 0.25s ease;
       cursor: pointer;
     }
     .lyric-row.active {
-      color: #f4f4f5;
+      color: #ffffff;
       font-size: 0.96rem;
       font-weight: 600;
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
@@ -161,10 +163,10 @@
     }
 
     footer.retro-deck {
-      background: linear-gradient(180deg, #101115 0%, #000000 100%);
+      background: var(--deck-bg);
       border-top: 1px solid var(--steel-border);
       padding: 8px 12px calc(24px + env(safe-area-inset-bottom, 20px));
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.5);
       z-index: 25;
       width: 100%;
     }
@@ -180,7 +182,7 @@
     .retro-time {
       font-family: 'Orbitron', monospace;
       font-size: 0.7rem;
-      color: #a1a1aa;
+      color: var(--steel-dim);
       min-width: 36px;
     }
 
@@ -196,13 +198,13 @@
     .seek-track {
       width: 100%;
       height: 4px;
-      background: #1e1e24;
+      background: #23252d;
       border-radius: 2px;
       position: relative;
     }
     .seek-bar {
       height: 100%;
-      background: linear-gradient(90deg, #52525b, #e4e4e7);
+      background: linear-gradient(90deg, #6b7280, #e4e4e7);
       border-radius: 2px;
       width: 0%;
       pointer-events: none;
@@ -237,9 +239,9 @@
       min-width: 0;
     }
     .steel-select {
-      background: #14151b;
-      border: 1px solid #2d2f3a;
-      color: #d4d4d8;
+      background: #1c1d24;
+      border: 1px solid #333642;
+      color: #e4e4e7;
       font-size: 0.7rem;
       padding: 5px 6px;
       border-radius: 6px;
@@ -261,9 +263,9 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #27272a 0%, #121215 100%);
-      border: 1px solid #3f3f46;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.15);
+      background: radial-gradient(circle at 35% 35%, #2a2c36 0%, #171820 100%);
+      border: 1px solid #3e414f;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -277,26 +279,26 @@
     .steel-knob-btn svg {
       width: 14px;
       height: 14px;
-      fill: #a1a1aa;
+      fill: #d1d5db;
     }
 
     .play-master-btn {
       width: 46px;
       height: 46px;
-      background: radial-gradient(circle at 35% 35%, #3f3f46 0%, #18181b 100%);
-      border: 1.5px solid #71717a;
-      box-shadow: 0 0 10px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.2);
+      background: radial-gradient(circle at 35% 35%, #4b4e5d 0%, #20222a 100%);
+      border: 1.5px solid #8b90a0;
+      box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.25);
     }
     .play-master-btn svg {
       width: 17px;
       height: 17px;
-      fill: #fafafa;
+      fill: #ffffff;
     }
 
     .modal-veil {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.9);
+      background: rgba(0,0,0,0.85);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
@@ -305,8 +307,8 @@
       padding: 16px;
     }
     .modal-inner {
-      background: #111216;
-      border: 1px solid #27272a;
+      background: #181920;
+      border: 1px solid #333642;
       border-radius: 12px;
       width: 100%;
       max-width: 520px;
@@ -328,13 +330,13 @@
     .field-row label {
       display: block;
       font-size: 0.78rem;
-      color: #a1a1aa;
+      color: var(--steel-dim);
       margin-bottom: 4px;
     }
     .field-row input, .field-row textarea, .field-row select {
       width: 100%;
-      background: #09090b;
-      border: 1px solid #27272a;
+      background: #111216;
+      border: 1px solid #2d303a;
       border-radius: 6px;
       color: #fff;
       font-size: 0.85rem;
@@ -347,8 +349,8 @@
       resize: vertical;
     }
     .btn-steel {
-      background: #27272a;
-      border: 1px solid #3f3f46;
+      background: #2b2e3a;
+      border: 1px solid #454959;
       color: #fafafa;
       font-weight: 600;
       padding: 8px 14px;
@@ -357,8 +359,8 @@
     }
     .btn-cancel {
       background: transparent;
-      border: 1px solid #27272a;
-      color: #71717a;
+      border: 1px solid #333642;
+      color: #9ca3af;
       padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
@@ -368,8 +370,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 6px 10px;
-      background: #09090b;
-      border: 1px solid #1f1f23;
+      background: #111216;
+      border: 1px solid #242630;
       margin-bottom: 4px;
       border-radius: 4px;
       font-size: 0.8rem;
@@ -385,8 +387,8 @@
       font-size: 0.72rem;
       cursor: pointer;
     }
-    .btn-edit { background: #3f3f46; color: #fff; }
-    .btn-del { background: #7f1d1d; color: #fca5a5; }
+    .btn-edit { background: #3b82f6; color: #fff; }
+    .btn-del { background: #ef4444; color: #fff; }
   </style>
 
   <script type="importmap">
@@ -475,7 +477,7 @@
         <button class="btn-cancel" id="btn-dl-html" style="font-size:0.75rem;">💾 下載更新 HTML</button>
       </div>
 
-      <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
+      <div style="background:#111216; padding:10px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
         <label style="font-size:0.75rem; color:#a1a1aa; display:flex; justify-content:space-between;">
           <span>黑膠與封面尺寸縮放</span>
           <span id="scale-val-lbl">1.0x</span>
@@ -483,7 +485,7 @@
         <input type="range" id="scale-slider" min="0.6" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:6px;">
       </div>
 
-      <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
+      <div style="background:#111216; padding:10px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
         <label style="font-size:0.78rem; color:#e4e4e7; font-weight:bold;">新增歌單</label>
         <div style="display:flex; gap:8px; margin-top:6px;">
           <input type="text" id="admin-new-pl-name" placeholder="歌單名稱...">
@@ -491,7 +493,7 @@
         </div>
       </div>
 
-      <div style="background:#09090b; padding:12px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
+      <div style="background:#111216; padding:12px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
         <h4 id="form-mode-title" style="color:#fafafa; font-size:0.85rem; margin-bottom:8px;">✦ 新增歌曲</h4>
         <input type="hidden" id="edit-song-id" value="">
 
@@ -625,7 +627,6 @@
             artist: "aespa",
             source: "phuiAIQAxZ4",
             cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
-            backCover: "",
             duration: 181,
             lyrics: []
           },
@@ -634,7 +635,6 @@
             artist: "aespa",
             source: "nFYwcndNuZY",
             cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
-            backCover: "",
             duration: 194,
             lyrics: []
           },
@@ -674,7 +674,6 @@
             artist: "Winter",
             source: "YTeFLKMnwjg",
             cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
-            backCover: "",
             duration: 220,
             lyrics: []
           },
@@ -683,7 +682,6 @@
             artist: "Winter",
             source: "YTeFLKMnwjg",
             cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
-            backCover: "",
             duration: 240,
             lyrics: []
           },
@@ -692,7 +690,6 @@
             artist: "Winter",
             source: "YTeFLKMnwjg",
             cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
-            backCover: "",
             duration: 215,
             lyrics: []
           }
@@ -716,7 +713,6 @@
             artist: "aespa",
             source: "D8VEhcPeSlc",
             cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            backCover: "",
             duration: 195,
             lyrics: []
           },
@@ -725,7 +721,6 @@
             artist: "aespa",
             source: "D8VEhcPeSlc",
             cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            backCover: "",
             duration: 172,
             lyrics: []
           },
@@ -734,7 +729,6 @@
             artist: "aespa",
             source: "D8VEhcPeSlc",
             cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            backCover: "",
             duration: 204,
             lyrics: []
           },
@@ -743,7 +737,6 @@
             artist: "aespa",
             source: "D8VEhcPeSlc",
             cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            backCover: "",
             duration: 189,
             lyrics: []
           }
@@ -767,7 +760,6 @@
             artist: "aespa",
             source: "jWQx2f-CErU",
             cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
-            backCover: "",
             duration: 182,
             lyrics: []
           },
@@ -776,7 +768,6 @@
             artist: "aespa",
             source: "jWQx2f-CErU",
             cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
-            backCover: "",
             duration: 175,
             lyrics: []
           },
@@ -785,7 +776,6 @@
             artist: "aespa",
             source: "jWQx2f-CErU",
             cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
-            backCover: "",
             duration: 196,
             lyrics: []
           }
@@ -793,12 +783,12 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v11_trueblack')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v11')) || 1.0;
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v12_silvergray')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v12')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v11_trueblack', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale_v11', modelScale);
+      localStorage.setItem('zy_playlist_v12_silvergray', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale_v12', modelScale);
     }
 
     let plIdx = 0;
@@ -840,7 +830,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (深黑底色 + 真實高光黑膠 + 晶亮外殼)
+     * 3. Three.js 3D (灰調背景 + 邊緣清晰黑膠唱片 + 光澤紙盒)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -863,78 +853,86 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // 燈光：柔和環境光 + 正面聚焦強光源 (打出高光澤)
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.2);
+    // 均勻且明亮的立體光源
+    const ambLight = new THREE.AmbientLight(0xffffff, 3.2);
     scene.add(ambLight);
 
     const keyLight = new THREE.DirectionalLight(0xffffff, 4.0);
-    keyLight.position.set(3, 4, 5);
+    keyLight.position.set(4, 5, 5);
     scene.add(keyLight);
 
-    const backRim = new THREE.DirectionalLight(0x555566, 1.8);
-    backRim.position.set(-4, -2, -3);
-    scene.add(backRim);
+    const rimLight = new THREE.DirectionalLight(0x9ca3af, 2.8);
+    rimLight.position.set(-5, -2, -3);
+    scene.add(rimLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 黑膠同心圓高光貼圖 (基底維持 #0a0a0d 深黑，僅反光處帶微光)
+    // 黑膠同心圓高光貼圖 (基底深黑，邊緣微銀灰反光帶，在灰背景下立體分明)
     function createTrueBlackShineTexture() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
 
-      // 唱片本體深黑色
-      ctx.fillStyle = '#0a0a0d';
+      // 深黑膠體基底
+      ctx.fillStyle = '#0f1014';
       ctx.fillRect(0, 0, 512, 512);
 
-      // 繪製細膩光澤
+      // 旋轉扇形光澤
       const grad = ctx.createConicGradient(0.6, 256, 256);
-      grad.addColorStop(0.0, 'rgba(10,10,13,1)');
-      grad.addColorStop(0.12, 'rgba(60,63,75,0.7)'); // 微光峰值
-      grad.addColorStop(0.25, 'rgba(10,10,13,1)');
-      grad.addColorStop(0.5, 'rgba(10,10,13,1)');
-      grad.addColorStop(0.62, 'rgba(60,63,75,0.7)'); // 對角微光峰值
-      grad.addColorStop(0.75, 'rgba(10,10,13,1)');
-      grad.addColorStop(1.0, 'rgba(10,10,13,1)');
+      grad.addColorStop(0.0, 'rgba(15,16,20,1)');
+      grad.addColorStop(0.12, 'rgba(75,80,95,0.7)');
+      grad.addColorStop(0.25, 'rgba(15,16,20,1)');
+      grad.addColorStop(0.5, 'rgba(15,16,20,1)');
+      grad.addColorStop(0.62, 'rgba(75,80,95,0.7)');
+      grad.addColorStop(0.75, 'rgba(15,16,20,1)');
+      grad.addColorStop(1.0, 'rgba(15,16,20,1)');
 
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(256, 256, 248, 0, Math.PI * 2);
       ctx.fill();
 
-      // 細緻同心圓溝槽
+      // 細緻凹凸同心圓紋理
       for (let r = 35; r < 248; r += 2) {
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 6 === 0) ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.5)';
+        ctx.strokeStyle = (r % 6 === 0) ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.4)';
         ctx.lineWidth = 1;
         ctx.stroke();
       }
+
+      // 黑膠最外圈亮銀邊緣倒角，確保在任何視角邊緣都清晰銳利
+      ctx.beginPath();
+      ctx.arc(256, 256, 246, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
       return new THREE.CanvasTexture(c);
     }
 
     const texLoader = new THREE.TextureLoader();
 
-    // 專輯外殼（具有亮面塗層光澤 Standard 材質）
+    // 專輯外殼（尺寸適中 2.0，表面帶薄膜清漆光澤）
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
       new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
       new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
       new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
       new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.18, metalness: 0.1 }), // 正面光澤膠膜
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.18, metalness: 0.1 })  // 背面光澤膠膜
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.16, metalness: 0.1 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.16, metalness: 0.1 })
     ]);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體（深黑 + 高金屬度鏡面反射）
+    // 唱片本體（半徑 0.95，帶光澤感）
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x0c0c10, // 深黑本體
+      color: 0x121318,
       map: createTrueBlackShineTexture(),
       roughness: 0.18,
       metalness: 0.75
@@ -1407,7 +1405,7 @@
       tree.innerHTML = '';
       store.forEach((p, pI) => {
         const pBox = document.createElement('div');
-        pBox.style.cssText = "margin-bottom:10px; background:#0e0f13; padding:8px; border-radius:6px; border:1px solid #1f2026;";
+        pBox.style.cssText = "margin-bottom:10px; background:#111216; padding:8px; border-radius:6px; border:1px solid #282a35;";
         pBox.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <strong style="color:#e4e4e7; font-size:0.82rem;">📁 ${p.name} (${p.songs.length})</strong>
