@@ -8,6 +8,7 @@
   <meta name="theme-color" content="#000000">
   <title>zy playlist</title>
 
+  <!-- 引入科技感與復古無襯線字型 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Syne:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -44,6 +45,7 @@
       justify-content: space-between;
     }
 
+    /* 頂部 Header */
     header {
       padding: calc(10px + env(safe-area-inset-top, 0px)) 20px 8px;
       display: flex;
@@ -78,6 +80,7 @@
       border-radius: 50%;
     }
 
+    /* 主舞台 */
     main {
       flex: 1;
       display: flex;
@@ -89,7 +92,7 @@
 
     #threejs-box {
       width: 100%;
-      height: 50%;
+      height: 52%;
       position: relative;
       cursor: grab;
     }
@@ -97,8 +100,9 @@
       cursor: grabbing;
     }
 
+    /* 歌曲資訊與歌詞區 */
     .info-lyrics-container {
-      height: 50%;
+      height: 48%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -134,7 +138,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      padding: 40px 16px 80px;
+      padding: 30px 16px 80px;
       scrollbar-width: none;
     }
     .lyrics-view::-webkit-scrollbar {
@@ -157,6 +161,7 @@
       transform: scale(1.04);
     }
 
+    /* 底部面板：高度拉高保護 Safari 手勢列 */
     footer.retro-deck {
       background: linear-gradient(180deg, #101115 0%, #000000 100%);
       border-top: 1px solid var(--steel-border);
@@ -179,6 +184,7 @@
       min-width: 38px;
     }
 
+    /* 手指拖曳進度條 */
     .seek-groove {
       flex: 1;
       height: 24px;
@@ -209,9 +215,9 @@
       top: -4px;
       width: 12px;
       height: 12px;
-      background: #fff;
+      background: #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 6px rgba(255,255,255,0.6);
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
       pointer-events: none;
     }
 
@@ -279,6 +285,7 @@
       fill: #fafafa;
     }
 
+    /* 彈窗樣式 */
     .modal-veil {
       position: fixed;
       inset: 0;
@@ -341,7 +348,6 @@
       border-radius: 6px;
       cursor: pointer;
     }
-    .btn-steel:hover { background: #3f3f46; }
     .btn-cancel {
       background: transparent;
       border: 1px solid #27272a;
@@ -387,8 +393,9 @@
 </head>
 <body>
 
-  <!-- 純原生音訊引擎 (無 YouTube，最穩健) -->
+  <!-- 原生音訊引擎與背景 YouTube 混合架構 -->
   <audio id="native-audio" playsinline preload="auto"></audio>
+  <iframe id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;" frameborder="0" allow="autoplay; encrypted-media"></iframe>
 
   <!-- Header -->
   <header>
@@ -431,13 +438,13 @@
       </div>
 
       <div class="buttons-group">
-        <button class="steel-knob-btn" id="btn-prev" title="Previous">
+        <button class="steel-knob-btn" id="btn-prev" title="上一首">
           <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </button>
-        <button class="steel-knob-btn play-master-btn" id="btn-play" title="Play / Pause">
+        <button class="steel-knob-btn play-master-btn" id="btn-play" title="播放 / 暫停">
           <svg id="play-svg-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <button class="steel-knob-btn" id="btn-next" title="Next">
+        <button class="steel-knob-btn" id="btn-next" title="下一首">
           <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
         </button>
       </div>
@@ -501,13 +508,13 @@
           <input type="text" id="form-song-artist" placeholder="例如：Winter">
         </div>
         <div class="field-row">
-          <label>GitHub MP3 網址 (支援直接貼上 github.com/... 連結，自動轉換)</label>
-          <input type="text" id="form-song-source" placeholder="如：https://github.com/.../Lips.mp3">
+          <label>音訊來源 (本機 mp3 檔名、GitHub raw 網址 或 YouTube 連結)</label>
+          <input type="text" id="form-song-source" placeholder="如：lips (online-audio-converter.com).mp3 或 YouTube 網址">
         </div>
 
         <div class="field-row">
-          <label>專輯封面 (Google Drive、網路圖或從手機圖庫選擇)</label>
-          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（自動轉直連）">
+          <label>專輯封面 (支援 Google Drive 分享連結自動轉直連、網路圖或從手機圖庫選擇)</label>
+          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（Google Drive、Imgur 等自動轉直連）">
           <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
             <input type="file" id="local-img-picker" accept="image/*" style="display:none;">
             <button type="button" class="btn-cancel" onclick="document.getElementById('local-img-picker').click()" style="font-size:0.72rem;">📁 從手機圖庫挑選圖片</button>
@@ -542,83 +549,253 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     /* -------------------------------------------------------------
-     * 1. 完整移植 winter-cd-player 歌單與 GitHub MP3 資源
+     * 1. 完整沿用 winter-cd-player 原生 5 大歌單與完整曲目配置
      * ------------------------------------------------------------*/
     const DEFAULT_DATA = [
       {
-        id: "pl_winter",
-        name: "Winter CD Collection",
+        id: "pl_lips",
+        name: "Lips",
         songs: [
           {
-            id: "s_lips",
             title: "Lips",
-            artist: "Winter (aespa)",
-            source: "https://raw.githubusercontent.com/u11150003-arch/winter-cd-player/main/audio/Lips.mp3",
-            cover: "https://raw.githubusercontent.com/u11150003-arch/winter-cd-player/main/images/cover.jpg",
+            artist: "Winter",
+            source: "lips (online-audio-converter.com).mp3",
+            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
+            duration: 211,
             lyrics: [
-              { time: 3, text: "Lips like rose petals falling" },
+              { time: 2, text: "Lips like rose petals" },
               { time: 8, text: "Soft whisper in the winter breeze" },
               { time: 15, text: "Feel the rhythm in your heart" },
-              { time: 24, text: "Shining bright through the cold night" },
-              { time: 35, text: "Every moment frozen in time" }
+              { time: 24, text: "Shining bright through the night" }
             ]
           },
           {
-            id: "s_whiplash",
-            title: "Whiplash",
+            title: "Time Walking On Memories기억을 걷는 시간",
+            artist: "Winter",
+            source: "time walking on memories (online-audio-converter.com).mp3",
+            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
+            duration: 208,
+            lyrics: []
+          },
+          {
+            title: "Winter - What you want do for love",
+            artist: "Winter",
+            source: "YTeFLKMnwjg",
+            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
+            duration: 210,
+            lyrics: []
+          },
+          {
+            title: "aespa - Life's Too Short",
             artist: "aespa",
-            source: "https://raw.githubusercontent.com/u11150003-arch/winter-cd-player/main/audio/Whiplash.mp3",
-            cover: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
-            lyrics: [
-              { time: 1, text: "One look give 'em whiplash" },
-              { time: 4, text: "Beat drop with a bad girl attitude" },
-              { time: 8, text: "W-H-I-P-L-A-S-H" },
-              { time: 14, text: "Under the silver spotlight" },
-              { time: 19, text: "Cold like Winter, sharp like steel" }
-            ]
+            source: "z2AHnk76PDU",
+            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
+            duration: 178,
+            lyrics: []
+          }
+        ]
+      },
+      {
+        id: "pl_spark",
+        name: "Spark",
+        songs: [
+          {
+            title: "Spark",
+            artist: "Winter",
+            source: "spark (online-audio-converter.com).mp3",
+            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
+            duration: 195,
+            lyrics: []
+          },
+          {
+            title: "aespa - Supernova",
+            artist: "aespa",
+            source: "phuiAIQAxZ4",
+            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
+            duration: 181,
+            lyrics: []
+          },
+          {
+            title: "aespa - Mine",
+            artist: "aespa",
+            source: "nFYwcndNuZY",
+            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
+            duration: 194,
+            lyrics: []
+          },
+          {
+            title: "aespa - Licorice",
+            artist: "aespa",
+            source: "phuiAIQAxZ4",
+            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
+            duration: 160,
+            lyrics: []
+          },
+          {
+            title: "aespa - Live My Life",
+            artist: "aespa",
+            source: "nFYwcndNuZY",
+            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
+            duration: 212,
+            lyrics: []
+          }
+        ]
+      },
+      {
+        id: "pl_blue",
+        name: "BLUE",
+        songs: [
+          {
+            title: "BLUE",
+            artist: "Winter",
+            source: "blue (online-audio-converter.com).mp3",
+            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
+            duration: 211,
+            lyrics: []
+          },
+          {
+            title: "Winter - With You (OST)",
+            artist: "Winter",
+            source: "YTeFLKMnwjg",
+            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
+            duration: 220,
+            lyrics: []
+          },
+          {
+            title: "Winter - Fly Away (Live Ver)",
+            artist: "Winter",
+            source: "YTeFLKMnwjg",
+            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
+            duration: 240,
+            lyrics: []
+          },
+          {
+            title: "Winter - Voyage",
+            artist: "Winter",
+            source: "YTeFLKMnwjg",
+            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
+            duration: 215,
+            lyrics: []
+          }
+        ]
+      },
+      {
+        id: "pl_saddle",
+        name: "Saddle Up",
+        songs: [
+          {
+            title: "Saddle Up",
+            artist: "Winter",
+            source: "Saddle Up (online-audio-converter.com).mp3",
+            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
+            duration: 201,
+            lyrics: []
+          },
+          {
+            title: "aespa - Trick or Trick",
+            artist: "aespa",
+            source: "D8VEhcPeSlc",
+            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
+            duration: 195,
+            lyrics: []
+          },
+          {
+            title: "aespa - Don't Blink",
+            artist: "aespa",
+            source: "D8VEhcPeSlc",
+            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
+            duration: 172,
+            lyrics: []
+          },
+          {
+            title: "aespa - Hot Air Balloon",
+            artist: "aespa",
+            source: "D8VEhcPeSlc",
+            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
+            duration: 204,
+            lyrics: []
+          },
+          {
+            title: "aespa - YOLO",
+            artist: "aespa",
+            source: "D8VEhcPeSlc",
+            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
+            duration: 189,
+            lyrics: []
+          }
+        ]
+      },
+      {
+        id: "pl_summer",
+        name: "Speed of Summer",
+        songs: [
+          {
+            title: "Speed of Summer",
+            artist: "Winter",
+            source: "speed of summer (online-audio-converter.com).mp3",
+            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
+            duration: 210,
+            lyrics: []
+          },
+          {
+            title: "aespa - Flights, Not Feelings",
+            artist: "aespa",
+            source: "jWQx2f-CErU",
+            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
+            duration: 182,
+            lyrics: []
+          },
+          {
+            title: "aespa - Pink Hoodie",
+            artist: "aespa",
+            source: "jWQx2f-CErU",
+            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
+            duration: 175,
+            lyrics: []
+          },
+          {
+            title: "aespa - Just Another Girl",
+            artist: "aespa",
+            source: "jWQx2f-CErU",
+            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
+            duration: 196,
+            lyrics: []
           }
         ]
       }
     ];
 
-    // 初始化儲存庫 (以 v5 全新穩定格式隔離)
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v5')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v5')) || 1.0;
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v6_full')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v6')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v5', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale_v5', modelScale);
+      localStorage.setItem('zy_playlist_v6_full', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale_v6', modelScale);
     }
 
     let plIdx = 0;
     let trackIdx = 0;
     let isPlaying = false;
     let isDraggingSeek = false;
+    let playMode = 'file'; // 'file' or 'yt'
+    let currentSec = 0;
+    let totalDuration = 211;
+    let ytTimer = null;
 
     const nativeAudio = document.getElementById('native-audio');
+    const ytIframe = document.getElementById('yt-hidden-player');
 
     /* -------------------------------------------------------------
-     * 2. 自動將 GitHub Blob 轉換為 Raw 直連
+     * 2. Google Drive / GitHub 網址自動轉換為真實圖片與音訊串流
      * ------------------------------------------------------------*/
-    function normalizeAudioUrl(url) {
-      if (!url) return '';
-      url = url.trim();
-      if (url.includes('github.com') && url.includes('/blob/')) {
-        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-      }
-      return url;
-    }
-
     function normalizeImageUrl(url) {
       if (!url) return '';
       url = url.trim();
-      const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-      if (driveMatch && (url.includes('drive.google.com') || url.includes('google.com'))) {
-        return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
-      }
-      if (url.includes('dropbox.com')) {
-        return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '');
-      }
+      const driveMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || 
+                         url.match(/id=([a-zA-Z0-9_-]+)/) || 
+                         url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (driveMatch) return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+      if (url.includes('dropbox.com')) return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '');
       if (url.includes('imgur.com') && !url.includes('i.imgur.com')) {
         const id = url.split('/').pop().split('.')[0];
         return `https://i.imgur.com/${id}.jpg`;
@@ -629,8 +806,16 @@
       return url;
     }
 
+    function extractYoutubeId(url) {
+      if (!url) return null;
+      if (url.includes("v=")) return url.split("v=")[1].substring(0, 11);
+      if (url.includes("youtu.be/")) return url.split("youtu.be/")[1].substring(0, 11);
+      if (url.length === 11 && !url.includes("/") && !url.includes(".")) return url.trim();
+      return null;
+    }
+
     /* -------------------------------------------------------------
-     * 3. Three.js 3D 黑膠外殼與明亮光澤
+     * 3. Three.js 3D 黑膠外殼與高反光明亮金屬光澤 (徹底解決暗黑問題)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -655,33 +840,37 @@
     controls.dampingFactor = 0.05;
     controls.enableZoom = false;
 
-    // 恢復明亮清晰光影
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.2);
+    // 增強型三點明亮高光設置
+    const ambLight = new THREE.AmbientLight(0xffffff, 3.2); // 提高環境明亮度
     scene.add(ambLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 2.8);
-    mainLight.position.set(5, 7, 6);
-    scene.add(mainLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.5); // 強烈正面照射
+    keyLight.position.set(5, 8, 6);
+    scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0x93c5fd, 1.8);
-    rimLight.position.set(-5, -2, -4);
+    const fillLight = new THREE.DirectionalLight(0xb0c4de, 2.5); // 柔和側邊反光
+    fillLight.position.set(-6, 3, 4);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2.0); // 輪廓光
+    rimLight.position.set(0, -5, -4);
     scene.add(rimLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 精緻黑膠同心圓材質
-    function createVinylTexture() {
+    // 精緻明亮黑膠唱片同心圓貼圖
+    function createBrightVinylTexture() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#141418';
+      ctx.fillStyle = '#22232a'; // 底色調亮，呈現透亮黑膠質感
       ctx.fillRect(0, 0, 512, 512);
-      for (let r = 40; r < 250; r += 2) {
+      for (let r = 35; r < 250; r += 2) {
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 6 === 0) ? '#2c2d36' : '#1c1d24';
+        ctx.strokeStyle = (r % 5 === 0) ? '#4a4d5e' : '#2d303b'; // 鮮明反光溝槽
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -690,39 +879,39 @@
 
     const texLoader = new THREE.TextureLoader();
 
-    // 外殼
+    // 專輯外殼
     const coverGeo = new THREE.BoxGeometry(2.2, 2.2, 0.05);
     const defaultCoverMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
-      new THREE.MeshStandardMaterial({ color: 0x333540, roughness: 0.25 }),
-      new THREE.MeshStandardMaterial({ color: 0x121318 })
+      new THREE.MeshStandardMaterial({ color: 0x22232a }),
+      new THREE.MeshStandardMaterial({ color: 0x22232a }),
+      new THREE.MeshStandardMaterial({ color: 0x22232a }),
+      new THREE.MeshStandardMaterial({ color: 0x22232a }),
+      new THREE.MeshStandardMaterial({ color: 0x444755, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0x18181f })
     ];
     const coverMesh = new THREE.Mesh(coverGeo, defaultCoverMaterials);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片（光澤感金屬與細膩反光）
+    // 唱片 (提高金屬感與降低粗糙度以呈現光芒)
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x18181c,
-      roughness: 0.18,
-      metalness: 0.85,
-      bumpMap: createVinylTexture(),
-      bumpScale: 0.02
+      color: 0x2a2b34,          // 帶金屬灰調的明亮黑膠色
+      roughness: 0.12,          // 鏡面反光
+      metalness: 0.90,          // 強烈金屬光澤
+      bumpMap: createBrightVinylTexture(),
+      bumpScale: 0.025
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
-    // 圓心貼紙
+    // 唱片圓心貼標
     const labelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.025, 32);
     const labelMat = new THREE.MeshStandardMaterial({
-      color: 0x333540,
-      roughness: 0.3
+      color: 0x444755,
+      roughness: 0.25
     });
     const labelMesh = new THREE.Mesh(labelGeo, labelMat);
     labelMesh.rotation.x = Math.PI / 2;
@@ -745,7 +934,7 @@
           labelMesh.material.needsUpdate = true;
         },
         undefined,
-        (err) => console.warn("封面載入防呆:", err)
+        (err) => console.warn("封面載入保護:", err)
       );
     }
 
@@ -766,7 +955,7 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 純原生 MP3 音訊與精準進度條監聽
+     * 4. 沿用 winter-cd-player 音訊播放設定 (支援本機檔案 + YouTube)
      * ------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
@@ -785,28 +974,150 @@
       return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
 
-    // 利用原生 timeupdate，不卡頓且最穩定
-    nativeAudio.addEventListener('timeupdate', () => {
-      if (isDraggingSeek) return;
-      const cur = nativeAudio.currentTime || 0;
-      const dur = nativeAudio.duration || 1;
-      const pct = Math.min(100, Math.max(0, (cur / dur) * 100));
+    function updateProgressUI(cur, total) {
+      currentSec = cur;
+      totalDuration = total || 211;
+      const pct = Math.min(100, Math.max(0, (cur / totalDuration) * 100));
       document.getElementById('seek-progress').style.width = `${pct}%`;
       document.getElementById('lbl-curr').textContent = formatTime(cur);
-      if (!isNaN(nativeAudio.duration)) {
-        document.getElementById('lbl-total').textContent = formatTime(nativeAudio.duration);
-      }
+      document.getElementById('lbl-total').textContent = formatTime(totalDuration);
       syncLyrics(cur);
-    });
+    }
 
+    // 原生音訊事件
+    nativeAudio.addEventListener('timeupdate', () => {
+      if (playMode !== 'file' || isDraggingSeek) return;
+      updateProgressUI(nativeAudio.currentTime, nativeAudio.duration || totalDuration);
+    });
     nativeAudio.addEventListener('playing', () => setPlayState(true));
     nativeAudio.addEventListener('pause', () => setPlayState(false));
     nativeAudio.addEventListener('ended', () => playNext());
-    nativeAudio.addEventListener('error', (e) => {
-      console.warn("音訊載入錯誤，請確認此 MP3 檔案是否已開放公開存取:", e);
-      setPlayState(false);
-    });
 
+    // YouTube 虛擬計時器 (沿用 winter-cd-player 的 startXpYtTimer 設定)
+    function startYtProgressTimer() {
+      clearInterval(ytTimer);
+      ytTimer = setInterval(() => {
+        if (!isPlaying || playMode !== 'yt' || isDraggingSeek) return;
+        currentSec++;
+        updateProgressUI(currentSec, totalDuration);
+        if (currentSec >= totalDuration) {
+          playNext();
+        }
+      }, 1000);
+    }
+
+    function playActiveSong() {
+      const curPl = store[plIdx];
+      if (!curPl || !curPl.songs[trackIdx]) return;
+      const song = curPl.songs[trackIdx];
+
+      renderUI();
+
+      totalDuration = song.duration || 211;
+      const ytId = extractYoutubeId(song.source);
+
+      if (ytId) {
+        // YouTube 模式
+        playMode = 'yt';
+        nativeAudio.pause();
+        nativeAudio.removeAttribute('src');
+
+        const startSec = Math.floor(currentSec || 0);
+        ytIframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&start=${startSec}&playsinline=1&controls=0&enablejsapi=1`;
+        setPlayState(true);
+        startYtProgressTimer();
+      } else {
+        // 本機 / 直連 MP3 模式
+        playMode = 'file';
+        clearInterval(ytTimer);
+        ytIframe.src = '';
+
+        // 轉換來源路徑 (支援本機檔案名稱與 GitHub Raw)
+        let directSrc = song.source.replace(/^\.\//, '');
+        if (!directSrc.startsWith('http')) {
+          directSrc = encodeURI(directSrc);
+        } else if (directSrc.includes('github.com') && directSrc.includes('/blob/')) {
+          directSrc = directSrc.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+        }
+
+        nativeAudio.muted = false;
+        nativeAudio.volume = 1.0;
+
+        if (!nativeAudio.src.endsWith(directSrc)) {
+          nativeAudio.src = directSrc;
+          nativeAudio.load();
+        }
+
+        if (currentSec > 0 && Math.abs(nativeAudio.currentTime - currentSec) > 1) {
+          nativeAudio.currentTime = currentSec;
+        }
+
+        const p = nativeAudio.play();
+        if (p !== undefined) {
+          p.then(() => setPlayState(true)).catch(err => {
+            console.log("等待使用者手勢播放:", err);
+            setPlayState(false);
+          });
+        }
+      }
+    }
+
+    function pauseActiveSong() {
+      setPlayState(false);
+      if (playMode === 'file') {
+        currentSec = nativeAudio.currentTime;
+        nativeAudio.pause();
+      } else {
+        clearInterval(ytTimer);
+        ytIframe.src = '';
+      }
+    }
+
+    /* -------------------------------------------------------------
+     * 5. 手指拖曳進度條跳轉 (Touch & Seek)
+     * ------------------------------------------------------------*/
+    const seekContainer = document.getElementById('seek-container');
+    const seekProgress = document.getElementById('seek-progress');
+
+    function getSeekFraction(e) {
+      const rect = seekContainer.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const pos = clientX - rect.left;
+      return Math.min(1, Math.max(0, pos / rect.width));
+    }
+
+    function handleSeekMove(e) {
+      if (!isDraggingSeek) return;
+      const frac = getSeekFraction(e);
+      seekProgress.style.width = `${frac * 100}%`;
+      document.getElementById('lbl-curr').textContent = formatTime(frac * totalDuration);
+    }
+
+    function handleSeekEnd(e) {
+      if (!isDraggingSeek) return;
+      isDraggingSeek = false;
+      const frac = getSeekFraction(e.changedTouches ? e.changedTouches[0] : e);
+      currentSec = frac * totalDuration;
+
+      if (playMode === 'file') {
+        nativeAudio.currentTime = currentSec;
+      } else {
+        if (isPlaying) playActiveSong();
+      }
+      updateProgressUI(currentSec, totalDuration);
+    }
+
+    seekContainer.addEventListener('mousedown', (e) => { isDraggingSeek = true; handleSeekMove(e); });
+    window.addEventListener('mousemove', handleSeekMove);
+    window.addEventListener('mouseup', handleSeekEnd);
+
+    seekContainer.addEventListener('touchstart', (e) => { isDraggingSeek = true; handleSeekMove(e); }, { passive: false });
+    window.addEventListener('touchmove', handleSeekMove, { passive: false });
+    window.addEventListener('touchend', handleSeekEnd);
+
+    /* -------------------------------------------------------------
+     * 6. 歌詞與切換渲染
+     * ------------------------------------------------------------*/
     function syncLyrics(sec) {
       const song = store[plIdx]?.songs[trackIdx];
       if (!song || !song.lyrics) return;
@@ -846,94 +1157,23 @@
         div.className = 'lyric-row';
         div.textContent = l.text;
         div.onclick = () => {
-          if (!isNaN(nativeAudio.duration)) {
-            nativeAudio.currentTime = l.time;
-          }
+          currentSec = l.time;
+          if (playMode === 'file') nativeAudio.currentTime = currentSec;
+          else playActiveSong();
         };
         scroller.appendChild(div);
       });
     }
 
-    /* -------------------------------------------------------------
-     * 5. 手機滑動調整進度條 (Touch & Drag)
-     * ------------------------------------------------------------*/
-    const seekContainer = document.getElementById('seek-container');
-    const seekProgress = document.getElementById('seek-progress');
-
-    function getSeekFraction(e) {
-      const rect = seekContainer.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const pos = clientX - rect.left;
-      return Math.min(1, Math.max(0, pos / rect.width));
-    }
-
-    function handleSeekMove(e) {
-      if (!isDraggingSeek) return;
-      const frac = getSeekFraction(e);
-      seekProgress.style.width = `${frac * 100}%`;
-      const dur = nativeAudio.duration || 1;
-      document.getElementById('lbl-curr').textContent = formatTime(frac * dur);
-    }
-
-    function handleSeekEnd(e) {
-      if (!isDraggingSeek) return;
-      isDraggingSeek = false;
-      const frac = getSeekFraction(e.changedTouches ? e.changedTouches[0] : e);
-      if (!isNaN(nativeAudio.duration)) {
-        nativeAudio.currentTime = frac * nativeAudio.duration;
-      }
-    }
-
-    seekContainer.addEventListener('mousedown', (e) => {
-      isDraggingSeek = true;
-      handleSeekMove(e);
-    });
-    window.addEventListener('mousemove', handleSeekMove);
-    window.addEventListener('mouseup', handleSeekEnd);
-
-    seekContainer.addEventListener('touchstart', (e) => {
-      isDraggingSeek = true;
-      handleSeekMove(e);
-    }, { passive: false });
-    window.addEventListener('touchmove', handleSeekMove, { passive: false });
-    window.addEventListener('touchend', handleSeekEnd);
-
-    /* -------------------------------------------------------------
-     * 6. 播放與切換核心
-     * ------------------------------------------------------------*/
-    function playActiveSong() {
-      const song = store[plIdx]?.songs[trackIdx];
-      if (!song) return;
-
-      renderUI();
-
-      const directMp3 = normalizeAudioUrl(song.source);
-      nativeAudio.src = directMp3;
-      nativeAudio.load();
-
-      const playPromise = nativeAudio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setPlayState(true))
-          .catch(err => {
-            console.log("等待使用者點擊播放按鍵:", err);
-            setPlayState(false);
-          });
-      }
-    }
-
     function renderUI() {
-      const song = store[plIdx]?.songs[trackIdx];
-      if (!song) {
-        document.getElementById('disp-title').textContent = "未選擇歌曲";
-        document.getElementById('disp-artist').textContent = "---";
-        return;
-      }
+      const curPl = store[plIdx];
+      const song = curPl?.songs[trackIdx];
+      if (!song) return;
 
       document.getElementById('disp-title').textContent = song.title;
       document.getElementById('disp-artist').textContent = song.artist;
 
-      applyCoverTo3D(song.cover);
+      applyCoverTo3D(song.cover || curPl.cover);
       renderLyricsList();
       populateDropdowns();
     }
@@ -942,6 +1182,7 @@
       const pl = store[plIdx];
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx + 1) % pl.songs.length;
+      currentSec = 0;
       playActiveSong();
     }
 
@@ -949,15 +1190,13 @@
       const pl = store[plIdx];
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx - 1 + pl.songs.length) % pl.songs.length;
+      currentSec = 0;
       playActiveSong();
     }
 
     document.getElementById('btn-play').onclick = () => {
-      if (nativeAudio.paused) {
-        nativeAudio.play().then(() => setPlayState(true)).catch(() => {});
-      } else {
-        nativeAudio.pause();
-      }
+      if (isPlaying) pauseActiveSong();
+      else playActiveSong();
     };
     document.getElementById('btn-next').onclick = playNext;
     document.getElementById('btn-prev').onclick = playPrev;
@@ -988,15 +1227,17 @@
     document.getElementById('sel-playlist').onchange = (e) => {
       plIdx = parseInt(e.target.value);
       trackIdx = 0;
+      currentSec = 0;
       playActiveSong();
     };
     document.getElementById('sel-song').onchange = (e) => {
       trackIdx = parseInt(e.target.value);
+      currentSec = 0;
       playActiveSong();
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式
+     * 7. 管理者模式 (密碼 0401)
      * ------------------------------------------------------------*/
     const authModal = document.getElementById('auth-modal');
     const adminModal = document.getElementById('admin-modal');
@@ -1072,7 +1313,7 @@
           const sRow = document.createElement('div');
           sRow.className = 'song-item-row';
           sRow.innerHTML = `
-            <span>🎵 ${s.title} - ${s.artist}</span>
+            <span>🎵 ${s.title}</span>
             <div class="song-actions">
               <button class="btn-act btn-edit" onclick="editSong(${pI}, ${sI})">編輯 ✎</button>
               <button class="btn-act btn-del" onclick="deleteSong(${pI}, ${sI})">刪除</button>
@@ -1110,7 +1351,7 @@
       document.getElementById('form-song-title').value = s.title;
       document.getElementById('form-song-artist').value = s.artist;
       document.getElementById('form-song-source').value = s.source;
-      document.getElementById('form-song-cover').value = s.cover;
+      document.getElementById('form-song-cover').value = s.cover || '';
 
       const lyricsStr = (s.lyrics || []).map(l => {
         const m = Math.floor(l.time / 60);
@@ -1141,10 +1382,10 @@
       const editKey = document.getElementById('edit-song-id').value;
       const targetPl = parseInt(document.getElementById('form-pl-target').value);
       const title = document.getElementById('form-song-title').value.trim();
-      const artist = document.getElementById('form-song-artist').value.trim() || 'Unknown';
+      const artist = document.getElementById('form-song-artist').value.trim() || 'Winter';
       const source = document.getElementById('form-song-source').value.trim();
       const rawCover = document.getElementById('form-song-cover').value.trim();
-      const cover = normalizeImageUrl(rawCover) || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800';
+      const cover = normalizeImageUrl(rawCover) || store[targetPl]?.cover || 'https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6';
       const lyricsRaw = document.getElementById('form-song-lyrics').value;
 
       if (!title || !source) return alert('請填寫完整歌名與音訊來源！');
@@ -1159,11 +1400,11 @@
       }).filter(Boolean).sort((a,b) => a.time - b.time);
 
       const songObj = {
-        id: editKey ? store[editKey.split('_')[0]].songs[editKey.split('_')[1]].id : 's_' + Date.now(),
         title,
         artist,
-        source: normalizeAudioUrl(source),
+        source,
         cover,
+        duration: 210,
         lyrics: lyricsParsed
       };
 
@@ -1212,7 +1453,7 @@
       a.click();
     };
 
-    // 啟動畫面渲染
+    // 啟動初始畫面
     renderUI();
   </script>
 </body>
