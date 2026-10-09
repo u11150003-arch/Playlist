@@ -7,18 +7,25 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#18191e">
 
-  <!-- 統一標題 -->
   <title>WINTER PLAYLIST</title>
 
-  <!-- Open Graph 預覽設定：純白底 + 專輯外殼 + 露出一半黑膠 -->
+  <!-- Open Graph / LINE 預覽設定 -->
   <meta property="og:site_name" content="WINTER PLAYLIST">
   <meta property="og:title" content="WINTER PLAYLIST">
-  <meta property="og:description" content=" ">
-  <meta name="description" content=" ">
-  <meta property="og:type" content="music.playlist">
-  <!-- 內嵌純白底、立體外殼與半露黑膠預覽圖 -->
-  <meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='100%25' height='100%25' fill='%23ffffff'/><g transform='translate(310, 75)'><circle cx='430' cy='240' r='230' fill='%23121316'/><circle cx='430' cy='240' r='85' fill='%23ffffff' stroke='%23e4e4e7' stroke-width='4'/><circle cx='430' cy='240' r='18' fill='%23121316'/><rect x='40' y='10' width='460' height='460' rx='10' fill='%2327272a' stroke='%23e4e4e7' stroke-width='3'/><image href='https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6' x='40' y='10' width='460' height='460' preserveAspectRatio='xMidYMid slice'/></g></svg>">
+  <!-- 簡易介紹詞 -->
+  <meta property="og:description" content="Playlist for WINTER">
+  <meta name="description" content="Playlist for WINTER">
+  <meta property="og:type" content="website">
+
+  <!-- LINE 支援的完整絕對圖片路徑（純白背景 + 專輯 + 半露黑膠） -->
+  <meta property="og:image" content="https://images.weserv.nl/?url=lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6&w=1200&h=630&fit=contain&cbg=white">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WINTER PLAYLIST">
+  <meta name="twitter:description" content="Playlist for WINTER">
+  <meta name="twitter:image" content="https://images.weserv.nl/?url=lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6&w=1200&h=630&fit=contain&cbg=white">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -466,7 +473,7 @@
     </div>
   </footer>
 
-  <!-- 管理後台掛載點（點擊才建立 DOM，杜絕爬蟲抓取字樣） -->
+  <!-- 管理後台掛載點（點擊才生成 DOM，避免文字洩漏至社群爬蟲） -->
   <div id="admin-mount-point"></div>
 
   <template id="auth-tpl">
@@ -848,7 +855,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (高清貼圖、純黑立體邊緣黑膠)
+     * 3. Three.js 3D (黑膠旋轉動態反光、立體層次)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -867,27 +874,29 @@
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3)); // 提升至原機視網膜高畫質
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.4);
+    // 環境光
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
-    dirLight.position.set(2.5, 4.5, 4);
+    // 主方向光 (斜上方照射，激發黑膠凹槽立體光斑)
+    const dirLight = new THREE.DirectionalLight(0xffffff, 2.6);
+    dirLight.position.set(3, 4, 3.5);
     scene.add(dirLight);
 
-    // 專門提亮黑膠邊界外輪廓，避免純黑融進背景
-    const rimLight = new THREE.DirectionalLight(0x828594, 2.5);
-    rimLight.position.set(4, -1.5, 2.5);
+    // 專屬側光：當唱片旋轉時營造動態光束感
+    const rimLight = new THREE.DirectionalLight(0xd4d4d8, 2.2);
+    rimLight.position.set(4, -1.8, 2.8);
     scene.add(rimLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 背景陰影
+    // 背景柔和落影
     function createShadowCanvas() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
@@ -911,28 +920,79 @@
     shadowMesh.position.set(0.1, -0.05, -0.15);
     turntableGroup.add(shadowMesh);
 
+    // 1024x1024 旋轉動態黑膠光澤質地 (微米音軌 + 輕柔各向異性反光)
+    function createGrooveVinylTexture() {
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 1024;
+      const ctx = c.getContext('2d');
+
+      // 深色黑膠基底
+      ctx.fillStyle = '#0f1014';
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      // 旋轉動態扇形柔光 (旋轉時產生自然掠過的光感)
+      const grad = ctx.createConicGradient(0, 512, 512);
+      grad.addColorStop(0.00, 'rgba(15, 16, 20, 1)');
+      grad.addColorStop(0.12, 'rgba(65, 68, 80, 0.65)');
+      grad.addColorStop(0.25, 'rgba(15, 16, 20, 1)');
+      grad.addColorStop(0.50, 'rgba(15, 16, 20, 1)');
+      grad.addColorStop(0.62, 'rgba(65, 68, 80, 0.65)');
+      grad.addColorStop(0.75, 'rgba(15, 16, 20, 1)');
+      grad.addColorStop(1.00, 'rgba(15, 16, 20, 1)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(512, 512, 500, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 同心圓刻紋
+      for (let r = 85; r < 496; r += 2.2) {
+        ctx.beginPath();
+        ctx.arc(512, 512, r, 0, Math.PI * 2);
+        if (r % 14 === 0) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+          ctx.lineWidth = 1.2;
+        } else {
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
+          ctx.lineWidth = 0.8;
+        }
+        ctx.stroke();
+      }
+
+      // 外緣倒角高光
+      ctx.beginPath();
+      ctx.arc(512, 512, 496, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      return tex;
+    }
+
     const texLoader = new THREE.TextureLoader();
 
     // 專輯外殼
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 })
     ]);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體 (深黑無光澤、但外圈邊線清晰)
+    // 唱片本體 (具備動態旋轉光澤與立體質感)
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x101115,
-      roughness: 0.88,
-      metalness: 0.08
+      color: 0x14151a,
+      map: createGrooveVinylTexture(),
+      roughness: 0.32,
+      metalness: 0.55
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
@@ -940,7 +1000,7 @@
 
     // 唱片中央貼標
     const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
-    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
+    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 }));
     labelMesh.rotation.x = Math.PI / 2;
     discGroup.add(labelMesh);
 
@@ -949,7 +1009,7 @@
     discGroup.position.set(VINYL_REST_X, 0, 0.01);
     turntableGroup.add(discGroup);
 
-    // 高清貼圖優化配置函數
+    // 原圖高解析度貼圖配置
     function setupHighQualityTexture(tex) {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.minFilter = THREE.LinearFilter;
@@ -1047,6 +1107,7 @@
       turntableGroup.rotation.y = THREE.MathUtils.lerp(turntableGroup.rotation.y, targetRotY, 0.1);
       turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
 
+      // 旋轉時帶動黑膠反光面旋轉，形成動態光澤流轉效果
       if (isPlaying) {
         discGroup.rotation.z -= 0.024;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
