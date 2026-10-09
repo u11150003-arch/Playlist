@@ -8,7 +8,6 @@
   <meta name="theme-color" content="#000000">
   <title>zy playlist</title>
 
-  <!-- 經典冷光/科技與無襯線字體 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Syne:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -158,7 +157,6 @@
       transform: scale(1.04);
     }
 
-    /* 底部面板：高度充足，杜絕 Safari 遮擋 */
     footer.retro-deck {
       background: linear-gradient(180deg, #101115 0%, #000000 100%);
       border-top: 1px solid var(--steel-border);
@@ -181,7 +179,6 @@
       min-width: 38px;
     }
 
-    /* 進度條容器（擴大觸控區域以便滑動） */
     .seek-groove {
       flex: 1;
       height: 24px;
@@ -206,7 +203,6 @@
       pointer-events: none;
       position: relative;
     }
-    /* 滑動把手 */
     .seek-thumb {
       position: absolute;
       right: -5px;
@@ -283,7 +279,6 @@
       fill: #fafafa;
     }
 
-    /* 彈窗樣式 */
     .modal-veil {
       position: fixed;
       inset: 0;
@@ -346,6 +341,7 @@
       border-radius: 6px;
       cursor: pointer;
     }
+    .btn-steel:hover { background: #3f3f46; }
     .btn-cancel {
       background: transparent;
       border: 1px solid #27272a;
@@ -391,10 +387,8 @@
 </head>
 <body>
 
-  <!-- 原生音訊引擎 -->
+  <!-- 純原生音訊引擎 (無 YouTube，最穩健) -->
   <audio id="native-audio" playsinline preload="auto"></audio>
-  <!-- 隱藏 YouTube 播放器 -->
-  <div id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;"></div>
 
   <!-- Header -->
   <header>
@@ -416,7 +410,7 @@
     </div>
   </main>
 
-  <!-- 底部控制面板 -->
+  <!-- 底部面板 -->
   <footer class="retro-deck">
     <div class="timeline-strip">
       <span class="retro-time" id="lbl-curr">00:00</span>
@@ -469,13 +463,11 @@
     <div class="modal-inner">
       <h3>歌單與曲目核心管理</h3>
 
-      <!-- 導出與備份按鈕群 -->
       <div style="display:flex; gap:8px; margin-bottom:14px;">
         <button class="btn-steel" id="btn-copy-code" style="flex:1; font-size:0.75rem;">📋 複製當前更新程式碼</button>
         <button class="btn-cancel" id="btn-dl-html" style="font-size:0.75rem;">💾 下載更新 HTML</button>
       </div>
 
-      <!-- 3D 尺寸微調滑桿 -->
       <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
         <label style="font-size:0.75rem; color:#a1a1aa; display:flex; justify-content:space-between;">
           <span>黑膠與封面尺寸縮放</span>
@@ -484,7 +476,6 @@
         <input type="range" id="scale-slider" min="0.6" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:6px;">
       </div>
 
-      <!-- 歌單分類管理 -->
       <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
         <label style="font-size:0.78rem; color:#e4e4e7; font-weight:bold;">新增歌單</label>
         <div style="display:flex; gap:8px; margin-top:6px;">
@@ -493,7 +484,6 @@
         </div>
       </div>
 
-      <!-- 歌曲編輯 / 新增表單 -->
       <div style="background:#09090b; padding:12px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
         <h4 id="form-mode-title" style="color:#fafafa; font-size:0.85rem; margin-bottom:8px;">✦ 新增歌曲</h4>
         <input type="hidden" id="edit-song-id" value="">
@@ -504,15 +494,15 @@
         </div>
         <div class="field-row">
           <label>歌曲名稱</label>
-          <input type="text" id="form-song-title" placeholder="例如：Whiplash">
+          <input type="text" id="form-song-title" placeholder="例如：Lips">
         </div>
         <div class="field-row">
           <label>演唱者 / 專輯名稱</label>
-          <input type="text" id="form-song-artist" placeholder="例如：aespa">
+          <input type="text" id="form-song-artist" placeholder="例如：Winter">
         </div>
         <div class="field-row">
-          <label>音訊來源 (支援 GitHub MP3 直連 或 YouTube 網址/ID)</label>
-          <input type="text" id="form-song-source" placeholder="如：https://...song.mp3 或 YouTube 網址">
+          <label>GitHub MP3 網址 (支援直接貼上 github.com/... 連結，自動轉換)</label>
+          <input type="text" id="form-song-source" placeholder="如：https://github.com/.../Lips.mp3">
         </div>
 
         <div class="field-row">
@@ -536,7 +526,6 @@
         </div>
       </div>
 
-      <!-- 歌單清單與特定編輯列表 -->
       <div>
         <label style="font-size:0.75rem; color:#71717a; margin-bottom:6px; display:block;">歌單與歌曲細項</label>
         <div id="admin-tree-view"></div>
@@ -548,83 +537,74 @@
     </div>
   </div>
 
-  <script src="https://www.youtube.com/iframe_api"></script>
-
   <script type="module">
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     /* -------------------------------------------------------------
-     * 1. 預設資料
+     * 1. 完整移植 winter-cd-player 歌單與 GitHub MP3 資源
      * ------------------------------------------------------------*/
     const DEFAULT_DATA = [
       {
-        id: "pl_vault",
-        name: "aespa Vault",
+        id: "pl_winter",
+        name: "Winter CD Collection",
         songs: [
+          {
+            id: "s_lips",
+            title: "Lips",
+            artist: "Winter (aespa)",
+            source: "https://raw.githubusercontent.com/u11150003-arch/winter-cd-player/main/audio/Lips.mp3",
+            cover: "https://raw.githubusercontent.com/u11150003-arch/winter-cd-player/main/images/cover.jpg",
+            lyrics: [
+              { time: 3, text: "Lips like rose petals falling" },
+              { time: 8, text: "Soft whisper in the winter breeze" },
+              { time: 15, text: "Feel the rhythm in your heart" },
+              { time: 24, text: "Shining bright through the cold night" },
+              { time: 35, text: "Every moment frozen in time" }
+            ]
+          },
           {
             id: "s_whiplash",
             title: "Whiplash",
             artist: "aespa",
-            source: "jWQx2f-CErU",
+            source: "https://raw.githubusercontent.com/u11150003-arch/winter-cd-player/main/audio/Whiplash.mp3",
             cover: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
             lyrics: [
               { time: 1, text: "One look give 'em whiplash" },
               { time: 4, text: "Beat drop with a bad girl attitude" },
               { time: 8, text: "W-H-I-P-L-A-S-H" },
               { time: 14, text: "Under the silver spotlight" },
-              { time: 19, text: "Cold like Winter, sharp like steel" },
-              { time: 26, text: "Can you feel the rhythm pulse?" },
-              { time: 33, text: "I'm unstoppable on the floor" },
-              { time: 45, text: "Keep shining through the night" }
-            ]
-          },
-          {
-            id: "s_supernova",
-            title: "Supernova",
-            artist: "aespa",
-            source: "phuiAIQAflA",
-            cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
-            lyrics: [
-              { time: 2, text: "Supernova exploding inside" },
-              { time: 6, text: "Opening the dimension gate" },
-              { time: 11, text: "Body bang, resonance everywhere" },
-              { time: 18, text: "Light breaks across the darkness" },
-              { time: 27, text: "Nova, shining forever" }
+              { time: 19, text: "Cold like Winter, sharp like steel" }
             ]
           }
         ]
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v4')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale')) || 1.0;
+    // 初始化儲存庫 (以 v5 全新穩定格式隔離)
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v5')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v5')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v4', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale', modelScale);
+      localStorage.setItem('zy_playlist_v5', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale_v5', modelScale);
     }
 
     let plIdx = 0;
     let trackIdx = 0;
     let isPlaying = false;
-    let playType = 'yt';
-    let ytPlayer = null;
-    let isYtReady = false;
-    let clockInterval = null;
     let isDraggingSeek = false;
 
     const nativeAudio = document.getElementById('native-audio');
 
     /* -------------------------------------------------------------
-     * 2. 音訊與圖片網址自動正規化 (修復 GitHub raw 直連與 Drive)
+     * 2. 自動將 GitHub Blob 轉換為 Raw 直連
      * ------------------------------------------------------------*/
     function normalizeAudioUrl(url) {
       if (!url) return '';
       url = url.trim();
-      // GitHub blob 網址自動轉換為 raw 直連
       if (url.includes('github.com') && url.includes('/blob/')) {
-        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
       }
       return url;
     }
@@ -650,7 +630,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D 黑膠外殼與唱片 (防破壞崩潰機制)
+     * 3. Three.js 3D 黑膠外殼與明亮光澤
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -675,29 +655,33 @@
     controls.dampingFactor = 0.05;
     controls.enableZoom = false;
 
-    const amb = new THREE.AmbientLight(0xffffff, 1.4);
-    scene.add(amb);
-    const coolLight = new THREE.DirectionalLight(0xe4e4e7, 1.8);
-    coolLight.position.set(4, 5, 5);
-    scene.add(coolLight);
-    const backRim = new THREE.DirectionalLight(0x71717a, 1.0);
-    backRim.position.set(-4, -2, -3);
-    scene.add(backRim);
+    // 恢復明亮清晰光影
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.2);
+    scene.add(ambLight);
+
+    const mainLight = new THREE.DirectionalLight(0xffffff, 2.8);
+    mainLight.position.set(5, 7, 6);
+    scene.add(mainLight);
+
+    const rimLight = new THREE.DirectionalLight(0x93c5fd, 1.8);
+    rimLight.position.set(-5, -2, -4);
+    scene.add(rimLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    function createVinylGrooveMap() {
+    // 精緻黑膠同心圓材質
+    function createVinylTexture() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#0a0a0d';
+      ctx.fillStyle = '#141418';
       ctx.fillRect(0, 0, 512, 512);
       for (let r = 40; r < 250; r += 2) {
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 6 === 0) ? '#18181f' : '#0e0f14';
+        ctx.strokeStyle = (r % 6 === 0) ? '#2c2d36' : '#1c1d24';
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -706,36 +690,39 @@
 
     const texLoader = new THREE.TextureLoader();
 
+    // 外殼
     const coverGeo = new THREE.BoxGeometry(2.2, 2.2, 0.05);
     const defaultCoverMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0x111115 }),
-      new THREE.MeshStandardMaterial({ color: 0x111115 }),
-      new THREE.MeshStandardMaterial({ color: 0x111115 }),
-      new THREE.MeshStandardMaterial({ color: 0x111115 }),
-      new THREE.MeshStandardMaterial({ color: 0x222228, roughness: 0.35 }),
-      new THREE.MeshStandardMaterial({ color: 0x09090b })
+      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026 }),
+      new THREE.MeshStandardMaterial({ color: 0x333540, roughness: 0.25 }),
+      new THREE.MeshStandardMaterial({ color: 0x121318 })
     ];
     const coverMesh = new THREE.Mesh(coverGeo, defaultCoverMaterials);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
+    // 唱片（光澤感金屬與細膩反光）
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x111216,
-      roughness: 0.25,
-      metalness: 0.8,
-      bumpMap: createVinylGrooveMap(),
-      bumpScale: 0.015
+      color: 0x18181c,
+      roughness: 0.18,
+      metalness: 0.85,
+      bumpMap: createVinylTexture(),
+      bumpScale: 0.02
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
+    // 圓心貼紙
     const labelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.025, 32);
     const labelMat = new THREE.MeshStandardMaterial({
-      color: 0x222228,
-      roughness: 0.4
+      color: 0x333540,
+      roughness: 0.3
     });
     const labelMesh = new THREE.Mesh(labelGeo, labelMat);
     labelMesh.rotation.x = Math.PI / 2;
@@ -758,9 +745,7 @@
           labelMesh.material.needsUpdate = true;
         },
         undefined,
-        (err) => {
-          console.warn("3D 圖片載入失敗，使用預設色塊，防止當機:", err);
-        }
+        (err) => console.warn("封面載入防呆:", err)
       );
     }
 
@@ -770,7 +755,7 @@
     function renderLoop() {
       requestAnimationFrame(renderLoop);
       if (isPlaying) {
-        discGroup.rotation.z -= 0.022;
+        discGroup.rotation.z -= 0.025;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
       } else {
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_REST_X, 0.06);
@@ -781,65 +766,15 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 雙軌音訊系統 (強健防當機 + MP3 直連)
+     * 4. 純原生 MP3 音訊與精準進度條監聽
      * ------------------------------------------------------------*/
-    window.onYouTubeIframeAPIReady = function() {
-      try {
-        ytPlayer = new YT.Player('yt-hidden-player', {
-          height: '100',
-          width: '100',
-          videoId: '',
-          playerVars: { 'playsinline': 1, 'controls': 0, 'disablekb': 1 },
-          events: {
-            'onReady': () => {
-              isYtReady = true;
-              renderUI();
-            },
-            'onStateChange': (e) => {
-              if (playType !== 'yt') return;
-              if (e.data === YT.PlayerState.PLAYING) setPlayState(true);
-              else if (e.data === YT.PlayerState.PAUSED) setPlayState(false);
-              else if (e.data === YT.PlayerState.ENDED) playNext();
-            },
-            'onError': (e) => {
-              console.warn("YouTube 載入發生錯誤:", e);
-              setPlayState(false);
-            }
-          }
-        });
-      } catch (e) {
-        console.warn("YouTube Player 初始化例外:", e);
-      }
-    };
-
-    function isYouTubeSource(src) {
-      if (!src) return false;
-      return src.includes('youtube.com') || src.includes('youtu.be') || (src.length === 11 && !src.includes('.') && !src.includes('/'));
-    }
-
-    function extractYtId(url) {
-      if (!url) return '';
-      const m = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-      return (m && m[2].length === 11) ? m[2] : url;
-    }
-
-    nativeAudio.addEventListener('playing', () => setPlayState(true));
-    nativeAudio.addEventListener('pause', () => setPlayState(false));
-    nativeAudio.addEventListener('ended', () => playNext());
-    nativeAudio.addEventListener('error', (e) => {
-      console.warn("原生音訊載入錯誤，請確認網址是否為 MP3 直連:", e);
-      setPlayState(false);
-    });
-
     function setPlayState(active) {
       isPlaying = active;
       const svg = document.getElementById('play-svg-icon');
       if (active) {
         svg.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        startClock();
       } else {
         svg.innerHTML = '<path d="M8 5v14l11-7z"/>';
-        stopClock();
       }
     }
 
@@ -850,34 +785,27 @@
       return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
 
-    function startClock() {
-      stopClock();
-      clockInterval = setInterval(() => {
-        if (isDraggingSeek) return; // 拖動進度條時暫停更新 UI
+    // 利用原生 timeupdate，不卡頓且最穩定
+    nativeAudio.addEventListener('timeupdate', () => {
+      if (isDraggingSeek) return;
+      const cur = nativeAudio.currentTime || 0;
+      const dur = nativeAudio.duration || 1;
+      const pct = Math.min(100, Math.max(0, (cur / dur) * 100));
+      document.getElementById('seek-progress').style.width = `${pct}%`;
+      document.getElementById('lbl-curr').textContent = formatTime(cur);
+      if (!isNaN(nativeAudio.duration)) {
+        document.getElementById('lbl-total').textContent = formatTime(nativeAudio.duration);
+      }
+      syncLyrics(cur);
+    });
 
-        let cur = 0;
-        let dur = 1;
-        if (playType === 'mp3') {
-          cur = nativeAudio.currentTime || 0;
-          dur = nativeAudio.duration || 1;
-        } else if (playType === 'yt' && ytPlayer && ytPlayer.getCurrentTime) {
-          try {
-            cur = ytPlayer.getCurrentTime() || 0;
-            dur = ytPlayer.getDuration() || 1;
-          } catch(e) {}
-        }
-
-        const pct = Math.min(100, Math.max(0, (cur / dur) * 100));
-        document.getElementById('seek-progress').style.width = `${pct}%`;
-        document.getElementById('lbl-curr').textContent = formatTime(cur);
-        document.getElementById('lbl-total').textContent = formatTime(dur);
-        syncLyrics(cur);
-      }, 250);
-    }
-
-    function stopClock() {
-      if (clockInterval) clearInterval(clockInterval);
-    }
+    nativeAudio.addEventListener('playing', () => setPlayState(true));
+    nativeAudio.addEventListener('pause', () => setPlayState(false));
+    nativeAudio.addEventListener('ended', () => playNext());
+    nativeAudio.addEventListener('error', (e) => {
+      console.warn("音訊載入錯誤，請確認此 MP3 檔案是否已開放公開存取:", e);
+      setPlayState(false);
+    });
 
     function syncLyrics(sec) {
       const song = store[plIdx]?.songs[trackIdx];
@@ -917,26 +845,17 @@
         const div = document.createElement('div');
         div.className = 'lyric-row';
         div.textContent = l.text;
-        div.onclick = () => seekTo(l.time);
+        div.onclick = () => {
+          if (!isNaN(nativeAudio.duration)) {
+            nativeAudio.currentTime = l.time;
+          }
+        };
         scroller.appendChild(div);
       });
     }
 
-    function seekTo(sec) {
-      sec = Math.max(0, sec);
-      if (playType === 'mp3') {
-        if (!isNaN(nativeAudio.duration)) {
-          nativeAudio.currentTime = Math.min(sec, nativeAudio.duration);
-        }
-      } else if (playType === 'yt' && ytPlayer && ytPlayer.seekTo) {
-        try {
-          ytPlayer.seekTo(sec, true);
-        } catch(e) {}
-      }
-    }
-
     /* -------------------------------------------------------------
-     * 5. 手機滑動調整進度條 (Touch & Mouse Drag Support)
+     * 5. 手機滑動調整進度條 (Touch & Drag)
      * ------------------------------------------------------------*/
     const seekContainer = document.getElementById('seek-container');
     const seekProgress = document.getElementById('seek-progress');
@@ -952,8 +871,7 @@
       if (!isDraggingSeek) return;
       const frac = getSeekFraction(e);
       seekProgress.style.width = `${frac * 100}%`;
-
-      let dur = playType === 'mp3' ? (nativeAudio.duration || 1) : (ytPlayer?.getDuration ? ytPlayer.getDuration() : 1);
+      const dur = nativeAudio.duration || 1;
       document.getElementById('lbl-curr').textContent = formatTime(frac * dur);
     }
 
@@ -961,8 +879,9 @@
       if (!isDraggingSeek) return;
       isDraggingSeek = false;
       const frac = getSeekFraction(e.changedTouches ? e.changedTouches[0] : e);
-      let dur = playType === 'mp3' ? (nativeAudio.duration || 1) : (ytPlayer?.getDuration ? ytPlayer.getDuration() : 1);
-      seekTo(frac * dur);
+      if (!isNaN(nativeAudio.duration)) {
+        nativeAudio.currentTime = frac * nativeAudio.duration;
+      }
     }
 
     seekContainer.addEventListener('mousedown', (e) => {
@@ -980,7 +899,7 @@
     window.addEventListener('touchend', handleSeekEnd);
 
     /* -------------------------------------------------------------
-     * 6. 播放與切換邏輯 (嚴密防呆與流暢切換)
+     * 6. 播放與切換核心
      * ------------------------------------------------------------*/
     function playActiveSong() {
       const song = store[plIdx]?.songs[trackIdx];
@@ -988,35 +907,18 @@
 
       renderUI();
 
-      const isYt = isYouTubeSource(song.source);
-      if (isYt) {
-        playType = 'yt';
-        try { nativeAudio.pause(); } catch(e) {}
-        if (ytPlayer && ytPlayer.loadVideoById) {
-          try {
-            ytPlayer.loadVideoById(extractYtId(song.source));
-            setPlayState(true);
-          } catch(e) {
-            console.warn(e);
-          }
-        }
-      } else {
-        playType = 'mp3';
-        if (ytPlayer && ytPlayer.pauseVideo) {
-          try { ytPlayer.pauseVideo(); } catch(e) {}
-        }
-        const streamUrl = normalizeAudioUrl(song.source);
-        nativeAudio.src = streamUrl;
-        nativeAudio.load();
-        const playPromise = nativeAudio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => setPlayState(true))
-            .catch(err => {
-              console.log("瀏覽器阻擋自動播放，需手動點擊播放按鈕:", err);
-              setPlayState(false);
-            });
-        }
+      const directMp3 = normalizeAudioUrl(song.source);
+      nativeAudio.src = directMp3;
+      nativeAudio.load();
+
+      const playPromise = nativeAudio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setPlayState(true))
+          .catch(err => {
+            console.log("等待使用者點擊播放按鍵:", err);
+            setPlayState(false);
+          });
       }
     }
 
@@ -1051,13 +953,10 @@
     }
 
     document.getElementById('btn-play').onclick = () => {
-      if (playType === 'mp3') {
-        if (nativeAudio.paused) nativeAudio.play().then(() => setPlayState(true)).catch(() => {});
-        else nativeAudio.pause();
+      if (nativeAudio.paused) {
+        nativeAudio.play().then(() => setPlayState(true)).catch(() => {});
       } else {
-        if (!ytPlayer) return;
-        if (isPlaying) ytPlayer.pauseVideo();
-        else ytPlayer.playVideo();
+        nativeAudio.pause();
       }
     };
     document.getElementById('btn-next').onclick = playNext;
@@ -1313,7 +1212,7 @@
       a.click();
     };
 
-    // 啟動渲染
+    // 啟動畫面渲染
     renderUI();
   </script>
 </body>
