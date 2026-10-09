@@ -7,15 +7,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#18191e">
 
-  <!-- 標題統一為 WINTER PLAYLIST -->
   <title>WINTER PLAYLIST</title>
 
-  <!-- Open Graph / LINE / 社群預覽卡片設定 (無介紹、黑底黑膠唱片封面) -->
+  <!-- 社群預覽設定：純白背景半露黑膠封面，完全隱藏介紹詞 -->
   <meta property="og:title" content="WINTER PLAYLIST">
-  <meta property="og:description" content="">
+  <meta property="og:description" content="&#8203;">
+  <meta name="description" content="&#8203;">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6">
-  <meta name="description" content="">
+  <!-- 預設純白底半露黑膠封面圖檔（可自行替換成專案目錄下的白底圖路徑） -->
+  <meta property="og:image" content="https://u11150003-arch.github.io/winter-cd-player/winter-white-vinyl-og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WINTER PLAYLIST">
+  <meta name="twitter:description" content="&#8203;">
+  <meta name="twitter:image" content="https://u11150003-arch.github.io/winter-cd-player/winter-white-vinyl-og.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -423,8 +427,8 @@
     <div id="threejs-box"></div>
     <div class="info-lyrics-container">
       <div class="track-meta">
-        <h1 id="disp-title">載入中...</h1>
-        <p id="disp-artist">---</p>
+        <h1 id="disp-title">Lips</h1>
+        <p id="disp-artist">Winter</p>
       </div>
       <div class="lyrics-view" id="lyrics-scroller"></div>
     </div>
@@ -463,106 +467,113 @@
     </div>
   </footer>
 
-  <div class="modal-veil" id="auth-modal">
-    <div class="modal-inner" style="max-width: 300px; text-align: center;">
-      <h3>System Access</h3>
-      <div class="field-row" style="margin-top: 14px;">
-        <input type="password" id="auth-input" placeholder="請輸入管理密碼" autocomplete="off">
-      </div>
-      <div style="display:flex; justify-content:center; gap:8px; margin-top:14px;">
-        <button class="btn-cancel" id="btn-auth-close">取消</button>
-        <button class="btn-steel" id="btn-auth-submit">驗證</button>
+  <!-- 管理後台容器：透過 JS 點擊時動態載入，避免被 LINE 爬蟲抓取文字 -->
+  <div id="admin-mount-point"></div>
+
+  <template id="auth-tpl">
+    <div class="modal-veil" id="auth-modal" style="display:flex;">
+      <div class="modal-inner" style="max-width: 300px; text-align: center;">
+        <h3>System Access</h3>
+        <div class="field-row" style="margin-top: 14px;">
+          <input type="password" id="auth-input" placeholder="請輸入管理密碼" autocomplete="off">
+        </div>
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:14px;">
+          <button class="btn-cancel" id="btn-auth-close">取消</button>
+          <button class="btn-steel" id="btn-auth-submit">驗證</button>
+        </div>
       </div>
     </div>
-  </div>
+  </template>
 
-  <div class="modal-veil" id="admin-modal">
-    <div class="modal-inner">
-      <h3>歌單與曲目核心管理</h3>
+  <template id="admin-tpl">
+    <div class="modal-veil" id="admin-modal" style="display:flex;">
+      <div class="modal-inner">
+        <h3>歌單與曲目核心管理</h3>
 
-      <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <button class="btn-steel" id="btn-copy-code" style="flex:1; font-size:0.75rem;">📋 複製當前更新程式碼</button>
-        <button class="btn-cancel" id="btn-dl-html" style="font-size:0.75rem;">💾 下載更新 HTML</button>
-      </div>
-
-      <div style="background:#111216; padding:10px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
-        <label style="font-size:0.75rem; color:#a1a1aa; display:flex; justify-content:space-between;">
-          <span>黑膠與封面尺寸縮放</span>
-          <span id="scale-val-lbl">1.0x</span>
-        </label>
-        <input type="range" id="scale-slider" min="0.6" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:6px;">
-      </div>
-
-      <div style="background:#111216; padding:10px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
-        <label style="font-size:0.78rem; color:#e4e4e7; font-weight:bold;">新增歌單</label>
-        <div style="display:flex; gap:8px; margin-top:6px;">
-          <input type="text" id="admin-new-pl-name" placeholder="歌單名稱...">
-          <button class="btn-steel" id="btn-add-pl">新增</button>
-        </div>
-      </div>
-
-      <div style="background:#111216; padding:12px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
-        <h4 id="form-mode-title" style="color:#fafafa; font-size:0.85rem; margin-bottom:8px;">✦ 新增歌曲</h4>
-        <input type="hidden" id="edit-song-id" value="">
-
-        <div class="field-row">
-          <label>所屬歌單</label>
-          <select id="form-pl-target"></select>
-        </div>
-        <div class="field-row">
-          <label>歌曲名稱</label>
-          <input type="text" id="form-song-title" placeholder="例如：Lips">
-        </div>
-        <div class="field-row">
-          <label>演唱者 / 專輯名稱</label>
-          <input type="text" id="form-song-artist" placeholder="例如：Winter">
-        </div>
-        <div class="field-row">
-          <label>音訊來源 (本機檔名、GitHub 網址 或 YouTube 連結)</label>
-          <input type="text" id="form-song-source" placeholder="如：lips (online-audio-converter.com).mp3 或 YouTube 網址">
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <button class="btn-steel" id="btn-copy-code" style="flex:1; font-size:0.75rem;">📋 複製當前更新程式碼</button>
+          <button class="btn-cancel" id="btn-dl-html" style="font-size:0.75rem;">💾 下載更新 HTML</button>
         </div>
 
-        <div class="field-row">
-          <label>專輯封面 (正面)</label>
-          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（自動轉直連）">
-          <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
-            <input type="file" id="local-img-picker" accept="image/*" style="display:none;">
-            <button type="button" class="btn-cancel" onclick="document.getElementById('local-img-picker').click()" style="font-size:0.72rem;">📁 從手機圖庫挑選正面</button>
-            <span id="img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
+        <div style="background:#111216; padding:10px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
+          <label style="font-size:0.75rem; color:#a1a1aa; display:flex; justify-content:space-between;">
+            <span>黑膠與封面尺寸縮放</span>
+            <span id="scale-val-lbl">1.0x</span>
+          </label>
+          <input type="range" id="scale-slider" min="0.6" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:6px;">
+        </div>
+
+        <div style="background:#111216; padding:10px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
+          <label style="font-size:0.78rem; color:#e4e4e7; font-weight:bold;">新增歌單</label>
+          <div style="display:flex; gap:8px; margin-top:6px;">
+            <input type="text" id="admin-new-pl-name" placeholder="歌單名稱...">
+            <button class="btn-steel" id="btn-add-pl">新增</button>
           </div>
         </div>
 
-        <div class="field-row">
-          <label>專輯外殼 (背面，留空則預設同正面)</label>
-          <input type="text" id="form-song-back-cover" placeholder="留空則預設跟正面相同">
-          <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
-            <input type="file" id="local-back-img-picker" accept="image/*" style="display:none;">
-            <button type="button" class="btn-cancel" onclick="document.getElementById('local-back-img-picker').click()" style="font-size:0.72rem;">📁 從手機圖庫挑選背面</button>
-            <span id="back-img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
+        <div style="background:#111216; padding:12px; border-radius:6px; border:1px solid #282a35; margin-bottom:12px;">
+          <h4 id="form-mode-title" style="color:#fafafa; font-size:0.85rem; margin-bottom:8px;">✦ 新增歌曲</h4>
+          <input type="hidden" id="edit-song-id" value="">
+
+          <div class="field-row">
+            <label>所屬歌單</label>
+            <select id="form-pl-target"></select>
+          </div>
+          <div class="field-row">
+            <label>歌曲名稱</label>
+            <input type="text" id="form-song-title" placeholder="例如：Lips">
+          </div>
+          <div class="field-row">
+            <label>演唱者 / 專輯名稱</label>
+            <input type="text" id="form-song-artist" placeholder="例如：Winter">
+          </div>
+          <div class="field-row">
+            <label>音訊來源 (本機檔名、GitHub 網址 或 YouTube 連結)</label>
+            <input type="text" id="form-song-source" placeholder="如：lips (online-audio-converter.com).mp3 或 YouTube 網址">
+          </div>
+
+          <div class="field-row">
+            <label>專輯封面 (正面)</label>
+            <input type="text" id="form-song-cover" placeholder="貼上圖片網址（自動轉直連）">
+            <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+              <input type="file" id="local-img-picker" accept="image/*" style="display:none;">
+              <button type="button" class="btn-cancel" id="btn-pick-img" style="font-size:0.72rem;">📁 從手機圖庫挑選正面</button>
+              <span id="img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label>專輯外殼 (背面，留空則預設同正面)</label>
+            <input type="text" id="form-song-back-cover" placeholder="留空則預設跟正面相同">
+            <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+              <input type="file" id="local-back-img-picker" accept="image/*" style="display:none;">
+              <button type="button" class="btn-cancel" id="btn-pick-back-img" style="font-size:0.72rem;">📁 從手機圖庫挑選背面</button>
+              <span id="back-img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label>動態歌詞 (支援 [分:秒] 或 [秒數])</label>
+            <textarea id="form-song-lyrics" rows="4" placeholder="[00:03] 歌詞第一句&#10;[00:08] 歌詞第二句"></textarea>
+          </div>
+
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button class="btn-steel" id="btn-save-song" style="flex:1;">儲存歌曲</button>
+            <button class="btn-cancel" id="btn-cancel-edit" style="display:none;">取消編輯</button>
           </div>
         </div>
 
-        <div class="field-row">
-          <label>動態歌詞 (支援 [分:秒] 或 [秒數])</label>
-          <textarea id="form-song-lyrics" rows="4" placeholder="[00:03] 歌詞第一句&#10;[00:08] 歌詞第二句"></textarea>
+        <div>
+          <label style="font-size:0.75rem; color:#71717a; margin-bottom:6px; display:block;">歌單與歌曲細項</label>
+          <div id="admin-tree-view"></div>
         </div>
 
-        <div style="display:flex; gap:8px; margin-top:8px;">
-          <button class="btn-steel" id="btn-save-song" style="flex:1;">儲存歌曲</button>
-          <button class="btn-cancel" id="btn-cancel-edit" style="display:none;">取消編輯</button>
+        <div style="text-align:right; margin-top:14px;">
+          <button class="btn-cancel" id="btn-close-admin">關閉管理後台</button>
         </div>
-      </div>
-
-      <div>
-        <label style="font-size:0.75rem; color:#71717a; margin-bottom:6px; display:block;">歌單與歌曲細項</label>
-        <div id="admin-tree-view"></div>
-      </div>
-
-      <div style="text-align:right; margin-top:14px;">
-        <button class="btn-cancel" id="btn-close-admin">關閉管理後台</button>
       </div>
     </div>
-  </div>
+  </template>
 
   <script type="module">
     import * as THREE from 'three';
@@ -838,7 +849,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (黑膠無光澤、維持原有經典黑膠設計)
+     * 3. Three.js 3D (立體陰影與立體邊緣光效)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -861,39 +872,74 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.0);
+    // 環境光
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.2);
     scene.add(ambLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    dirLight.position.set(2, 4, 4);
+    // 主方向光 (斜上方照射，營造自然明暗)
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    dirLight.position.set(3, 5, 4);
     scene.add(dirLight);
+
+    // 側邊立體輪廓光：專門勾勒黑膠唱片邊緣，避免純黑唱片與暗色背景融合
+    const rimLight = new THREE.DirectionalLight(0x71717a, 2.2);
+    rimLight.position.set(4, -2, 2);
+    scene.add(rimLight);
+
+    const backRimLight = new THREE.DirectionalLight(0x3f3f46, 1.8);
+    backRimLight.position.set(-4, 3, -2);
+    scene.add(backRimLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
+
+    // 軟陰影貼圖平面 (Soft Drop Shadow) - 讓專輯與黑膠在背景上浮現出立體深度
+    function createShadowCanvas() {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 512;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(256, 256, 30, 256, 256, 240);
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
+      grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.28)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 512);
+      return new THREE.CanvasTexture(c);
+    }
+    const shadowGeo = new THREE.PlaneGeometry(3.6, 2.6);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      map: createShadowCanvas(),
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false
+    });
+    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowMesh.position.set(0.1, -0.05, -0.15);
+    turntableGroup.add(shadowMesh);
 
     const texLoader = new THREE.TextureLoader();
 
     // 專輯外殼
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
-      new THREE.MeshStandardMaterial({ color: 0x141418 }),
-      new THREE.MeshStandardMaterial({ color: 0x141418 }),
-      new THREE.MeshStandardMaterial({ color: 0x141418 }),
-      new THREE.MeshStandardMaterial({ color: 0x141418 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff })
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
     ]);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體 (純黑、無髮絲光澤設計)
+    // 唱片本體 (無光澤，但具備清晰邊緣立體層次)
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x0a0a0d,
-      roughness: 0.9,
-      metalness: 0.0
+      color: 0x121318,
+      roughness: 0.82,
+      metalness: 0.12
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
@@ -901,7 +947,7 @@
 
     // 唱片中央貼標
     const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
-    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
     labelMesh.rotation.x = Math.PI / 2;
     discGroup.add(labelMesh);
 
@@ -1288,69 +1334,95 @@
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式 (密碼 0401)
+     * 7. 管理者模式（動態掛載 DOM，避免任何後台文字外洩至預覽爬蟲）
      * ------------------------------------------------------------*/
-    const authModal = document.getElementById('auth-modal');
-    const adminModal = document.getElementById('admin-modal');
-    const authInput = document.getElementById('auth-input');
+    const mountPoint = document.getElementById('admin-mount-point');
 
-    function openAuth() {
-      authInput.value = '';
-      authModal.style.display = 'flex';
+    function openAuthModal() {
+      mountPoint.innerHTML = document.getElementById('auth-tpl').innerHTML;
+      const authModal = document.getElementById('auth-modal');
+      const authInput = document.getElementById('auth-input');
       authInput.focus();
+
+      document.getElementById('btn-auth-close').onclick = () => { mountPoint.innerHTML = ''; };
+      document.getElementById('btn-auth-submit').onclick = () => {
+        if (authInput.value === '0401') {
+          openAdminDashboard();
+        } else {
+          alert('驗證失敗！');
+        }
+      };
     }
-    document.getElementById('btn-open-auth').onclick = openAuth;
-    document.getElementById('logo-trigger').onclick = openAuth;
 
-    document.getElementById('btn-auth-close').onclick = () => authModal.style.display = 'none';
-    document.getElementById('btn-auth-submit').onclick = () => {
-      if (authInput.value === '0401') {
-        authModal.style.display = 'none';
-        adminModal.style.display = 'flex';
-        renderAdminUI();
-      } else {
-        alert('驗證失敗！');
-      }
-    };
-    document.getElementById('btn-close-admin').onclick = () => {
-      adminModal.style.display = 'none';
-      persistData();
-      renderUI();
-    };
+    document.getElementById('btn-open-auth').onclick = openAuthModal;
+    document.getElementById('logo-trigger').onclick = openAuthModal;
 
-    const scaleSlider = document.getElementById('scale-slider');
-    scaleSlider.value = modelScale;
-    document.getElementById('scale-val-lbl').textContent = `${modelScale}x`;
-    scaleSlider.oninput = (e) => {
-      modelScale = parseFloat(e.target.value);
+    function openAdminDashboard() {
+      mountPoint.innerHTML = document.getElementById('admin-tpl').innerHTML;
+
+      const scaleSlider = document.getElementById('scale-slider');
+      scaleSlider.value = modelScale;
       document.getElementById('scale-val-lbl').textContent = `${modelScale}x`;
-      turntableGroup.scale.set(modelScale, modelScale, modelScale);
-    };
-
-    document.getElementById('local-img-picker').onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        document.getElementById('form-song-cover').value = event.target.result;
-        document.getElementById('img-picker-status').textContent = `已載入: ${file.name}`;
+      scaleSlider.oninput = (e) => {
+        modelScale = parseFloat(e.target.value);
+        document.getElementById('scale-val-lbl').textContent = `${modelScale}x`;
+        turntableGroup.scale.set(modelScale, modelScale, modelScale);
       };
-      reader.readAsDataURL(file);
-    };
 
-    document.getElementById('local-back-img-picker').onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        document.getElementById('form-song-back-cover').value = event.target.result;
-        document.getElementById('back-img-picker-status').textContent = `已載入: ${file.name}`;
+      document.getElementById('btn-pick-img').onclick = () => document.getElementById('local-img-picker').click();
+      document.getElementById('local-img-picker').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById('form-song-cover').value = event.target.result;
+          document.getElementById('img-picker-status').textContent = `已載入: ${file.name}`;
+        };
+        reader.readAsDataURL(file);
       };
-      reader.readAsDataURL(file);
-    };
 
-    function renderAdminUI() {
+      document.getElementById('btn-pick-back-img').onclick = () => document.getElementById('local-back-img-picker').click();
+      document.getElementById('local-back-img-picker').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById('form-song-back-cover').value = event.target.result;
+          document.getElementById('back-img-picker-status').textContent = `已載入: ${file.name}`;
+        };
+        reader.readAsDataURL(file);
+      };
+
+      document.getElementById('btn-close-admin').onclick = () => {
+        mountPoint.innerHTML = '';
+        persistData();
+        renderUI();
+      };
+
+      document.getElementById('btn-save-song').onclick = saveSongHandler;
+      document.getElementById('btn-cancel-edit').onclick = resetSongForm;
+      document.getElementById('btn-add-pl').onclick = addPlaylistHandler;
+
+      document.getElementById('btn-copy-code').onclick = () => {
+        navigator.clipboard.writeText(document.documentElement.outerHTML).then(() => {
+          alert('已將當前完整 HTML 程式碼複製到剪貼簿！');
+        });
+      };
+
+      document.getElementById('btn-dl-html').onclick = () => {
+        const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'index.html';
+        a.click();
+      };
+
+      renderAdminTree();
+    }
+
+    function renderAdminTree() {
       const targetPlSel = document.getElementById('form-pl-target');
+      if (!targetPlSel) return;
       targetPlSel.innerHTML = '';
       store.forEach((p, idx) => {
         const opt = document.createElement('option');
@@ -1367,7 +1439,7 @@
         pBox.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <strong style="color:#e4e4e7; font-size:0.82rem;">📁 ${p.name} (${p.songs.length})</strong>
-            <button class="btn-act btn-del" onclick="deletePlaylist(${pI})">刪除歌單</button>
+            <button class="btn-act btn-del" onclick="window.delPl(${pI})">刪除歌單</button>
           </div>
         `;
 
@@ -1377,8 +1449,8 @@
           sRow.innerHTML = `
             <span>🎵 ${s.title}</span>
             <div class="song-actions">
-              <button class="btn-act btn-edit" onclick="editSong(${pI}, ${sI})">編輯 ✎</button>
-              <button class="btn-act btn-del" onclick="deleteSong(${pI}, ${sI})">刪除</button>
+              <button class="btn-act btn-edit" onclick="window.editS(${pI}, ${sI})">編輯 ✎</button>
+              <button class="btn-act btn-del" onclick="window.delS(${pI}, ${sI})">刪除</button>
             </div>
           `;
           pBox.appendChild(sRow);
@@ -1387,25 +1459,25 @@
       });
     }
 
-    window.deletePlaylist = function(pI) {
+    window.delPl = (pI) => {
       if (store.length <= 1) return alert('請至少保留一個歌單！');
       if (confirm(`確定刪除歌單《${store[pI].name}》？`)) {
         store.splice(pI, 1);
         if (plIdx >= store.length) plIdx = 0;
         persistData();
-        renderAdminUI();
+        renderAdminTree();
         renderUI();
       }
     };
 
-    window.deleteSong = function(pI, sI) {
+    window.delS = (pI, sI) => {
       store[pI].songs.splice(sI, 1);
       persistData();
-      renderAdminUI();
+      renderAdminTree();
       renderUI();
     };
 
-    window.editSong = function(pI, sI) {
+    window.editS = (pI, sI) => {
       const s = store[pI].songs[sI];
       document.getElementById('form-mode-title').textContent = `✦ 編輯歌曲: ${s.title}`;
       document.getElementById('edit-song-id').value = `${pI}_${sI}`;
@@ -1427,8 +1499,6 @@
       document.getElementById('admin-modal').scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    document.getElementById('btn-cancel-edit').onclick = resetSongForm;
-
     function resetSongForm() {
       document.getElementById('form-mode-title').textContent = '✦ 新增歌曲';
       document.getElementById('edit-song-id').value = '';
@@ -1443,7 +1513,7 @@
       document.getElementById('btn-cancel-edit').style.display = 'none';
     }
 
-    document.getElementById('btn-save-song').onclick = () => {
+    function saveSongHandler() {
       const editKey = document.getElementById('edit-song-id').value;
       const targetPl = parseInt(document.getElementById('form-pl-target').value);
       const title = document.getElementById('form-song-title').value.trim();
@@ -1489,37 +1559,21 @@
       }
 
       persistData();
-      renderAdminUI();
+      renderAdminTree();
       renderUI();
       resetSongForm();
       alert(`歌曲《${title}》已成功儲存！`);
-    };
+    }
 
-    document.getElementById('btn-add-pl').onclick = () => {
+    function addPlaylistHandler() {
       const name = document.getElementById('admin-new-pl-name').value.trim();
       if (!name) return alert('請輸入歌單名稱！');
       store.push({ id: 'pl_' + Date.now(), name, songs: [] });
       document.getElementById('admin-new-pl-name').value = '';
       persistData();
-      renderAdminUI();
+      renderAdminTree();
       renderUI();
-    };
-
-    document.getElementById('btn-copy-code').onclick = () => {
-      const fullHtml = document.documentElement.outerHTML;
-      navigator.clipboard.writeText(fullHtml).then(() => {
-        alert('已將當前完整 HTML 程式碼複製到剪貼簿！');
-      });
-    };
-
-    document.getElementById('btn-dl-html').onclick = () => {
-      const fullHtml = document.documentElement.outerHTML;
-      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'index.html';
-      a.click();
-    };
+    }
 
     renderUI();
   </script>
