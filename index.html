@@ -29,7 +29,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* 徹底消滅分界感：全域單一極黑底色 */
     html, body {
       width: 100vw;
       height: 100vh;
@@ -86,7 +85,7 @@
       position: relative;
       min-height: 0;
       overflow: hidden;
-      background: #000000 !important; /* 無漸層、零邊界感 */
+      background: #000000 !important;
     }
 
     #threejs-box {
@@ -794,12 +793,12 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v10_shine')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v10')) || 1.0;
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v11_trueblack')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v11')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v10_shine', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale_v10', modelScale);
+      localStorage.setItem('zy_playlist_v11_trueblack', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale_v11', modelScale);
     }
 
     let plIdx = 0;
@@ -841,7 +840,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (高光反光扇形貼圖、光線正面打光、縮小比例)
+     * 3. Three.js 3D (深黑底色 + 真實高光黑膠 + 晶亮外殼)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -864,52 +863,52 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // 聚光燈直接由斜上方正面打在黑膠盤面，製造高光反光帶
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.8);
+    // 燈光：柔和環境光 + 正面聚焦強光源 (打出高光澤)
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.2);
     scene.add(ambLight);
 
-    const discSpotLight = new THREE.DirectionalLight(0xffffff, 4.5);
-    discSpotLight.position.set(2, 4, 5); // 直射黑膠正面
-    scene.add(discSpotLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 4.0);
+    keyLight.position.set(3, 4, 5);
+    scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x71717a, 2.0);
-    fillLight.position.set(-4, -1, 3);
-    scene.add(fillLight);
+    const backRim = new THREE.DirectionalLight(0x555566, 1.8);
+    backRim.position.set(-4, -2, -3);
+    scene.add(backRim);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 生成實體黑膠唱片「雙扇形等離子光澤（Radial Anisotropic Glare）」貼圖
-    function createShiningVinylTexture() {
+    // 黑膠同心圓高光貼圖 (基底維持 #0a0a0d 深黑，僅反光處帶微光)
+    function createTrueBlackShineTexture() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
 
-      // 底色深黑炭色
-      ctx.fillStyle = '#16171b';
+      // 唱片本體深黑色
+      ctx.fillStyle = '#0a0a0d';
       ctx.fillRect(0, 0, 512, 512);
 
-      // 繪製兩道斜對角高光扇形反光 (光澤感來源)
-      const grad = ctx.createConicGradient(0.8, 256, 256);
-      grad.addColorStop(0.0, '#1a1b20');
-      grad.addColorStop(0.12, '#64687d'); // 第一道強反光峰值
-      grad.addColorStop(0.25, '#1a1b20');
-      grad.addColorStop(0.5, '#1a1b20');
-      grad.addColorStop(0.62, '#64687d'); // 第二道對角強反光峰值
-      grad.addColorStop(0.75, '#1a1b20');
-      grad.addColorStop(1.0, '#1a1b20');
+      // 繪製細膩光澤
+      const grad = ctx.createConicGradient(0.6, 256, 256);
+      grad.addColorStop(0.0, 'rgba(10,10,13,1)');
+      grad.addColorStop(0.12, 'rgba(60,63,75,0.7)'); // 微光峰值
+      grad.addColorStop(0.25, 'rgba(10,10,13,1)');
+      grad.addColorStop(0.5, 'rgba(10,10,13,1)');
+      grad.addColorStop(0.62, 'rgba(60,63,75,0.7)'); // 對角微光峰值
+      grad.addColorStop(0.75, 'rgba(10,10,13,1)');
+      grad.addColorStop(1.0, 'rgba(10,10,13,1)');
 
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(256, 256, 250, 0, Math.PI * 2);
+      ctx.arc(256, 256, 248, 0, Math.PI * 2);
       ctx.fill();
 
-      // 同心圓細緻微凹凸紋路
-      for (let r = 35; r < 250; r += 2) {
+      // 細緻同心圓溝槽
+      for (let r = 35; r < 248; r += 2) {
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 6 === 0) ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.35)';
+        ctx.strokeStyle = (r % 6 === 0) ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.5)';
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -918,26 +917,27 @@
 
     const texLoader = new THREE.TextureLoader();
 
-    // 專輯外殼（縮減至 2.0，大小精緻適中）
+    // 專輯外殼（具有亮面塗層光澤 Standard 材質）
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
-      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 右
-      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 左
-      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 上
-      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 下
-      new THREE.MeshBasicMaterial({ color: 0xffffff }), // 正面
-      new THREE.MeshBasicMaterial({ color: 0xffffff })  // 背面
+      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.18, metalness: 0.1 }), // 正面光澤膠膜
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.18, metalness: 0.1 })  // 背面光澤膠膜
     ]);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體（半徑 0.95，帶光澤感金屬反射）
+    // 唱片本體（深黑 + 高金屬度鏡面反射）
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      map: createShiningVinylTexture(),
-      roughness: 0.15,
-      metalness: 0.85
+      color: 0x0c0c10, // 深黑本體
+      map: createTrueBlackShineTexture(),
+      roughness: 0.18,
+      metalness: 0.75
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
@@ -945,7 +945,7 @@
 
     // 唱片中央貼標
     const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
-    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 }));
     labelMesh.rotation.x = Math.PI / 2;
     discGroup.add(labelMesh);
 
