@@ -181,7 +181,6 @@
       transform: scale(1.02);
     }
 
-    /* 操作框：保有完整邊框設計，並將顏色延伸填滿螢幕最底部的安全區域 */
     footer.retro-deck {
       background: var(--deck-bg) !important;
       border-top: 1px solid var(--steel-border);
@@ -476,7 +475,6 @@
     </div>
   </footer>
 
-  <!-- 管理後台掛載點 -->
   <div id="admin-mount-point"></div>
 
   <template id="auth-tpl">
@@ -589,6 +587,57 @@
 
     const CD_PROJECT_BASE = "https://u11150003-arch.github.io/winter-cd-player/";
 
+    const LIPS_LRC_TEXT = `[00:12.21]오늘따라 건조한 느낌
+[00:18.86]목소리 쉽게 나오질 않아
+[00:27.10]한참을 못 했던 말 너무 많은데
+[00:34.81]내 말 잘 안 들릴까 봐 겁나
+[00:41.99]긴 긴 시간이 지나간 사이
+[00:49.65]여전이 내 맘은 그댈 향하고
+[00:56.55]늦은 건 아니라 고 말해줘요
+[01:04.54]숨이 차고 조금은 떨리는데
+[01:08.47]오랜만이라 이 고백
+[01:12.19]I love you
+[01:14.86]완벽한 타이밍 아니라도
+[01:19.64]눈 돌리지 말고 내 입모양을 봐, babe
+[01:25.96]귀 기울여 듣지 말고
+[01:30.47]그냥 내 입술을 읽어봐
+[01:34.72]아주 천천히 말해줄게
+[01:46.10]긴 긴 여정이 지나간 사이
+[01:53.54]속에서만 매일 표현 못하고
+[02:00.18]그대도 같은 맘이라 해줘요
+[02:06.29]입이 말라 전보다 떨리는데
+[02:12.39]오랜만이라 이 고백
+[02:16.06]I love you
+[02:18.73]완벽한 타이밍 아니라도
+[02:23.52]눈 돌리지 말고 내 입모양을 봐, babe
+[02:29.90]귀 기울여 듣지 말고
+[02:34.14]그냥 내 입술을 읽어봐
+[02:38.18]아주 천천히 말해줄게
+[02:47.16]말해줄게
+[02:49.82]우린 서로 가 동시에 좋아하는
+[02:55.34]어려운 확률 속에
+[02:59.02]다 들어온 것 같아
+[03:05.63]밤새워 반복해줄게
+[03:10.40]크게 말 못 하고 조용히
+[03:14.11]입가를 촉촉이 하고
+[03:17.80]I love you
+[03:20.71]완벽한 타이밍 온 것 같아
+[03:25.50]진지한 내 표정 내 입모양을 봐, babe
+[03:31.91]두 손으로 귀를 막고
+[03:35.90]그냥 내 입술을 읽어봐
+[03:40.15]아주 천천히 말해줄게`;
+
+    function parseLrc(txt) {
+      return txt.split('\n').map(l => {
+        const m = l.match(/\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)/);
+        if (m) {
+          const t = parseInt(m[1]) * 60 + parseFloat(m[2]);
+          return { time: t, text: m[3] || '' };
+        }
+        return null;
+      }).filter(Boolean).sort((a,b) => a.time - b.time);
+    }
+
     const DEFAULT_DATA = [
       {
         id: "pl_lips",
@@ -600,13 +649,8 @@
             source: "lips (online-audio-converter.com).mp3",
             cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
             backCover: "",
-            duration: 211,
-            lyrics: [
-              { time: 2, text: "Lips like rose petals" },
-              { time: 8, text: "Soft whisper in the winter breeze" },
-              { time: 15, text: "Feel the rhythm in your heart" },
-              { time: 24, text: "Shining bright through the night" }
-            ]
+            duration: 230,
+            lyrics: parseLrc(LIPS_LRC_TEXT)
           },
           {
             title: "Time Walking On Memories기억을 걷는 시간",
@@ -811,11 +855,16 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store')) || DEFAULT_DATA;
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v2')) || DEFAULT_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
+    // 若本地儲存的 Lips 仍為舊歌詞，直接強制更新
+    if (store[0] && store[0].songs[0] && store[0].songs[0].title === 'Lips') {
+      store[0].songs[0].lyrics = parseLrc(LIPS_LRC_TEXT);
+    }
+
     function persistData() {
-      localStorage.setItem('winter_playlist_store', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_v2', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -825,7 +874,7 @@
     let isDraggingSeek = false;
     let playMode = 'file';
     let currentSec = 0;
-    let totalDuration = 211;
+    let totalDuration = 230;
     let ytTimer = null;
 
     const nativeAudio = document.getElementById('native-audio');
@@ -858,7 +907,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (黑膠動態旋轉光澤與立體層次)
+     * 3. Three.js 3D
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -1387,7 +1436,7 @@
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式（DOM 動態掛載）
+     * 7. 管理者模式
      * ------------------------------------------------------------*/
     const mountPoint = document.getElementById('admin-mount-point');
 
@@ -1579,23 +1628,14 @@
 
       if (!title || !source) return alert('請填寫完整歌名與音訊來源！');
 
-      const lyricsParsed = lyricsRaw.split('\n').map(l => {
-        const m = l.match(/\[(\d+)(?::(\d+))?\]\s*(.*)/);
-        if (m) {
-          const t = m[2] !== undefined ? parseInt(m[1])*60 + parseFloat(m[2]) : parseFloat(m[1]);
-          return { time: t, text: m[3] || '' };
-        }
-        return null;
-      }).filter(Boolean).sort((a,b) => a.time - b.time);
-
       const songObj = {
         title,
         artist,
         source,
         cover,
         backCover,
-        duration: 210,
-        lyrics: lyricsParsed
+        duration: 230,
+        lyrics: parseLrc(lyricsRaw)
       };
 
       if (editKey) {
