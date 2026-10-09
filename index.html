@@ -7,19 +7,18 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#18191e">
 
+  <!-- 統一標題 -->
   <title>WINTER PLAYLIST</title>
 
-  <!-- 社群預覽設定：純白背景半露黑膠封面，完全隱藏介紹詞 -->
+  <!-- Open Graph 預覽設定：純白底 + 專輯外殼 + 露出一半黑膠 -->
+  <meta property="og:site_name" content="WINTER PLAYLIST">
   <meta property="og:title" content="WINTER PLAYLIST">
-  <meta property="og:description" content="&#8203;">
-  <meta name="description" content="&#8203;">
-  <meta property="og:type" content="website">
-  <!-- 預設純白底半露黑膠封面圖檔（可自行替換成專案目錄下的白底圖路徑） -->
-  <meta property="og:image" content="https://u11150003-arch.github.io/winter-cd-player/winter-white-vinyl-og.png">
+  <meta property="og:description" content=" ">
+  <meta name="description" content=" ">
+  <meta property="og:type" content="music.playlist">
+  <!-- 內嵌純白底、立體外殼與半露黑膠預覽圖 -->
+  <meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'><rect width='100%25' height='100%25' fill='%23ffffff'/><g transform='translate(310, 75)'><circle cx='430' cy='240' r='230' fill='%23121316'/><circle cx='430' cy='240' r='85' fill='%23ffffff' stroke='%23e4e4e7' stroke-width='4'/><circle cx='430' cy='240' r='18' fill='%23121316'/><rect x='40' y='10' width='460' height='460' rx='10' fill='%2327272a' stroke='%23e4e4e7' stroke-width='3'/><image href='https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6' x='40' y='10' width='460' height='460' preserveAspectRatio='xMidYMid slice'/></g></svg>">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="WINTER PLAYLIST">
-  <meta name="twitter:description" content="&#8203;">
-  <meta name="twitter:image" content="https://u11150003-arch.github.io/winter-cd-player/winter-white-vinyl-og.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -467,7 +466,7 @@
     </div>
   </footer>
 
-  <!-- 管理後台容器：透過 JS 點擊時動態載入，避免被 LINE 爬蟲抓取文字 -->
+  <!-- 管理後台掛載點（點擊才建立 DOM，杜絕爬蟲抓取字樣） -->
   <div id="admin-mount-point"></div>
 
   <template id="auth-tpl">
@@ -849,7 +848,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (立體陰影與立體邊緣光效)
+     * 3. Three.js 3D (高清貼圖、純黑立體邊緣黑膠)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -866,48 +865,42 @@
       renderer.setSize(container.clientWidth, container.clientHeight);
     }
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3)); // 提升至原機視網膜高畫質
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // 環境光
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.2);
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.4);
     scene.add(ambLight);
 
-    // 主方向光 (斜上方照射，營造自然明暗)
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
-    dirLight.position.set(3, 5, 4);
+    dirLight.position.set(2.5, 4.5, 4);
     scene.add(dirLight);
 
-    // 側邊立體輪廓光：專門勾勒黑膠唱片邊緣，避免純黑唱片與暗色背景融合
-    const rimLight = new THREE.DirectionalLight(0x71717a, 2.2);
-    rimLight.position.set(4, -2, 2);
+    // 專門提亮黑膠邊界外輪廓，避免純黑融進背景
+    const rimLight = new THREE.DirectionalLight(0x828594, 2.5);
+    rimLight.position.set(4, -1.5, 2.5);
     scene.add(rimLight);
-
-    const backRimLight = new THREE.DirectionalLight(0x3f3f46, 1.8);
-    backRimLight.position.set(-4, 3, -2);
-    scene.add(backRimLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 軟陰影貼圖平面 (Soft Drop Shadow) - 讓專輯與黑膠在背景上浮現出立體深度
+    // 背景陰影
     function createShadowCanvas() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
       const grad = ctx.createRadialGradient(256, 256, 30, 256, 256, 240);
-      grad.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
-      grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.28)');
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+      grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.3)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 512, 512);
       return new THREE.CanvasTexture(c);
     }
-    const shadowGeo = new THREE.PlaneGeometry(3.6, 2.6);
+    const shadowGeo = new THREE.PlaneGeometry(3.8, 2.8);
     const shadowMat = new THREE.MeshBasicMaterial({
       map: createShadowCanvas(),
       transparent: true,
@@ -933,13 +926,13 @@
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體 (無光澤，但具備清晰邊緣立體層次)
+    // 唱片本體 (深黑無光澤、但外圈邊線清晰)
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x121318,
-      roughness: 0.82,
-      metalness: 0.12
+      color: 0x101115,
+      roughness: 0.88,
+      metalness: 0.08
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
@@ -956,13 +949,23 @@
     discGroup.position.set(VINYL_REST_X, 0, 0.01);
     turntableGroup.add(discGroup);
 
+    // 高清貼圖優化配置函數
+    function setupHighQualityTexture(tex) {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      tex.needsUpdate = true;
+    }
+
     function applyCoverTo3D(frontUrl, backUrl) {
       if (!frontUrl) return;
       const directFront = normalizeImageUrl(frontUrl);
       const directBack = backUrl ? normalizeImageUrl(backUrl) : directFront;
 
       texLoader.load(directFront, (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
+        setupHighQualityTexture(tex);
         coverMesh.material[4].map = tex;
         coverMesh.material[4].needsUpdate = true;
         labelMesh.material.map = tex;
@@ -970,7 +973,7 @@
       });
 
       texLoader.load(directBack, (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
+        setupHighQualityTexture(tex);
         coverMesh.material[5].map = tex;
         coverMesh.material[5].needsUpdate = true;
       });
@@ -1334,13 +1337,12 @@
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式（動態掛載 DOM，避免任何後台文字外洩至預覽爬蟲）
+     * 7. 管理者模式（動態掛載 DOM，爬蟲完全讀取不到後台字樣）
      * ------------------------------------------------------------*/
     const mountPoint = document.getElementById('admin-mount-point');
 
     function openAuthModal() {
       mountPoint.innerHTML = document.getElementById('auth-tpl').innerHTML;
-      const authModal = document.getElementById('auth-modal');
       const authInput = document.getElementById('auth-input');
       authInput.focus();
 
