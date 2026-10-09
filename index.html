@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#18191e">
+  <meta name="theme-color" content="#131418">
 
   <title>WINTER PLAYLIST</title>
 
@@ -17,14 +17,12 @@
   <meta property="og:type" content="music.playlist">
   <meta property="og:url" content="https://u11150003-arch.github.io/WINTER-PLAYLIST/">
   
-  <!-- 您提供的雲端黑膠縮圖直連網址 -->
   <meta property="og:image" content="https://lh3.googleusercontent.com/d/1c2HM5tdmFqXvLC_3a2xkNgAVpZupleLW">
   <meta property="og:image:secure_url" content="https://lh3.googleusercontent.com/d/1c2HM5tdmFqXvLC_3a2xkNgAVpZupleLW">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
-  <!-- Twitter / Threads 卡片規範 -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="WINTER PLAYLIST">
   <meta name="twitter:description" content="Playlist for WINTER">
@@ -183,13 +181,15 @@
       transform: scale(1.02);
     }
 
+    /* 操作框：保有完整邊框設計，並將顏色延伸填滿螢幕最底部的安全區域 */
     footer.retro-deck {
-      background: var(--deck-bg);
+      background: var(--deck-bg) !important;
       border-top: 1px solid var(--steel-border);
-      padding: 8px 12px calc(24px + env(safe-area-inset-bottom, 20px));
       box-shadow: 0 -8px 30px rgba(0,0,0,0.5);
+      padding: 10px 14px calc(24px + env(safe-area-inset-bottom, 20px));
       z-index: 25;
       width: 100%;
+      flex-shrink: 0;
     }
 
     .timeline-strip {
@@ -476,7 +476,7 @@
     </div>
   </footer>
 
-  <!-- 管理後台掛載點（點擊才產生，避免爬蟲抓到 System Access 字樣） -->
+  <!-- 管理後台掛載點 -->
   <div id="admin-mount-point"></div>
 
   <template id="auth-tpl">
@@ -858,7 +858,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (黑膠動態光澤、微米音軌與立體層次)
+     * 3. Three.js 3D (黑膠動態旋轉光澤與立體層次)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -896,7 +896,6 @@
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 背景陰影
     function createShadowCanvas() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
@@ -920,7 +919,6 @@
     shadowMesh.position.set(0.1, -0.05, -0.15);
     turntableGroup.add(shadowMesh);
 
-    // 1024x1024 旋轉動態黑膠光澤質地 (微米音軌 + 輕柔扇形柔光)
     function createGrooveVinylTexture() {
       const c = document.createElement('canvas');
       c.width = 1024; c.height = 1024;
@@ -968,7 +966,6 @@
 
     const texLoader = new THREE.TextureLoader();
 
-    // 專輯外殼
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
       new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
@@ -981,7 +978,6 @@
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
@@ -994,7 +990,6 @@
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
-    // 唱片中央貼標
     const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
     const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 }));
     labelMesh.rotation.x = Math.PI / 2;
@@ -1005,7 +1000,6 @@
     discGroup.position.set(VINYL_REST_X, 0, 0.01);
     turntableGroup.add(discGroup);
 
-    // 高解析度貼圖保持
     function setupHighQualityTexture(tex) {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.minFilter = THREE.LinearFilter;
@@ -1125,13 +1119,6 @@
       } else {
         svg.innerHTML = '<path d="M8 5v14l11-7z"/>';
       }
-    }
-
-    function formatTime(sec) {
-      sec = Math.floor(sec) || 0;
-      const m = Math.floor(sec / 60);
-      const s = sec % 60;
-      return `${String(m).padStart(2,'0')}`;
     }
 
     function updateProgressUI(cur, total) {
