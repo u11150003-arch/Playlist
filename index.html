@@ -9,23 +9,26 @@
 
   <title>WINTER PLAYLIST</title>
 
-  <!-- Open Graph / LINE 預覽設定 -->
+  <!-- Open Graph 標籤 (支援 LINE / Instagram / Threads / Facebook) -->
   <meta property="og:site_name" content="WINTER PLAYLIST">
   <meta property="og:title" content="WINTER PLAYLIST">
-  <!-- 簡易介紹詞 -->
   <meta property="og:description" content="Playlist for WINTER">
   <meta name="description" content="Playlist for WINTER">
-  <meta property="og:type" content="website">
-
-  <!-- LINE 支援的完整絕對圖片路徑（純白背景 + 專輯 + 半露黑膠） -->
-  <meta property="og:image" content="https://images.weserv.nl/?url=lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6&w=1200&h=630&fit=contain&cbg=white">
+  <meta property="og:type" content="music.playlist">
+  <meta property="og:url" content="https://u11150003-arch.github.io/WINTER-PLAYLIST/">
+  
+  <!-- 您提供的雲端黑膠縮圖直連網址 -->
+  <meta property="og:image" content="https://lh3.googleusercontent.com/d/1c2HM5tdmFqXvLC_3a2xkNgAVpZupleLW">
+  <meta property="og:image:secure_url" content="https://lh3.googleusercontent.com/d/1c2HM5tdmFqXvLC_3a2xkNgAVpZupleLW">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
+  <!-- Twitter / Threads 卡片規範 -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="WINTER PLAYLIST">
   <meta name="twitter:description" content="Playlist for WINTER">
-  <meta name="twitter:image" content="https://images.weserv.nl/?url=lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6&w=1200&h=630&fit=contain&cbg=white">
+  <meta name="twitter:image" content="https://lh3.googleusercontent.com/d/1c2HM5tdmFqXvLC_3a2xkNgAVpZupleLW">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -473,7 +476,7 @@
     </div>
   </footer>
 
-  <!-- 管理後台掛載點（點擊才生成 DOM，避免文字洩漏至社群爬蟲） -->
+  <!-- 管理後台掛載點（點擊才產生，避免爬蟲抓到 System Access 字樣） -->
   <div id="admin-mount-point"></div>
 
   <template id="auth-tpl">
@@ -855,7 +858,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (黑膠旋轉動態反光、立體層次)
+     * 3. Three.js 3D (黑膠動態光澤、微米音軌與立體層次)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -878,16 +881,13 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // 環境光
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.0);
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.2);
     scene.add(ambLight);
 
-    // 主方向光 (斜上方照射，激發黑膠凹槽立體光斑)
     const dirLight = new THREE.DirectionalLight(0xffffff, 2.6);
     dirLight.position.set(3, 4, 3.5);
     scene.add(dirLight);
 
-    // 專屬側光：當唱片旋轉時營造動態光束感
     const rimLight = new THREE.DirectionalLight(0xd4d4d8, 2.2);
     rimLight.position.set(4, -1.8, 2.8);
     scene.add(rimLight);
@@ -896,7 +896,7 @@
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 背景柔和落影
+    // 背景陰影
     function createShadowCanvas() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
@@ -920,17 +920,15 @@
     shadowMesh.position.set(0.1, -0.05, -0.15);
     turntableGroup.add(shadowMesh);
 
-    // 1024x1024 旋轉動態黑膠光澤質地 (微米音軌 + 輕柔各向異性反光)
+    // 1024x1024 旋轉動態黑膠光澤質地 (微米音軌 + 輕柔扇形柔光)
     function createGrooveVinylTexture() {
       const c = document.createElement('canvas');
       c.width = 1024; c.height = 1024;
       const ctx = c.getContext('2d');
 
-      // 深色黑膠基底
       ctx.fillStyle = '#0f1014';
       ctx.fillRect(0, 0, 1024, 1024);
 
-      // 旋轉動態扇形柔光 (旋轉時產生自然掠過的光感)
       const grad = ctx.createConicGradient(0, 512, 512);
       grad.addColorStop(0.00, 'rgba(15, 16, 20, 1)');
       grad.addColorStop(0.12, 'rgba(65, 68, 80, 0.65)');
@@ -944,7 +942,6 @@
       ctx.arc(512, 512, 500, 0, Math.PI * 2);
       ctx.fill();
 
-      // 同心圓刻紋
       for (let r = 85; r < 496; r += 2.2) {
         ctx.beginPath();
         ctx.arc(512, 512, r, 0, Math.PI * 2);
@@ -958,7 +955,6 @@
         ctx.stroke();
       }
 
-      // 外緣倒角高光
       ctx.beginPath();
       ctx.arc(512, 512, 496, 0, Math.PI * 2);
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
@@ -985,7 +981,7 @@
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體 (具備動態旋轉光澤與立體質感)
+    // 唱片本體
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
@@ -1009,7 +1005,7 @@
     discGroup.position.set(VINYL_REST_X, 0, 0.01);
     turntableGroup.add(discGroup);
 
-    // 原圖高解析度貼圖配置
+    // 高解析度貼圖保持
     function setupHighQualityTexture(tex) {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.minFilter = THREE.LinearFilter;
@@ -1107,7 +1103,6 @@
       turntableGroup.rotation.y = THREE.MathUtils.lerp(turntableGroup.rotation.y, targetRotY, 0.1);
       turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
 
-      // 旋轉時帶動黑膠反光面旋轉，形成動態光澤流轉效果
       if (isPlaying) {
         discGroup.rotation.z -= 0.024;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
@@ -1136,7 +1131,7 @@
       sec = Math.floor(sec) || 0;
       const m = Math.floor(sec / 60);
       const s = sec % 60;
-      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      return `${String(m).padStart(2,'0')}`;
     }
 
     function updateProgressUI(cur, total) {
@@ -1144,8 +1139,12 @@
       totalDuration = total || 211;
       const pct = Math.min(100, Math.max(0, (cur / totalDuration) * 100));
       document.getElementById('seek-progress').style.width = `${pct}%`;
-      document.getElementById('lbl-curr').textContent = formatTime(cur);
-      document.getElementById('lbl-total').textContent = formatTime(totalDuration);
+      const curM = Math.floor(cur / 60);
+      const curS = Math.floor(cur % 60);
+      const totM = Math.floor(totalDuration / 60);
+      const totS = Math.floor(totalDuration % 60);
+      document.getElementById('lbl-curr').textContent = `${String(curM).padStart(2,'0')}:${String(curS).padStart(2,'0')}`;
+      document.getElementById('lbl-total').textContent = `${String(totM).padStart(2,'0')}:${String(totS).padStart(2,'0')}`;
       syncLyrics(cur);
     }
 
@@ -1216,7 +1215,7 @@
         const p = nativeAudio.play();
         if (p !== undefined) {
           p.then(() => setPlayState(true)).catch(err => {
-            console.log("等待點擊播放:", err);
+            console.log("等待手勢點擊播放:", err);
             setPlayState(false);
           });
         }
@@ -1251,7 +1250,10 @@
       if (!isDraggingSeek) return;
       const frac = getSeekFraction(e);
       seekProgress.style.width = `${frac * 100}%`;
-      document.getElementById('lbl-curr').textContent = formatTime(frac * totalDuration);
+      const cur = frac * totalDuration;
+      const m = Math.floor(cur / 60);
+      const s = Math.floor(cur % 60);
+      document.getElementById('lbl-curr').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
 
     function handleSeekEnd(e) {
@@ -1398,7 +1400,7 @@
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式（動態掛載 DOM，爬蟲完全讀取不到後台字樣）
+     * 7. 管理者模式（DOM 動態掛載）
      * ------------------------------------------------------------*/
     const mountPoint = document.getElementById('admin-mount-point');
 
