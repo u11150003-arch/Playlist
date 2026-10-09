@@ -6,7 +6,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#18191e">
-  <title>zy playlist</title>
+
+  <!-- 標題統一為 WINTER PLAYLIST -->
+  <title>WINTER PLAYLIST</title>
+
+  <!-- Open Graph / LINE / 社群預覽卡片設定 (無介紹、黑底黑膠唱片封面) -->
+  <meta property="og:title" content="WINTER PLAYLIST">
+  <meta property="og:description" content="">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6">
+  <meta name="description" content="">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -404,7 +413,7 @@
   <iframe id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;" frameborder="0" allow="autoplay; encrypted-media"></iframe>
 
   <header>
-    <div class="brand-title" id="logo-trigger">ZY PLAYLIST</div>
+    <div class="brand-title" id="logo-trigger">WINTER PLAYLIST</div>
     <button class="admin-dot-btn" id="btn-open-auth" title="Settings">
       <span></span><span></span><span></span>
     </button>
@@ -782,12 +791,12 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v13_anisotropic')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v13')) || 1.0;
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v13_anisotropic', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale_v13', modelScale);
+      localStorage.setItem('winter_playlist_store', JSON.stringify(store));
+      localStorage.setItem('winter_model_scale', modelScale);
     }
 
     let plIdx = 0;
@@ -829,7 +838,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (高階各向異性黑膠髮絲紋與動態光澤生成)
+     * 3. Three.js 3D (黑膠無光澤、維持原有經典黑膠設計)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -852,100 +861,39 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // 針對黑膠髮絲反射的最佳化燈光陣列
-    const ambLight = new THREE.AmbientLight(0xffffff, 2.6);
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambLight);
 
-    const mainSpotLight = new THREE.DirectionalLight(0xffffff, 4.2);
-    mainSpotLight.position.set(3, 5, 5); // 45度角精準激發黑膠刻痕高光
-    scene.add(mainSpotLight);
-
-    const rimLight = new THREE.DirectionalLight(0xa1a1aa, 2.5);
-    rimLight.position.set(-5, -2, -3);
-    scene.add(rimLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight.position.set(2, 4, 4);
+    scene.add(dirLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
-
-    // 1024x1024 高解析度各向異性扇形光澤 (Anisotropic Radial Glare Map)
-    function createAnisotropicVinylTexture() {
-      const c = document.createElement('canvas');
-      c.width = 1024; c.height = 1024;
-      const ctx = c.getContext('2d');
-
-      // 1. 純黑深邃黑膠底色
-      ctx.fillStyle = '#0b0c0e';
-      ctx.fillRect(0, 0, 1024, 1024);
-
-      // 2. 經典各向異性雙沙漏形/扇形光暈 (仿照真實照片中的扇形折射)
-      const grad = ctx.createConicGradient(Math.PI / 4, 512, 512);
-      grad.addColorStop(0.00, 'rgba(12, 13, 16, 1)');
-      grad.addColorStop(0.10, 'rgba(88, 92, 108, 0.85)'); // 第 1 道強光芒
-      grad.addColorStop(0.18, 'rgba(12, 13, 16, 1)');
-      grad.addColorStop(0.50, 'rgba(12, 13, 16, 1)');
-      grad.addColorStop(0.60, 'rgba(88, 92, 108, 0.85)'); // 第 2 道對角強光芒
-      grad.addColorStop(0.68, 'rgba(12, 13, 16, 1)');
-      grad.addColorStop(1.00, 'rgba(12, 13, 16, 1)');
-
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(512, 512, 500, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 3. 高密度微米同心圓髮絲紋 (Micro-grooves)
-      for (let r = 80; r < 496; r += 1.8) {
-        ctx.beginPath();
-        ctx.arc(512, 512, r, 0, Math.PI * 2);
-        // 音軌分段與反光刻度
-        if (r % 12 === 0) {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-          ctx.lineWidth = 1.4;
-        } else if (r % 4 === 0) {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-          ctx.lineWidth = 1.0;
-        } else {
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
-          ctx.lineWidth = 0.8;
-        }
-        ctx.stroke();
-      }
-
-      // 4. 外圈修整倒角與內圈引導槽 (Lead-in & Run-out)
-      ctx.beginPath();
-      ctx.arc(512, 512, 498, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      const tex = new THREE.CanvasTexture(c);
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      return tex;
-    }
 
     const texLoader = new THREE.TextureLoader();
 
     // 專輯外殼
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
-      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
-      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
-      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
-      new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.16, metalness: 0.1 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.16, metalness: 0.1 })
+      new THREE.MeshStandardMaterial({ color: 0x141418 }),
+      new THREE.MeshStandardMaterial({ color: 0x141418 }),
+      new THREE.MeshStandardMaterial({ color: 0x141418 }),
+      new THREE.MeshStandardMaterial({ color: 0x141418 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
     ]);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體（搭載各向異性扇形光澤材質）
+    // 唱片本體 (純黑、無髮絲光澤設計)
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x101115,
-      map: createAnisotropicVinylTexture(),
-      roughness: 0.18,
-      metalness: 0.78
+      color: 0x0a0a0d,
+      roughness: 0.9,
+      metalness: 0.0
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
@@ -953,7 +901,7 @@
 
     // 唱片中央貼標
     const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
-    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 }));
+    const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff }));
     labelMesh.rotation.x = Math.PI / 2;
     discGroup.add(labelMesh);
 
@@ -983,7 +931,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 純自轉手勢驅動 (點擊自動回正)
+     * 手勢旋轉操作
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1050,7 +998,6 @@
       turntableGroup.rotation.y = THREE.MathUtils.lerp(turntableGroup.rotation.y, targetRotY, 0.1);
       turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
 
-      // 旋轉黑膠時，同心圓髮絲紋與扇形光芒隨之自轉
       if (isPlaying) {
         discGroup.rotation.z -= 0.024;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
@@ -1159,7 +1106,7 @@
         const p = nativeAudio.play();
         if (p !== undefined) {
           p.then(() => setPlayState(true)).catch(err => {
-            console.log("等待手勢點擊播放:", err);
+            console.log("等待點擊播放:", err);
             setPlayState(false);
           });
         }
@@ -1178,7 +1125,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 5. 手指滑動進度條 (Touch & Seek)
+     * 5. 進度條拖曳控制
      * ------------------------------------------------------------*/
     const seekContainer = document.getElementById('seek-container');
     const seekProgress = document.getElementById('seek-progress');
