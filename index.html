@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#000000">
   <title>zy playlist</title>
 
-  <!-- 引入科技感與復古無襯線字型 -->
+  <!-- 引入指定字型 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Syne:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -47,7 +47,7 @@
 
     /* 頂部 Header */
     header {
-      padding: calc(10px + env(safe-area-inset-top, 0px)) 20px 8px;
+      padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -161,30 +161,32 @@
       transform: scale(1.04);
     }
 
-    /* 底部面板：高度拉高保護 Safari 手勢列 */
+    /* 底部面板：防 Safari 遮擋且緊湊排版 */
     footer.retro-deck {
       background: linear-gradient(180deg, #101115 0%, #000000 100%);
       border-top: 1px solid var(--steel-border);
-      padding: 8px 16px calc(24px + env(safe-area-inset-bottom, 20px));
+      padding: 8px 12px calc(26px + env(safe-area-inset-bottom, 20px));
       box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
       z-index: 25;
+      width: 100%;
     }
 
     .timeline-strip {
       display: flex;
       align-items: center;
-      gap: 10px;
-      max-width: 640px;
-      margin: 0 auto 8px;
+      gap: 8px;
+      max-width: 480px;
+      margin: 0 auto 10px;
+      padding: 0 4px;
     }
     .retro-time {
       font-family: 'Orbitron', monospace;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: #a1a1aa;
-      min-width: 38px;
+      min-width: 36px;
     }
 
-    /* 手指拖曳進度條 */
+    /* 滑動進度條 */
     .seek-groove {
       flex: 1;
       height: 24px;
@@ -221,67 +223,79 @@
       pointer-events: none;
     }
 
+    /* 控制列：緊湊響應式，絕對不擠出螢幕 */
     .deck-controls {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 640px;
+      max-width: 480px;
       margin: 0 auto;
+      gap: 6px;
+      padding: 0 2px;
     }
 
+    /* 左右微縮下拉選單 */
     .steel-select-group {
       display: flex;
-      gap: 6px;
+      gap: 5px;
+      flex-shrink: 1;
+      min-width: 0;
     }
     .steel-select {
       background: #14151b;
       border: 1px solid #2d2f3a;
       color: #d4d4d8;
-      font-size: 0.75rem;
-      padding: 6px 10px;
+      font-size: 0.7rem;
+      padding: 5px 6px;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
-      max-width: 120px;
+      width: 82px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
+    /* 按鍵區：縮小間隙避免被右邊遮擋 */
     .buttons-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
+      flex-shrink: 0;
     }
     .steel-knob-btn {
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #27272a 0%, #121215 100%);
       border: 1px solid #3f3f46;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.15);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.15);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.15s ease;
+      flex-shrink: 0;
     }
     .steel-knob-btn:active {
       transform: scale(0.92);
     }
     .steel-knob-btn svg {
-      width: 15px;
-      height: 15px;
+      width: 14px;
+      height: 14px;
       fill: #a1a1aa;
     }
 
     .play-master-btn {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       background: radial-gradient(circle at 35% 35%, #3f3f46 0%, #18181b 100%);
       border: 1.5px solid #71717a;
-      box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.2);
+      box-shadow: 0 0 10px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.2);
     }
     .play-master-btn svg {
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       fill: #fafafa;
     }
 
@@ -393,7 +407,7 @@
 </head>
 <body>
 
-  <!-- 原生音訊引擎與背景 YouTube 混合架構 -->
+  <!-- 音訊引擎：本機 audio 與 背景 YouTube 串流 -->
   <audio id="native-audio" playsinline preload="auto"></audio>
   <iframe id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;" frameborder="0" allow="autoplay; encrypted-media"></iframe>
 
@@ -508,13 +522,13 @@
           <input type="text" id="form-song-artist" placeholder="例如：Winter">
         </div>
         <div class="field-row">
-          <label>音訊來源 (本機 mp3 檔名、GitHub raw 網址 或 YouTube 連結)</label>
+          <label>音訊來源 (本機檔名、GitHub 網址 或 YouTube 連結)</label>
           <input type="text" id="form-song-source" placeholder="如：lips (online-audio-converter.com).mp3 或 YouTube 網址">
         </div>
 
         <div class="field-row">
-          <label>專輯封面 (支援 Google Drive 分享連結自動轉直連、網路圖或從手機圖庫選擇)</label>
-          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（Google Drive、Imgur 等自動轉直連）">
+          <label>專輯封面 (Google Drive 分享連結自動轉直連、網路圖或從手機圖庫選擇)</label>
+          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（自動轉直連）">
           <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
             <input type="file" id="local-img-picker" accept="image/*" style="display:none;">
             <button type="button" class="btn-cancel" onclick="document.getElementById('local-img-picker').click()" style="font-size:0.72rem;">📁 從手機圖庫挑選圖片</button>
@@ -549,8 +563,10 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     /* -------------------------------------------------------------
-     * 1. 完整沿用 winter-cd-player 原生 5 大歌單與完整曲目配置
+     * 1. 完整沿用 winter-cd-player 原始 5 大歌單配置 (跨專案音訊絕對路徑)
      * ------------------------------------------------------------*/
+    const CD_PROJECT_BASE = "https://u11150003-arch.github.io/winter-cd-player/";
+
     const DEFAULT_DATA = [
       {
         id: "pl_lips",
@@ -765,19 +781,19 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v6_full')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v6')) || 1.0;
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v7_bright')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v7')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v6_full', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale_v6', modelScale);
+      localStorage.setItem('zy_playlist_v7_bright', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale_v7', modelScale);
     }
 
     let plIdx = 0;
     let trackIdx = 0;
     let isPlaying = false;
     let isDraggingSeek = false;
-    let playMode = 'file'; // 'file' or 'yt'
+    let playMode = 'file';
     let currentSec = 0;
     let totalDuration = 211;
     let ytTimer = null;
@@ -786,7 +802,7 @@
     const ytIframe = document.getElementById('yt-hidden-player');
 
     /* -------------------------------------------------------------
-     * 2. Google Drive / GitHub 網址自動轉換為真實圖片與音訊串流
+     * 2. 跨專案音訊與雲端圖片自動直連解析
      * ------------------------------------------------------------*/
     function normalizeImageUrl(url) {
       if (!url) return '';
@@ -815,7 +831,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D 黑膠外殼與高反光明亮金屬光澤 (徹底解決暗黑問題)
+     * 3. Three.js 3D 黑膠外殼與鮮亮高飽和表面 (徹底還原右圖鮮明感)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -829,10 +845,10 @@
       renderer.setSize(container.clientWidth, container.clientHeight);
     }
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
+    renderer.outputColorSpace = THREE.SRGBColorSpace; // 保持色彩鮮明
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -840,37 +856,29 @@
     controls.dampingFactor = 0.05;
     controls.enableZoom = false;
 
-    // 增強型三點明亮高光設置
-    const ambLight = new THREE.AmbientLight(0xffffff, 3.2); // 提高環境明亮度
+    // 清晰純白光源 (不壓暗、不泛黃)
+    const ambLight = new THREE.AmbientLight(0xffffff, 4.0);
     scene.add(ambLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 3.5); // 強烈正面照射
-    keyLight.position.set(5, 8, 6);
-    scene.add(keyLight);
-
-    const fillLight = new THREE.DirectionalLight(0xb0c4de, 2.5); // 柔和側邊反光
-    fillLight.position.set(-6, 3, 4);
-    scene.add(fillLight);
-
-    const rimLight = new THREE.DirectionalLight(0xffffff, 2.0); // 輪廓光
-    rimLight.position.set(0, -5, -4);
-    scene.add(rimLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 3.0);
+    dirLight.position.set(5, 8, 6);
+    scene.add(dirLight);
 
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 精緻明亮黑膠唱片同心圓貼圖
+    // 黑膠反光溝槽貼圖 (亮灰同心圓溝槽)
     function createBrightVinylTexture() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#22232a'; // 底色調亮，呈現透亮黑膠質感
+      ctx.fillStyle = '#1c1d22';
       ctx.fillRect(0, 0, 512, 512);
       for (let r = 35; r < 250; r += 2) {
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 5 === 0) ? '#4a4d5e' : '#2d303b'; // 鮮明反光溝槽
+        ctx.strokeStyle = (r % 4 === 0) ? '#4a4d5a' : '#282932';
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -879,40 +887,37 @@
 
     const texLoader = new THREE.TextureLoader();
 
-    // 專輯外殼
+    // 外殼 (正面使用不受光照衰減的鮮亮材質)
     const coverGeo = new THREE.BoxGeometry(2.2, 2.2, 0.05);
-    const defaultCoverMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0x22232a }),
-      new THREE.MeshStandardMaterial({ color: 0x22232a }),
-      new THREE.MeshStandardMaterial({ color: 0x22232a }),
-      new THREE.MeshStandardMaterial({ color: 0x22232a }),
-      new THREE.MeshStandardMaterial({ color: 0x444755, roughness: 0.2 }),
-      new THREE.MeshStandardMaterial({ color: 0x18181f })
-    ];
-    const coverMesh = new THREE.Mesh(coverGeo, defaultCoverMaterials);
+    const coverFaceMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const coverMesh = new THREE.Mesh(coverGeo, [
+      new THREE.MeshBasicMaterial({ color: 0x1f2026 }),
+      new THREE.MeshBasicMaterial({ color: 0x1f2026 }),
+      new THREE.MeshBasicMaterial({ color: 0x1f2026 }),
+      new THREE.MeshBasicMaterial({ color: 0x1f2026 }),
+      coverFaceMat, // 正面貼圖
+      new THREE.MeshBasicMaterial({ color: 0x18181f })
+    ]);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片 (提高金屬感與降低粗糙度以呈現光芒)
+    // 唱片本體 (帶有光澤弧線)
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x2a2b34,          // 帶金屬灰調的明亮黑膠色
-      roughness: 0.12,          // 鏡面反光
-      metalness: 0.90,          // 強烈金屬光澤
+      color: 0x222329,
+      roughness: 0.15,
+      metalness: 0.85,
       bumpMap: createBrightVinylTexture(),
-      bumpScale: 0.025
+      bumpScale: 0.02
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
-    // 唱片圓心貼標
+    // 唱片中央貼標
     const labelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.025, 32);
-    const labelMat = new THREE.MeshStandardMaterial({
-      color: 0x444755,
-      roughness: 0.25
-    });
+    const labelMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const labelMesh = new THREE.Mesh(labelGeo, labelMat);
     labelMesh.rotation.x = Math.PI / 2;
     discGroup.add(labelMesh);
@@ -928,6 +933,7 @@
       texLoader.load(
         direct,
         (tex) => {
+          tex.colorSpace = THREE.SRGBColorSpace;
           coverMesh.material[4].map = tex;
           coverMesh.material[4].needsUpdate = true;
           labelMesh.material.map = tex;
@@ -955,7 +961,7 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 沿用 winter-cd-player 音訊播放設定 (支援本機檔案 + YouTube)
+     * 4. 跨專案音訊串流 (自動尋找 winter-cd-player 音訊檔)
      * ------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
@@ -984,7 +990,6 @@
       syncLyrics(cur);
     }
 
-    // 原生音訊事件
     nativeAudio.addEventListener('timeupdate', () => {
       if (playMode !== 'file' || isDraggingSeek) return;
       updateProgressUI(nativeAudio.currentTime, nativeAudio.duration || totalDuration);
@@ -993,7 +998,6 @@
     nativeAudio.addEventListener('pause', () => setPlayState(false));
     nativeAudio.addEventListener('ended', () => playNext());
 
-    // YouTube 虛擬計時器 (沿用 winter-cd-player 的 startXpYtTimer 設定)
     function startYtProgressTimer() {
       clearInterval(ytTimer);
       ytTimer = setInterval(() => {
@@ -1017,7 +1021,7 @@
       const ytId = extractYoutubeId(song.source);
 
       if (ytId) {
-        // YouTube 模式
+        // YouTube 播放模式
         playMode = 'yt';
         nativeAudio.pause();
         nativeAudio.removeAttribute('src');
@@ -1027,15 +1031,15 @@
         setPlayState(true);
         startYtProgressTimer();
       } else {
-        // 本機 / 直連 MP3 模式
+        // 本機 / 遠端 MP3 播放模式
         playMode = 'file';
         clearInterval(ytTimer);
         ytIframe.src = '';
 
-        // 轉換來源路徑 (支援本機檔案名稱與 GitHub Raw)
         let directSrc = song.source.replace(/^\.\//, '');
+        // 若不是 http 開頭，自動定位至 winter-cd-player 專案的音訊直連網址
         if (!directSrc.startsWith('http')) {
-          directSrc = encodeURI(directSrc);
+          directSrc = CD_PROJECT_BASE + encodeURI(directSrc);
         } else if (directSrc.includes('github.com') && directSrc.includes('/blob/')) {
           directSrc = directSrc.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
         }
@@ -1074,7 +1078,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 5. 手指拖曳進度條跳轉 (Touch & Seek)
+     * 5. 手指滑動進度條 (Touch & Seek)
      * ------------------------------------------------------------*/
     const seekContainer = document.getElementById('seek-container');
     const seekProgress = document.getElementById('seek-progress');
@@ -1453,7 +1457,6 @@
       a.click();
     };
 
-    // 啟動初始畫面
     renderUI();
   </script>
 </body>
