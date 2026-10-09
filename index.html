@@ -14,8 +14,8 @@
 
   <style>
     :root {
-      --bg: #18191e;           /* 高級冷霧灰，完美烘托黑膠輪廓 */
-      --deck-bg: #131418;      /* 下方控制台微深層次 */
+      --bg: #18191e;
+      --deck-bg: #131418;
       --steel: #f4f4f5;
       --steel-dim: #9ca3af;
       --steel-border: #2a2c35;
@@ -30,7 +30,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* 全域統一淺色階冷霧灰背景，杜絕死黑 */
     html, body {
       width: 100vw;
       height: 100vh;
@@ -783,12 +782,12 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v12_silvergray')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v12')) || 1.0;
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v13_anisotropic')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v13')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v12_silvergray', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale_v12', modelScale);
+      localStorage.setItem('zy_playlist_v13_anisotropic', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale_v13', modelScale);
     }
 
     let plIdx = 0;
@@ -830,7 +829,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (灰調背景 + 邊緣清晰黑膠唱片 + 光澤紙盒)
+     * 3. Three.js 3D (高階各向異性黑膠髮絲紋與動態光澤生成)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -853,15 +852,15 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // 均勻且明亮的立體光源
-    const ambLight = new THREE.AmbientLight(0xffffff, 3.2);
+    // 針對黑膠髮絲反射的最佳化燈光陣列
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.6);
     scene.add(ambLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 4.0);
-    keyLight.position.set(4, 5, 5);
-    scene.add(keyLight);
+    const mainSpotLight = new THREE.DirectionalLight(0xffffff, 4.2);
+    mainSpotLight.position.set(3, 5, 5); // 45度角精準激發黑膠刻痕高光
+    scene.add(mainSpotLight);
 
-    const rimLight = new THREE.DirectionalLight(0x9ca3af, 2.8);
+    const rimLight = new THREE.DirectionalLight(0xa1a1aa, 2.5);
     rimLight.position.set(-5, -2, -3);
     scene.add(rimLight);
 
@@ -869,53 +868,64 @@
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 黑膠同心圓高光貼圖 (基底深黑，邊緣微銀灰反光帶，在灰背景下立體分明)
-    function createTrueBlackShineTexture() {
+    // 1024x1024 高解析度各向異性扇形光澤 (Anisotropic Radial Glare Map)
+    function createAnisotropicVinylTexture() {
       const c = document.createElement('canvas');
-      c.width = 512; c.height = 512;
+      c.width = 1024; c.height = 1024;
       const ctx = c.getContext('2d');
 
-      // 深黑膠體基底
-      ctx.fillStyle = '#0f1014';
-      ctx.fillRect(0, 0, 512, 512);
+      // 1. 純黑深邃黑膠底色
+      ctx.fillStyle = '#0b0c0e';
+      ctx.fillRect(0, 0, 1024, 1024);
 
-      // 旋轉扇形光澤
-      const grad = ctx.createConicGradient(0.6, 256, 256);
-      grad.addColorStop(0.0, 'rgba(15,16,20,1)');
-      grad.addColorStop(0.12, 'rgba(75,80,95,0.7)');
-      grad.addColorStop(0.25, 'rgba(15,16,20,1)');
-      grad.addColorStop(0.5, 'rgba(15,16,20,1)');
-      grad.addColorStop(0.62, 'rgba(75,80,95,0.7)');
-      grad.addColorStop(0.75, 'rgba(15,16,20,1)');
-      grad.addColorStop(1.0, 'rgba(15,16,20,1)');
+      // 2. 經典各向異性雙沙漏形/扇形光暈 (仿照真實照片中的扇形折射)
+      const grad = ctx.createConicGradient(Math.PI / 4, 512, 512);
+      grad.addColorStop(0.00, 'rgba(12, 13, 16, 1)');
+      grad.addColorStop(0.10, 'rgba(88, 92, 108, 0.85)'); // 第 1 道強光芒
+      grad.addColorStop(0.18, 'rgba(12, 13, 16, 1)');
+      grad.addColorStop(0.50, 'rgba(12, 13, 16, 1)');
+      grad.addColorStop(0.60, 'rgba(88, 92, 108, 0.85)'); // 第 2 道對角強光芒
+      grad.addColorStop(0.68, 'rgba(12, 13, 16, 1)');
+      grad.addColorStop(1.00, 'rgba(12, 13, 16, 1)');
 
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(256, 256, 248, 0, Math.PI * 2);
+      ctx.arc(512, 512, 500, 0, Math.PI * 2);
       ctx.fill();
 
-      // 細緻凹凸同心圓紋理
-      for (let r = 35; r < 248; r += 2) {
+      // 3. 高密度微米同心圓髮絲紋 (Micro-grooves)
+      for (let r = 80; r < 496; r += 1.8) {
         ctx.beginPath();
-        ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 6 === 0) ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.4)';
-        ctx.lineWidth = 1;
+        ctx.arc(512, 512, r, 0, Math.PI * 2);
+        // 音軌分段與反光刻度
+        if (r % 12 === 0) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.lineWidth = 1.4;
+        } else if (r % 4 === 0) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+          ctx.lineWidth = 1.0;
+        } else {
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
+          ctx.lineWidth = 0.8;
+        }
         ctx.stroke();
       }
 
-      // 黑膠最外圈亮銀邊緣倒角，確保在任何視角邊緣都清晰銳利
+      // 4. 外圈修整倒角與內圈引導槽 (Lead-in & Run-out)
       ctx.beginPath();
-      ctx.arc(256, 256, 246, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-      ctx.lineWidth = 2;
+      ctx.arc(512, 512, 498, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 3;
       ctx.stroke();
 
-      return new THREE.CanvasTexture(c);
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      return tex;
     }
 
     const texLoader = new THREE.TextureLoader();
 
-    // 專輯外殼（尺寸適中 2.0，表面帶薄膜清漆光澤）
+    // 專輯外殼
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
       new THREE.MeshStandardMaterial({ color: 0x141418, roughness: 0.3 }),
@@ -928,14 +938,14 @@
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體（半徑 0.95，帶光澤感）
+    // 唱片本體（搭載各向異性扇形光澤材質）
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x121318,
-      map: createTrueBlackShineTexture(),
+      color: 0x101115,
+      map: createAnisotropicVinylTexture(),
       roughness: 0.18,
-      metalness: 0.75
+      metalness: 0.78
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
@@ -1040,8 +1050,9 @@
       turntableGroup.rotation.y = THREE.MathUtils.lerp(turntableGroup.rotation.y, targetRotY, 0.1);
       turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
 
+      // 旋轉黑膠時，同心圓髮絲紋與扇形光芒隨之自轉
       if (isPlaying) {
-        discGroup.rotation.z -= 0.025;
+        discGroup.rotation.z -= 0.024;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
       } else {
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_REST_X, 0.06);
