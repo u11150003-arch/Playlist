@@ -9,7 +9,7 @@
   <title>zy playlist</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Syne:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
   <style>
@@ -29,6 +29,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* 徹底消滅分界感：全域單一極黑底色 */
     html, body {
       width: 100vw;
       height: 100vh;
@@ -44,14 +45,13 @@
       justify-content: space-between;
     }
 
-    /* 頂部 Header：無邊界、融合式透明過渡 */
     header {
       padding: calc(12px + env(safe-area-inset-top, 0px)) 18px 4px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       z-index: 30;
-      background: transparent;
+      background: #000000 !important;
     }
 
     .brand-title {
@@ -79,7 +79,6 @@
       border-radius: 50%;
     }
 
-    /* 主舞台一體化：平滑微光背景 */
     main {
       flex: 1;
       display: flex;
@@ -87,23 +86,23 @@
       position: relative;
       min-height: 0;
       overflow: hidden;
-      background: radial-gradient(circle at 50% 25%, #181920 0%, #08080a 50%, #000000 85%);
+      background: #000000 !important; /* 無漸層、零邊界感 */
     }
 
     #threejs-box {
       width: 100%;
-      height: 54%;
+      height: 52%;
       position: relative;
-      touch-action: none; /* 讓純旋轉手勢能第一時間觸發 */
+      touch-action: none;
       cursor: grab;
+      background: #000000 !important;
     }
     #threejs-box:active {
       cursor: grabbing;
     }
 
-    /* 歌曲資訊與歌詞區 */
     .info-lyrics-container {
-      height: 46%;
+      height: 48%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -146,7 +145,6 @@
       display: none;
     }
 
-    /* 字幕精細化微調：縮小且不過度放大 */
     .lyric-row {
       text-align: center;
       font-size: 0.82rem;
@@ -163,7 +161,6 @@
       transform: scale(1.02);
     }
 
-    /* 底部面板 */
     footer.retro-deck {
       background: linear-gradient(180deg, #101115 0%, #000000 100%);
       border-top: 1px solid var(--steel-border);
@@ -188,7 +185,6 @@
       min-width: 36px;
     }
 
-    /* 滑動進度條 */
     .seek-groove {
       flex: 1;
       height: 24px;
@@ -225,7 +221,6 @@
       pointer-events: none;
     }
 
-    /* 控制列：小螢幕緊湊排版 */
     .deck-controls {
       display: flex;
       align-items: center;
@@ -299,7 +294,6 @@
       fill: #fafafa;
     }
 
-    /* 彈窗樣式 */
     .modal-veil {
       position: fixed;
       inset: 0;
@@ -406,11 +400,9 @@
 </head>
 <body>
 
-  <!-- 音訊引擎：本機 audio 與 背景 YouTube 串流 -->
   <audio id="native-audio" playsinline preload="auto"></audio>
   <iframe id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;" frameborder="0" allow="autoplay; encrypted-media"></iframe>
 
-  <!-- Header -->
   <header>
     <div class="brand-title" id="logo-trigger">ZY PLAYLIST</div>
     <button class="admin-dot-btn" id="btn-open-auth" title="Settings">
@@ -418,7 +410,6 @@
     </button>
   </header>
 
-  <!-- 3D 與歌詞舞台 -->
   <main>
     <div id="threejs-box"></div>
     <div class="info-lyrics-container">
@@ -430,7 +421,6 @@
     </div>
   </main>
 
-  <!-- 底部面板 -->
   <footer class="retro-deck">
     <div class="timeline-strip">
       <span class="retro-time" id="lbl-curr">00:00</span>
@@ -464,7 +454,6 @@
     </div>
   </footer>
 
-  <!-- 密碼驗證視窗 (不出現密碼 0401) -->
   <div class="modal-veil" id="auth-modal">
     <div class="modal-inner" style="max-width: 300px; text-align: center;">
       <h3>System Access</h3>
@@ -478,7 +467,6 @@
     </div>
   </div>
 
-  <!-- 後台管理系統 -->
   <div class="modal-veil" id="admin-modal">
     <div class="modal-inner">
       <h3>歌單與曲目核心管理</h3>
@@ -491,9 +479,9 @@
       <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
         <label style="font-size:0.75rem; color:#a1a1aa; display:flex; justify-content:space-between;">
           <span>黑膠與封面尺寸縮放</span>
-          <span id="scale-val-lbl">1.2x</span>
+          <span id="scale-val-lbl">1.0x</span>
         </label>
-        <input type="range" id="scale-slider" min="0.8" max="1.8" step="0.05" value="1.2" style="width:100%; margin-top:6px;">
+        <input type="range" id="scale-slider" min="0.6" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:6px;">
       </div>
 
       <div style="background:#09090b; padding:10px; border-radius:6px; border:1px solid #1f1f23; margin-bottom:12px;">
@@ -535,7 +523,6 @@
           </div>
         </div>
 
-        <!-- 獨立專輯背面圖片設定 -->
         <div class="field-row">
           <label>專輯外殼 (背面，留空則預設同正面)</label>
           <input type="text" id="form-song-back-cover" placeholder="留空則預設跟正面相同">
@@ -571,9 +558,6 @@
   <script type="module">
     import * as THREE from 'three';
 
-    /* -------------------------------------------------------------
-     * 1. 完整沿用 winter-cd-player 原始 5 大歌單配置
-     * ------------------------------------------------------------*/
     const CD_PROJECT_BASE = "https://u11150003-arch.github.io/winter-cd-player/";
 
     const DEFAULT_DATA = [
@@ -660,7 +644,6 @@
             artist: "aespa",
             source: "phuiAIQAxZ4",
             cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
-            backCover: "",
             duration: 160,
             lyrics: []
           },
@@ -811,12 +794,12 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v9_refine')) || DEFAULT_DATA;
-    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v9')) || 1.2;
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v10_shine')) || DEFAULT_DATA;
+    let modelScale = parseFloat(localStorage.getItem('zy_model_scale_v10')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('zy_playlist_v9_refine', JSON.stringify(store));
-      localStorage.setItem('zy_model_scale_v9', modelScale);
+      localStorage.setItem('zy_playlist_v10_shine', JSON.stringify(store));
+      localStorage.setItem('zy_model_scale_v10', modelScale);
     }
 
     let plIdx = 0;
@@ -831,9 +814,6 @@
     const nativeAudio = document.getElementById('native-audio');
     const ytIframe = document.getElementById('yt-hidden-player');
 
-    /* -------------------------------------------------------------
-     * 2. 網址解析
-     * ------------------------------------------------------------*/
     function normalizeImageUrl(url) {
       if (!url) return '';
       url = url.trim();
@@ -861,17 +841,17 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (黑膠放大、純自轉手勢驅動、點擊即回正)
+     * 3. Three.js 3D (高光反光扇形貼圖、光線正面打光、縮小比例)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100);
-    const DEFAULT_CAM_POS = new THREE.Vector3(0, 0.1, 5.2); // 視角更貼近模型
+    const DEFAULT_CAM_POS = new THREE.Vector3(0, 0.1, 5.2);
 
     function resizeCamera() {
       const isMobile = window.innerWidth < 600;
-      DEFAULT_CAM_POS.set(0, isMobile ? 0.1 : 0.2, isMobile ? 5.2 : 4.6);
+      DEFAULT_CAM_POS.set(0, isMobile ? 0.1 : 0.15, isMobile ? 5.2 : 4.6);
       camera.position.copy(DEFAULT_CAM_POS);
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
@@ -884,35 +864,53 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // 光影配置
-    const ambLight = new THREE.AmbientLight(0xffffff, 4.2);
+    // 聚光燈直接由斜上方正面打在黑膠盤面，製造高光反光帶
+    const ambLight = new THREE.AmbientLight(0xffffff, 2.8);
     scene.add(ambLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 3.5);
-    dirLight.position.set(5, 8, 6);
-    scene.add(dirLight);
+    const discSpotLight = new THREE.DirectionalLight(0xffffff, 4.5);
+    discSpotLight.position.set(2, 4, 5); // 直射黑膠正面
+    scene.add(discSpotLight);
 
-    const sideLight = new THREE.DirectionalLight(0xa1a1aa, 2.5);
-    sideLight.position.set(-6, 2, 4);
-    scene.add(sideLight);
+    const fillLight = new THREE.DirectionalLight(0x71717a, 2.0);
+    fillLight.position.set(-4, -1, 3);
+    scene.add(fillLight);
 
-    // 總群組 (包含外殼與黑膠)
     const turntableGroup = new THREE.Group();
     turntableGroup.scale.set(modelScale, modelScale, modelScale);
     scene.add(turntableGroup);
 
-    // 黑膠同心圓立體高光貼圖
-    function createBrightVinylTexture() {
+    // 生成實體黑膠唱片「雙扇形等離子光澤（Radial Anisotropic Glare）」貼圖
+    function createShiningVinylTexture() {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 512;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#1c1d22';
+
+      // 底色深黑炭色
+      ctx.fillStyle = '#16171b';
       ctx.fillRect(0, 0, 512, 512);
+
+      // 繪製兩道斜對角高光扇形反光 (光澤感來源)
+      const grad = ctx.createConicGradient(0.8, 256, 256);
+      grad.addColorStop(0.0, '#1a1b20');
+      grad.addColorStop(0.12, '#64687d'); // 第一道強反光峰值
+      grad.addColorStop(0.25, '#1a1b20');
+      grad.addColorStop(0.5, '#1a1b20');
+      grad.addColorStop(0.62, '#64687d'); // 第二道對角強反光峰值
+      grad.addColorStop(0.75, '#1a1b20');
+      grad.addColorStop(1.0, '#1a1b20');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(256, 256, 250, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 同心圓細緻微凹凸紋路
       for (let r = 35; r < 250; r += 2) {
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 4 === 0) ? '#585b6b' : '#2b2d36';
-        ctx.lineWidth = 1.3;
+        ctx.strokeStyle = (r % 6 === 0) ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.35)';
+        ctx.lineWidth = 1;
         ctx.stroke();
       }
       return new THREE.CanvasTexture(c);
@@ -920,41 +918,39 @@
 
     const texLoader = new THREE.TextureLoader();
 
-    // 專輯外殼（尺寸由 2.2 升至 2.4）
-    const coverGeo = new THREE.BoxGeometry(2.4, 2.4, 0.05);
+    // 專輯外殼（縮減至 2.0，大小精緻適中）
+    const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverMesh = new THREE.Mesh(coverGeo, [
-      new THREE.MeshBasicMaterial({ color: 0x1f2026 }), // 右
-      new THREE.MeshBasicMaterial({ color: 0x1f2026 }), // 左
-      new THREE.MeshBasicMaterial({ color: 0x1f2026 }), // 上
-      new THREE.MeshBasicMaterial({ color: 0x1f2026 }), // 下
+      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 右
+      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 左
+      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 上
+      new THREE.MeshBasicMaterial({ color: 0x181920 }), // 下
       new THREE.MeshBasicMaterial({ color: 0xffffff }), // 正面
       new THREE.MeshBasicMaterial({ color: 0xffffff })  // 背面
     ]);
-    coverMesh.position.set(-0.6, 0, 0);
+    coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
-    // 唱片本體（半徑由 1.05 升至 1.15）
+    // 唱片本體（半徑 0.95，帶光澤感金屬反射）
     const discGroup = new THREE.Group();
-    const discGeo = new THREE.CylinderGeometry(1.15, 1.15, 0.02, 64);
+    const discGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x24252d,
-      roughness: 0.14,
-      metalness: 0.88,
-      bumpMap: createBrightVinylTexture(),
-      bumpScale: 0.03
+      map: createShiningVinylTexture(),
+      roughness: 0.15,
+      metalness: 0.85
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
     // 唱片中央貼標
-    const labelGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.025, 32);
+    const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
     const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
     labelMesh.rotation.x = Math.PI / 2;
     discGroup.add(labelMesh);
 
-    const VINYL_REST_X = 0.6;
-    const VINYL_OUT_X = 1.08;
+    const VINYL_REST_X = 0.52;
+    const VINYL_OUT_X = 0.95;
     discGroup.position.set(VINYL_REST_X, 0, 0.01);
     turntableGroup.add(discGroup);
 
@@ -979,7 +975,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 純自轉觸控引擎 (無平移干擾、手指滑動直接旋轉黑膠舞台)
+     * 純自轉手勢驅動 (點擊自動回正)
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1010,7 +1006,7 @@
 
       targetRotY += deltaX * 0.008;
       targetRotX += deltaY * 0.006;
-      targetRotX = Math.max(-0.6, Math.min(0.6, targetRotX)); // 限制上下傾斜角度，維持最美視角
+      targetRotX = Math.max(-0.55, Math.min(0.55, targetRotX));
 
       prevPointerX = clientX;
       prevPointerY = clientY;
@@ -1018,7 +1014,6 @@
 
     function onPointerUp() {
       if (!hasMoved && isTouching) {
-        // 純點擊時平滑回正
         triggerResetView();
       }
       isTouching = false;
@@ -1033,7 +1028,6 @@
     window.addEventListener('touchmove', onPointerMove, { passive: true });
     window.addEventListener('touchend', onPointerUp);
 
-    // 平滑重設視角至標準正中央
     function triggerResetView() {
       targetRotX = 0;
       targetRotY = 0;
@@ -1045,11 +1039,9 @@
     function renderLoop() {
       requestAnimationFrame(renderLoop);
 
-      // 平滑旋轉阻尼
       turntableGroup.rotation.y = THREE.MathUtils.lerp(turntableGroup.rotation.y, targetRotY, 0.1);
       turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
 
-      // 唱片自轉與滑出
       if (isPlaying) {
         discGroup.rotation.z -= 0.025;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
@@ -1117,7 +1109,7 @@
       const song = curPl.songs[trackIdx];
 
       renderUI();
-      triggerResetView(); // 換歌自動平滑回正 3D 視角
+      triggerResetView();
 
       totalDuration = song.duration || 211;
       const ytId = extractYoutubeId(song.source);
@@ -1219,7 +1211,7 @@
     window.addEventListener('touchend', handleSeekEnd);
 
     /* -------------------------------------------------------------
-     * 6. 歌詞與切換渲染 (細膩輕量化滾動)
+     * 6. 歌詞與切換渲染
      * ------------------------------------------------------------*/
     function syncLyrics(sec) {
       const song = store[plIdx]?.songs[trackIdx];
