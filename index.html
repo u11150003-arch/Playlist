@@ -282,7 +282,7 @@
 
     .steel-select-group {
       display: flex;
-      gap: 5px;
+      gap: 8px;
       flex-shrink: 1;
       min-width: 0;
     }
@@ -299,6 +299,22 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      transition: width 0.2s ease;
+    }
+
+    /* 電腦版 / 平板端加寬控制項 */
+    @media (min-width: 768px) {
+      .timeline-strip, .deck-controls {
+        max-width: 620px;
+      }
+      .steel-select {
+        width: 130px;
+        font-size: 0.78rem;
+        padding: 6px 10px;
+      }
+      #sel-song {
+        width: 220px; /* 歌曲名稱加寬以容納長歌名 */
+      }
     }
 
     .buttons-group {
@@ -615,7 +631,6 @@
 
     const CD_PROJECT_BASE = "https://u11150003-arch.github.io/winter-cd-player/";
 
-    // 支援 [00:12.21] 毫秒與雙行中韓對照的歌詞解析器
     function parseLrc(txt) {
       if (!txt) return [];
       const lines = txt.split('\n');
@@ -937,16 +952,15 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v5')) || DEFAULT_DATA;
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v6')) || DEFAULT_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
-    // 自動升級 Lips 歌詞以支援中文與毫秒
     if (store[0] && store[0].songs[0] && store[0].songs[0].title === 'Lips') {
       store[0].songs[0].lyrics = parseLrc(LIPS_LRC_TEXT);
     }
 
     function persistData() {
-      localStorage.setItem('winter_playlist_store_v5', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_v6', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -1333,7 +1347,7 @@
         const p = nativeAudio.play();
         if (p !== undefined) {
           p.then(() => setPlayState(true)).catch(err => {
-            console.log("等待手勢點擊播放:", err);
+            console.log("等待點擊播放:", err);
             setPlayState(false);
           });
         }
