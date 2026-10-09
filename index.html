@@ -3,21 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0a0c">
   <title>zy playlist</title>
-  
+
+  <!-- 引入復古典雅英文字型與古典風格中文字型 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Syne:wght@600;800&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&family=Cinzel:wght@600;800;900&family=Noto+Serif+TC:wght@400;600;900&family=Playfair+Display:ital,wght@0,600;1,400&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
+    /* 指定字型定義: Cossette Titre 風格替代/備選 & Chocolate Classical 典雅中文風格 */
+    @font-face {
+      font-family: 'CossetteTitreCustom';
+      src: local('Cossette Titre'), local('Cossette-Titre');
+    }
+    @font-face {
+      font-family: 'ChocolateClassicalCustom';
+      src: local('Chocolate Classical Sans'), local('ChocolateClassicalSans');
+    }
+
     :root {
-      --bg: #0c0c0e;
-      --deck-bg: #141418;
-      --accent: #d4b185; /* 復古唱片香檳金 */
-      --accent-glow: rgba(212, 177, 133, 0.35);
-      --text: #eaeaea;
-      --text-dim: #71717a;
-      --panel-border: rgba(255, 255, 255, 0.08);
+      --bg: #090a0d;
+      --card-bg: #121318;
+      --brass: #c5a47e;
+      --brass-dark: #8c6f4e;
+      --brass-light: #edd8be;
+      --brass-glow: rgba(197, 164, 126, 0.35);
+      --text: #eae8e3;
+      --text-muted: #6b6e79;
+      --border-engraved: #23252e;
     }
 
     * {
@@ -28,337 +44,347 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      background: radial-gradient(circle at 50% 25%, #181920 0%, var(--bg) 80%);
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      background-color: #000000;
+      background: radial-gradient(ellipse at 50% 30%, #15161d 0%, #060709 100%);
       color: var(--text);
-      font-family: 'Syne', 'Noto Sans TC', sans-serif;
-      height: 100vh;
-      height: 100dvh; /* 適配手機動態視窗高度 */
+      font-family: 'ChocolateClassicalCustom', 'Shippori Mincho', 'Noto Serif TC', serif;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      padding-bottom: env(safe-area-inset-bottom);
+      justify-content: space-between;
     }
 
-    /* 頂部 Header */
+    /* 頂部 Header - 經典雕刻字樣 */
     header {
+      padding: calc(12px + env(safe-area-inset-top)) 24px 10px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 12px 24px;
-      z-index: 30;
-      background: linear-gradient(180deg, rgba(12,12,14,0.9) 0%, transparent 100%);
+      justify-content: space-between;
+      z-index: 20;
+      background: linear-gradient(180deg, rgba(6,7,9,0.95) 0%, transparent 100%);
     }
 
     .brand-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: 4px;
-      color: #f4ede4;
+      font-family: 'CossetteTitreCustom', 'Castoro Titling', 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 3.5px;
+      color: var(--brass-light);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8), 0 0 12px var(--brass-glow);
       cursor: pointer;
     }
 
-    .admin-dot-btn {
-      background: none;
+    .admin-trigger-dot {
+      background: transparent;
       border: none;
       outline: none;
       cursor: pointer;
-      padding: 8px;
       display: flex;
-      align-items: center;
-      gap: 4px;
+      gap: 5px;
+      padding: 8px;
     }
-    .admin-dot-btn span {
+    .admin-trigger-dot span {
       width: 4px;
       height: 4px;
-      background: #52525b;
+      background: #474a56;
       border-radius: 50%;
       transition: background 0.2s;
     }
-    .admin-dot-btn:hover span {
-      background: var(--accent);
+    .admin-trigger-dot:hover span {
+      background: var(--brass);
     }
 
-    /* 主視覺整合區 (去除多餘分界框) */
-    .showcase-area {
+    /* 中央一體化舞台 */
+    main {
       flex: 1;
       display: flex;
       flex-direction: column;
       position: relative;
-      overflow: hidden;
       min-height: 0;
+      overflow: hidden;
     }
 
-    /* 3D 畫布舞台 */
-    #canvas-box {
+    #threejs-box {
       width: 100%;
       height: 52%;
       position: relative;
       cursor: grab;
     }
-    #canvas-box:active {
+    #threejs-box:active {
       cursor: grabbing;
     }
 
-    /* 歌曲資訊與歌詞區 */
-    .track-lyrics-wrap {
+    .info-lyrics-container {
       height: 48%;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
-      padding: 0 20px 10px;
-      mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+      padding: 0 20px;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
     }
 
-    .song-meta-header {
+    .track-meta {
       text-align: center;
       margin-bottom: 6px;
       z-index: 10;
     }
-    .song-meta-header h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.15rem;
+    .track-meta h1 {
+      font-family: 'CossetteTitreCustom', 'Castoro Titling', 'Playfair Display', serif;
+      font-size: 1.25rem;
       letter-spacing: 1.5px;
       color: #fff;
     }
-    .song-meta-header p {
-      font-size: 0.8rem;
-      color: var(--accent);
-      letter-spacing: 0.5px;
+    .track-meta p {
+      font-family: 'Playfair Display', 'Noto Serif TC', serif;
+      font-size: 0.85rem;
+      color: var(--brass);
+      font-style: italic;
       margin-top: 2px;
     }
 
-    .lyrics-viewport {
+    .lyrics-view {
       width: 100%;
-      max-width: 600px;
+      max-width: 650px;
       flex: 1;
       overflow-y: auto;
       scroll-behavior: smooth;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      padding: 60px 16px 80px;
+      gap: 18px;
+      padding: 50px 16px 80px;
       scrollbar-width: none;
     }
-    .lyrics-viewport::-webkit-scrollbar {
+    .lyrics-view::-webkit-scrollbar {
       display: none;
     }
 
-    .lyric-item {
+    .lyric-row {
       text-align: center;
       font-size: 0.95rem;
-      color: #52525b;
-      line-height: 1.6;
+      color: #4b4e5b;
+      line-height: 1.7;
       transition: all 0.35s ease;
-      transform: scale(0.95);
       cursor: pointer;
+      font-family: 'ChocolateClassicalCustom', 'Shippori Mincho', 'Noto Serif TC', serif;
     }
-    .lyric-item.active {
-      color: #f4ede4;
-      font-size: 1.15rem;
+    .lyric-row.active {
+      color: var(--brass-light);
+      font-size: 1.2rem;
       font-weight: 600;
+      text-shadow: 0 0 18px var(--brass-glow);
       transform: scale(1.05);
-      text-shadow: 0 0 16px var(--accent-glow);
     }
 
-    /* 底部復古播放機台 (Retro Turntable Console) */
-    .deck-player {
-      background: linear-gradient(180deg, #16161b 0%, #0d0d10 100%);
-      border-top: 1px solid var(--panel-border);
-      padding: 12px 24px calc(14px + env(safe-area-inset-bottom));
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+    /* 底部復古類比 CD / 黑膠播放器面板 */
+    footer.retro-deck {
+      background: linear-gradient(180deg, #16171f 0%, #090a0d 100%);
+      border-top: 1px solid var(--border-engraved);
+      padding: 10px 20px calc(24px + env(safe-area-inset-bottom));
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.9);
       z-index: 25;
     }
 
-    /* 進度條與時間 */
-    .timeline-bar {
+    .timeline-strip {
       display: flex;
       align-items: center;
       gap: 12px;
-      max-width: 680px;
-      margin: 0 auto 12px;
+      max-width: 640px;
+      margin: 0 auto 10px;
     }
-    .time-lbl {
-      font-family: 'Syne', monospace;
-      font-size: 0.72rem;
-      color: var(--text-dim);
+    .retro-time {
+      font-family: 'Castoro Titling', 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: var(--brass);
       letter-spacing: 1px;
-      min-width: 38px;
+      min-width: 36px;
     }
     .seek-groove {
       flex: 1;
       height: 4px;
-      background: #27272f;
+      background: #1e2029;
       border-radius: 2px;
       cursor: pointer;
       position: relative;
     }
-    .seek-fill {
+    .seek-bar {
       height: 100%;
-      background: linear-gradient(90deg, #997b53, var(--accent));
+      background: linear-gradient(90deg, var(--brass-dark), var(--brass-light));
       border-radius: 2px;
       width: 0%;
       pointer-events: none;
     }
 
-    /* 控制按鈕列 */
-    .controls-row {
+    .deck-controls {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 680px;
+      max-width: 640px;
       margin: 0 auto;
     }
 
-    /* 歌單切換下拉框 (復古深色系) */
-    .selector-unit {
+    /* 復古仿金屬銘牌選單 */
+    .brass-select-group {
       display: flex;
       gap: 8px;
     }
-    .retro-select {
-      background: #1e1e24;
-      border: 1px solid #32323c;
-      color: #d4d4d8;
-      font-size: 0.75rem;
-      padding: 6px 10px;
-      border-radius: 20px;
+    .brass-select {
+      background: linear-gradient(180deg, #1b1c24 0%, #111218 100%);
+      border: 1px solid #363947;
+      color: #cfd1d8;
+      font-family: 'ChocolateClassicalCustom', 'Shippori Mincho', sans-serif;
+      font-size: 0.8rem;
+      padding: 7px 12px;
+      border-radius: 6px;
       outline: none;
       cursor: pointer;
-      max-width: 130px;
+      max-width: 125px;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.06), 0 2px 5px rgba(0,0,0,0.4);
     }
 
-    /* 按鍵專屬精雕外觀 */
-    .btn-cluster {
+    /* 復古實體金屬質感按鈕 (消除現代感扁平風) */
+    .buttons-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
     }
-    .deck-icon-btn {
-      background: radial-gradient(circle at 40% 40%, #2a2a34 0%, #17171d 100%);
-      border: 1px solid #383844;
+    .retro-knob-btn {
       width: 44px;
       height: 44px;
       border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #2d2f3c 0%, #171821 70%, #0d0e14 100%);
+      border: 1px solid #434759;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.25);
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15);
-      transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: all 0.15s ease;
     }
-    .deck-icon-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: #d1d5db;
-      transition: fill 0.2s;
-    }
-    .deck-icon-btn:active {
+    .retro-knob-btn:active {
       transform: scale(0.92);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.9), inset 0 2px 4px rgba(0,0,0,0.6);
     }
-    .deck-icon-btn:hover svg {
-      fill: var(--accent);
+    .retro-knob-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: #bcc0cb;
     }
 
-    /* 播放圓鈕 (香檳金飾圈) */
-    .btn-play-large {
-      width: 54px;
-      height: 54px;
-      background: radial-gradient(circle at 35% 35%, #3e3328 0%, #1c1712 100%);
-      border: 1.5px solid var(--accent);
-      box-shadow: 0 0 18px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.25);
+    .play-master-btn {
+      width: 52px;
+      height: 52px;
+      background: radial-gradient(circle at 35% 35%, #3d3429 0%, #1c1712 80%, #0f0c09 100%);
+      border: 1.5px solid var(--brass);
+      box-shadow: 0 0 15px var(--brass-glow), inset 0 1px 2px rgba(255,255,255,0.3);
     }
-    .btn-play-large svg {
+    .play-master-btn svg {
       width: 20px;
       height: 20px;
-      fill: var(--accent);
+      fill: var(--brass-light);
     }
 
-    /* YouTube 隱藏播放容器 */
-    #yt-hidden-player {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-    }
-
-    /* 密碼驗證視窗 */
-    .modal-backdrop {
+    /* 彈窗外層 */
+    .modal-veil {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 100;
-      padding: 20px;
+      padding: 16px;
     }
-    .modal-box {
-      background: #18181f;
-      border: 1px solid #2e2e38;
-      border-radius: 16px;
-      padding: 24px;
+    .modal-inner {
+      background: #14151d;
+      border: 1px solid #303342;
+      border-radius: 14px;
       width: 100%;
-      max-width: 480px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-      max-height: 85vh;
+      max-width: 550px;
+      max-height: 88vh;
       overflow-y: auto;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    .modal-box h3 {
-      font-size: 1.15rem;
-      letter-spacing: 1px;
-      margin-bottom: 16px;
-      color: var(--accent);
-      font-family: 'Cinzel', serif;
-    }
-    .input-row {
+    .modal-inner h3 {
+      font-family: 'CossetteTitreCustom', 'Castoro Titling', serif;
+      font-size: 1.2rem;
+      color: var(--brass-light);
       margin-bottom: 14px;
+      letter-spacing: 1px;
     }
-    .input-row label {
+    .field-row {
+      margin-bottom: 12px;
+    }
+    .field-row label {
       display: block;
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-bottom: 6px;
+      font-size: 0.8rem;
+      color: #8b8f9e;
+      margin-bottom: 5px;
     }
-    .input-row input, .input-row textarea {
+    .field-row input, .field-row textarea, .field-row select {
       width: 100%;
-      background: #0f0f13;
-      border: 1px solid #2a2a35;
-      border-radius: 8px;
-      padding: 10px 12px;
+      background: #0b0c10;
+      border: 1px solid #282a36;
+      border-radius: 6px;
       color: #fff;
       font-size: 0.88rem;
+      padding: 8px 10px;
       outline: none;
     }
-    .modal-btns {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 18px;
+    .field-row textarea {
+      font-family: monospace;
+      font-size: 0.8rem;
+      resize: vertical;
     }
     .btn-gold {
-      background: var(--accent);
+      background: linear-gradient(145deg, #d8b790, #ad885f);
       border: none;
-      color: #121214;
-      font-weight: 600;
-      padding: 8px 18px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .btn-cancel {
-      background: #272730;
-      border: none;
-      color: #a1a1aa;
+      color: #12100d;
+      font-weight: 700;
       padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
     }
+    .btn-dark {
+      background: #252733;
+      border: 1px solid #393c4e;
+      color: #b0b4c2;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .song-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: #0d0e14;
+      border: 1px solid #20222e;
+      margin-bottom: 4px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+    }
+    .song-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-act {
+      border: none;
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .btn-edit { background: #3b82f6; color: #fff; }
+    .btn-del { background: #ef4444; color: #fff; }
   </style>
 
   <script type="importmap">
@@ -372,122 +398,147 @@
 </head>
 <body>
 
-  <div id="yt-hidden-player"></div>
+  <!-- 原生音訊引擎 (相容 MP3 與 GitHub Raw 播放) -->
+  <audio id="native-audio" playsinline preload="auto"></audio>
+  <!-- 隱藏 YouTube 播放器 -->
+  <div id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;"></div>
 
   <!-- Header -->
   <header>
     <div class="brand-title" id="logo-trigger">ZY PLAYLIST</div>
-    <button class="admin-dot-btn" id="admin-trigger" title="Settings">
+    <button class="admin-trigger-dot" id="btn-open-auth" title="Settings">
       <span></span><span></span><span></span>
     </button>
   </header>
 
-  <!-- 舞台與歌詞 (無割裂線、一體式設計) -->
-  <main class="showcase-area">
-    <div id="canvas-box"></div>
-
-    <div class="track-lyrics-wrap">
-      <div class="song-meta-header">
+  <!-- 3D 與歌詞舞台 -->
+  <main>
+    <div id="threejs-box"></div>
+    <div class="info-lyrics-container">
+      <div class="track-meta">
         <h1 id="disp-title">Whiplash</h1>
         <p id="disp-artist">aespa</p>
       </div>
-      <div class="lyrics-viewport" id="lyrics-scroller"></div>
+      <div class="lyrics-view" id="lyrics-scroller"></div>
     </div>
   </main>
 
-  <!-- 底部復古播放機台 -->
-  <footer class="deck-player">
-    <div class="timeline-bar">
-      <span class="time-lbl" id="curr-time">00:00</span>
-      <div class="seek-groove" id="seek-bar">
-        <div class="seek-fill" id="seek-fill"></div>
+  <!-- 底部復古播放台 -->
+  <footer class="retro-deck">
+    <div class="timeline-strip">
+      <span class="retro-time" id="lbl-curr">00:00</span>
+      <div class="seek-groove" id="seek-container">
+        <div class="seek-bar" id="seek-progress"></div>
       </div>
-      <span class="time-lbl" id="total-time">00:00</span>
+      <span class="retro-time" id="lbl-total">00:00</span>
     </div>
 
-    <div class="controls-row">
-      <div class="selector-unit">
-        <select class="retro-select" id="playlist-sel"></select>
-        <select class="retro-select" id="track-sel"></select>
+    <div class="deck-controls">
+      <div class="brass-select-group">
+        <select class="brass-select" id="sel-playlist"></select>
+        <select class="brass-select" id="sel-song"></select>
       </div>
 
-      <!-- 精緻 SVG 設計感按鈕 -->
-      <div class="btn-cluster">
-        <!-- 上一首 -->
-        <button class="deck-icon-btn" id="btn-prev" title="Previous Track">
+      <div class="buttons-group">
+        <button class="retro-knob-btn" id="btn-prev" title="Previous">
           <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </button>
-
-        <!-- 播放/暫停 -->
-        <button class="deck-icon-btn btn-play-large" id="btn-play" title="Play / Pause">
-          <svg id="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <button class="retro-knob-btn play-master-btn" id="btn-play" title="Play / Pause">
+          <svg id="play-svg-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
-
-        <!-- 下一首 -->
-        <button class="deck-icon-btn" id="btn-next" title="Next Track">
+        <button class="retro-knob-btn" id="btn-next" title="Next">
           <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
         </button>
       </div>
     </div>
   </footer>
 
-  <!-- 密碼輸入對話框 (密碼 0401) -->
-  <div class="modal-backdrop" id="auth-modal">
-    <div class="modal-box" style="max-width: 320px; text-align: center;">
+  <!-- 密碼驗證視窗 (密碼 0401) -->
+  <div class="modal-veil" id="auth-modal">
+    <div class="modal-inner" style="max-width: 320px; text-align: center;">
       <h3>System Access</h3>
-      <div class="input-row">
-        <input type="password" id="pass-field" placeholder="Enter PIN code" autocomplete="off">
+      <div class="field-row" style="margin-top: 14px;">
+        <input type="password" id="auth-input" placeholder="請輸入密碼 (0401)" autocomplete="off">
       </div>
-      <div class="modal-btns" style="justify-content: center;">
-        <button class="btn-cancel" id="btn-auth-cancel">Cancel</button>
-        <button class="btn-gold" id="btn-auth-confirm">Verify</button>
+      <div style="display:flex; justify-content:center; gap:8px; margin-top:16px;">
+        <button class="btn-dark" id="btn-auth-close">取消</button>
+        <button class="btn-gold" id="btn-auth-submit">驗證</button>
       </div>
     </div>
   </div>
 
-  <!-- 管理後台面板 -->
-  <div class="modal-backdrop" id="admin-modal">
-    <div class="modal-box">
-      <h3>Manage Playlist & Songs</h3>
+  <!-- 後台管理系統 -->
+  <div class="modal-veil" id="admin-modal">
+    <div class="modal-inner">
+      <h3>歌單與曲目核心管理</h3>
 
-      <!-- 歌單新增與刪除 -->
-      <div style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--panel-border);">
-        <label style="font-size:0.75rem; color:var(--text-dim); display:block; margin-bottom:6px;">歌單管理</label>
-        <div style="display:flex; gap:8px; margin-bottom:12px;">
-          <input type="text" id="new-pl-input" placeholder="新歌單名稱" style="flex:1;">
-          <button class="btn-gold" id="btn-create-pl">新增</button>
-        </div>
-        <div id="admin-pl-list"></div>
+      <!-- 導出與備份按鈕群 -->
+      <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <button class="btn-gold" id="btn-copy-code" style="flex:1; font-size:0.75rem;">📋 複製當前更新程式碼</button>
+        <button class="btn-dark" id="btn-dl-html" style="font-size:0.75rem;">💾 下載更新 HTML</button>
       </div>
 
-      <!-- 歌曲編輯/新增 -->
-      <div>
-        <h4 style="font-size:0.88rem; margin-bottom:12px; color:#fff;">新增歌曲至當前歌單</h4>
-        <div class="input-row">
+      <!-- 歌單分類管理 -->
+      <div style="background:#0a0b0e; padding:12px; border-radius:8px; border:1px solid #232532; margin-bottom:16px;">
+        <label style="font-size:0.8rem; color:var(--brass); font-weight:bold;">新增 / 管理歌單</label>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <input type="text" id="admin-new-pl-name" placeholder="歌單名稱...">
+          <button class="btn-gold" id="btn-add-pl">新增歌單</button>
+        </div>
+      </div>
+
+      <!-- 歌曲編輯 / 新增表單 -->
+      <div style="background:#0a0b0e; padding:14px; border-radius:8px; border:1px solid #232532; margin-bottom:16px;">
+        <h4 id="form-mode-title" style="color:var(--brass-light); font-size:0.9rem; margin-bottom:10px;">✦ 新增歌曲</h4>
+        <input type="hidden" id="edit-song-id" value="">
+
+        <div class="field-row">
+          <label>所屬歌單</label>
+          <select id="form-pl-target"></select>
+        </div>
+        <div class="field-row">
           <label>歌曲名稱</label>
-          <input type="text" id="in-song-title" placeholder="如：Whiplash">
+          <input type="text" id="form-song-title" placeholder="例如：Whiplash">
         </div>
-        <div class="input-row">
+        <div class="field-row">
           <label>演唱者 / 專輯名稱</label>
-          <input type="text" id="in-song-artist" placeholder="如：aespa">
+          <input type="text" id="form-song-artist" placeholder="例如：aespa">
         </div>
-        <div class="input-row">
-          <label>YouTube 網址或影片 ID</label>
-          <input type="text" id="in-song-yt" placeholder="如：jWQx2f-CErU 或完整網址">
+        <div class="field-row">
+          <label>音訊來源 (支援 GitHub MP3 直連 或 YouTube 網址/ID)</label>
+          <input type="text" id="form-song-source" placeholder="如：https://...song.mp3 或 YouTube 網址">
         </div>
-        <div class="input-row">
-          <label>外殼與唱片封面圖片網址</label>
-          <input type="text" id="in-song-cover" placeholder="https://...">
+
+        <!-- 圖片直連轉換與手機圖庫上傳 -->
+        <div class="field-row">
+          <label>專輯封面 (支援 Google Drive 分享連結自動轉直連、網路圖或從手機圖庫選擇)</label>
+          <input type="text" id="form-song-cover" placeholder="貼上圖片網址（Google Drive、Imgur 等自動轉直連）">
+          <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+            <input type="file" id="local-img-picker" accept="image/*" style="display:none;">
+            <button type="button" class="btn-dark" onclick="document.getElementById('local-img-picker').click()" style="font-size:0.75rem;">📁 從手機圖庫挑選圖片</button>
+            <span id="img-picker-status" style="font-size:0.72rem; color:#888;"></span>
+          </div>
         </div>
-        <div class="input-row">
-          <label>歌詞段落 (支援 [分:秒] 或 [秒數])</label>
-          <textarea id="in-song-lyrics" rows="4" placeholder="[00:03] One look give 'em whiplash&#10;[00:08] Beat drop with a bad girl attitude&#10;[00:15] ..."></textarea>
+
+        <div class="field-row">
+          <label>動態歌詞 (支援 [分:秒] 或 [秒數])</label>
+          <textarea id="form-song-lyrics" rows="4" placeholder="[00:03] One look give 'em whiplash&#10;[00:08] Beat drop with a bad girl attitude&#10;[00:15] ..."></textarea>
         </div>
-        <button class="btn-gold" id="btn-add-song" style="width:100%; margin-top:8px;">新增曲目</button>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="btn-gold" id="btn-save-song" style="flex:1;">儲存歌曲</button>
+          <button class="btn-dark" id="btn-cancel-edit" style="display:none;">取消編輯</button>
+        </div>
       </div>
 
-      <div class="modal-btns">
-        <button class="btn-cancel" id="btn-close-admin">關閉面板</button>
+      <!-- 歌單清單與特定編輯列表 -->
+      <div>
+        <label style="font-size:0.8rem; color:#888; margin-bottom:6px; display:block;">歌單與歌曲細項 (點選編輯可修改特定歌曲)</label>
+        <div id="admin-tree-view"></div>
+      </div>
+
+      <div style="text-align:right; margin-top:16px;">
+        <button class="btn-dark" id="btn-close-admin">關閉管理後台</button>
       </div>
     </div>
   </div>
@@ -499,19 +550,19 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     /* -------------------------------------------------------------
-     * 1. 資料配置 (融合海報色彩與 aespa 曲目)
+     * 1. 核心資料結構 (支援 MP3 直連與 YouTube)
      * ------------------------------------------------------------*/
-    const DEFAULT_PLAYLISTS = [
+    const DEFAULT_DATA = [
       {
-        id: "pl_aespa",
+        id: "pl_vault",
         name: "aespa Vault",
         songs: [
           {
             id: "s_whiplash",
             title: "Whiplash",
             artist: "aespa",
-            ytId: "jWQx2f-CErU",
-            // 採用冷豔迷幻的高質感封面
+            // 可放 mp3 直連或 YouTube
+            source: "jWQx2f-CErU",
             cover: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
             lyrics: [
               { time: 1, text: "One look give 'em whiplash" },
@@ -528,7 +579,7 @@
             id: "s_supernova",
             title: "Supernova",
             artist: "aespa",
-            ytId: "phuiAIQAflA",
+            source: "phuiAIQAflA",
             cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
             lyrics: [
               { time: 2, text: "Supernova exploding inside" },
@@ -542,32 +593,64 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('zy_playlist_v2')) || DEFAULT_PLAYLISTS;
-    function syncStorage() {
-      localStorage.setItem('zy_playlist_v2', JSON.stringify(store));
+    let store = JSON.parse(localStorage.getItem('zy_playlist_v3')) || DEFAULT_DATA;
+    function persistData() {
+      localStorage.setItem('zy_playlist_v3', JSON.stringify(store));
     }
 
-    let plIndex = 0;
-    let trackIndex = 0;
+    let plIdx = 0;
+    let trackIdx = 0;
     let isPlaying = false;
+    let playType = 'yt'; // 'mp3' or 'yt'
     let ytPlayer = null;
-    let timerId = null;
+    let isYtReady = false;
+    let clockInterval = null;
+
+    const nativeAudio = document.getElementById('native-audio');
 
     /* -------------------------------------------------------------
-     * 2. Three.js 3D 黑膠外殼與同心圓金屬光碟
+     * 2. 雲端圖片網址自動直連轉換邏輯
      * ------------------------------------------------------------*/
-    const container = document.getElementById('canvas-box');
+    function normalizeImageUrl(url) {
+      if (!url) return '';
+      url = url.trim();
+
+      // Google Drive 連結轉換 (如 drive.google.com/file/d/ID/view)
+      const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+      if (driveMatch && (url.includes('drive.google.com') || url.includes('google.com'))) {
+        return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+      }
+
+      // Dropbox 連結轉換
+      if (url.includes('dropbox.com')) {
+        return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '');
+      }
+
+      // Imgur 頁面轉直連
+      if (url.includes('imgur.com') && !url.includes('i.imgur.com')) {
+        const id = url.split('/').pop().split('.')[0];
+        return `https://i.imgur.com/${id}.jpg`;
+      }
+
+      return url;
+    }
+
+    /* -------------------------------------------------------------
+     * 3. Three.js 3D 黑膠外殼與精緻唱片
+     * ------------------------------------------------------------*/
+    const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100);
-    // 依據手機螢幕直向調整視角距離
-    function adjustCameraDistance() {
+    const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
+    function resizeCamera() {
       const isMobile = window.innerWidth < 600;
-      camera.position.set(0, isMobile ? 0.2 : 0.4, isMobile ? 5.8 : 5.0);
+      camera.position.set(0, isMobile ? 0.2 : 0.4, isMobile ? 5.6 : 4.8);
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
     }
-    adjustCameraDistance();
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -576,471 +659,565 @@
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.enableZoom = false; // 避免手機拖曳滑動時誤觸放大縮小
+    controls.enableZoom = false;
 
-    // 氣氛燈光
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
-    scene.add(ambientLight);
+    // 典雅復古柔光
+    const amb = new THREE.AmbientLight(0xffffff, 1.5);
+    scene.add(amb);
+    const goldLight = new THREE.DirectionalLight(0xf5d0a9, 2.2);
+    goldLight.position.set(4, 5, 5);
+    scene.add(goldLight);
+    const rim = new THREE.DirectionalLight(0x7c8cb3, 1.2);
+    rim.position.set(-4, -2, -3);
+    scene.add(rim);
 
-    const spotLight = new THREE.DirectionalLight(0xfef08a, 1.8);
-    spotLight.position.set(3, 5, 4);
-    scene.add(spotLight);
+    const turntableGroup = new THREE.Group();
+    scene.add(turntableGroup);
 
-    const rimLight = new THREE.DirectionalLight(0x818cf8, 1.5);
-    rimLight.position.set(-4, -2, -3);
-    scene.add(rimLight);
+    // 黑膠溝槽
+    function createVinylGrooveMap() {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#0c0d12';
+      ctx.fillRect(0, 0, 512, 512);
+      for (let r = 40; r < 250; r += 2) {
+        ctx.beginPath();
+        ctx.arc(256, 256, r, 0, Math.PI * 2);
+        ctx.strokeStyle = (r % 6 === 0) ? '#1c1e28' : '#111218';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      return new THREE.CanvasTexture(c);
+    }
 
-    const vinylGroup = new THREE.Group();
-    scene.add(vinylGroup);
+    const texLoader = new THREE.TextureLoader();
 
-    // 外殼 Box
-    const textureLoader = new THREE.TextureLoader();
+    // 外殼
     const coverGeo = new THREE.BoxGeometry(2.2, 2.2, 0.05);
-
-    function buildCoverMaterials(imgUrl) {
-      const mapTex = textureLoader.load(imgUrl);
+    function makeCoverMaterials(img) {
+      const tex = texLoader.load(img);
       return [
         new THREE.MeshStandardMaterial({ color: 0x111115 }),
         new THREE.MeshStandardMaterial({ color: 0x111115 }),
         new THREE.MeshStandardMaterial({ color: 0x111115 }),
         new THREE.MeshStandardMaterial({ color: 0x111115 }),
-        new THREE.MeshStandardMaterial({ map: mapTex, roughness: 0.3 }),
-        new THREE.MeshStandardMaterial({ color: 0x0c0c0e })
+        new THREE.MeshStandardMaterial({ map: tex, roughness: 0.35 }),
+        new THREE.MeshStandardMaterial({ color: 0x09090b })
       ];
     }
-
-    const coverMesh = new THREE.Mesh(coverGeo, buildCoverMaterials(store[0].songs[0].cover));
+    const coverMesh = new THREE.Mesh(coverGeo, makeCoverMaterials(store[0]?.songs[0]?.cover || ''));
     coverMesh.position.set(-0.55, 0, 0);
-    vinylGroup.add(coverMesh);
+    turntableGroup.add(coverMesh);
 
-    // 黑膠溝槽質感 Canvas
-    function createVinylTexture() {
-      const cvs = document.createElement('canvas');
-      cvs.width = 512; cvs.height = 512;
-      const ctx = cvs.getContext('2d');
-      ctx.fillStyle = '#0f0f13';
-      ctx.fillRect(0, 0, 512, 512);
-      for (let r = 40; r < 250; r += 2) {
-        ctx.beginPath();
-        ctx.arc(256, 256, r, 0, Math.PI * 2);
-        ctx.strokeStyle = (r % 6 === 0) ? '#1f2026' : '#141419';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-      return new THREE.CanvasTexture(cvs);
-    }
-
+    // 唱片
     const discGroup = new THREE.Group();
     const discGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.02, 64);
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x121217,
-      roughness: 0.28,
+      color: 0x111216,
+      roughness: 0.25,
       metalness: 0.8,
-      bumpMap: createVinylTexture(),
+      bumpMap: createVinylGrooveMap(),
       bumpScale: 0.015
     });
     const discMesh = new THREE.Mesh(discGeo, discMat);
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
-    // 黑膠唱片圓標
+    // 圓心貼紙
     const labelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.025, 32);
     const labelMat = new THREE.MeshStandardMaterial({
-      map: textureLoader.load(store[0].songs[0].cover),
+      map: texLoader.load(store[0]?.songs[0]?.cover || ''),
       roughness: 0.4
     });
     const labelMesh = new THREE.Mesh(labelGeo, labelMat);
     labelMesh.rotation.x = Math.PI / 2;
     discGroup.add(labelMesh);
 
-    const IDLE_X = 0.55;
-    const SPIN_X = 0.95;
-    discGroup.position.set(IDLE_X, 0, 0.01);
-    vinylGroup.add(discGroup);
+    const VINYL_REST_X = 0.55;
+    const VINYL_OUT_X = 0.98;
+    discGroup.position.set(VINYL_REST_X, 0, 0.01);
+    turntableGroup.add(discGroup);
 
-    function updateCoverTexture(url) {
-      textureLoader.load(url, (t) => {
-        coverMesh.material[4].map = t;
+    function applyCoverTo3D(url) {
+      const direct = normalizeImageUrl(url);
+      texLoader.load(direct, (tex) => {
+        coverMesh.material[4].map = tex;
         coverMesh.material[4].needsUpdate = true;
-        labelMesh.material.map = t;
+        labelMesh.material.map = tex;
         labelMesh.material.needsUpdate = true;
       });
     }
 
-    window.addEventListener('resize', () => {
-      adjustCameraDistance();
-      camera.aspect = container.clientWidth / container.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
-    });
+    window.addEventListener('resize', resizeCamera);
+    resizeCamera();
 
-    function animate3D() {
-      requestAnimationFrame(animate3D);
+    function renderLoop() {
+      requestAnimationFrame(renderLoop);
       if (isPlaying) {
-        discGroup.rotation.z -= 0.02;
-        discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, SPIN_X, 0.06);
+        discGroup.rotation.z -= 0.022;
+        discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
       } else {
-        discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, IDLE_X, 0.06);
+        discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_REST_X, 0.06);
       }
       controls.update();
       renderer.render(scene, camera);
     }
-    animate3D();
+    renderLoop();
 
     /* -------------------------------------------------------------
-     * 3. YouTube 播放器控制
+     * 4. 音訊系統 (MP3 直連與 YouTube 雙核心)
      * ------------------------------------------------------------*/
     window.onYouTubeIframeAPIReady = function() {
-      const initSong = store[plIndex].songs[trackIndex];
+      const initSong = store[plIdx]?.songs[trackIdx];
+      const isYt = isYouTubeSource(initSong?.source || '');
       ytPlayer = new YT.Player('yt-hidden-player', {
-        height: '160',
-        width: '160',
-        videoId: initSong ? initSong.ytId : '',
-        playerVars: {
-          'playsinline': 1,
-          'controls': 0,
-          'disablekb': 1,
-          'origin': window.location.origin
-        },
+        height: '100',
+        width: '100',
+        videoId: isYt ? extractYtId(initSong.source) : '',
+        playerVars: { 'playsinline': 1, 'controls': 0, 'disablekb': 1 },
         events: {
-          'onReady': () => {
-            renderUI();
-          },
-          'onStateChange': onPlayerStateChange
+          'onReady': () => { isYtReady = true; renderUI(); },
+          'onStateChange': (e) => {
+            if (playType !== 'yt') return;
+            if (e.data === YT.PlayerState.PLAYING) setPlayState(true);
+            else if (e.data === YT.PlayerState.PAUSED) setPlayState(false);
+            else if (e.data === YT.PlayerState.ENDED) playNext();
+          }
         }
       });
     };
 
-    function onPlayerStateChange(e) {
-      if (e.data === YT.PlayerState.PLAYING) {
-        isPlaying = true;
-        setPlayIcon(true);
-        startTracking();
-      } else if (e.data === YT.PlayerState.PAUSED) {
-        isPlaying = false;
-        setPlayIcon(false);
-        stopTracking();
-      } else if (e.data === YT.PlayerState.ENDED) {
-        handleNext();
-      }
+    function isYouTubeSource(src) {
+      if (!src) return false;
+      return src.includes('youtube.com') || src.includes('youtu.be') || (src.length === 11 && !src.includes('.'));
     }
 
-    function setPlayIcon(playing) {
-      const svg = document.getElementById('play-icon-svg');
-      if (playing) {
-        svg.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // 暫停雙槓
+    function extractYtId(url) {
+      if (!url) return '';
+      const m = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+      return (m && m[2].length === 11) ? m[2] : url;
+    }
+
+    // Native MP3 監聽
+    nativeAudio.addEventListener('playing', () => setPlayState(true));
+    nativeAudio.addEventListener('pause', () => setPlayState(false));
+    nativeAudio.addEventListener('ended', () => playNext());
+
+    function setPlayState(active) {
+      isPlaying = active;
+      const svg = document.getElementById('play-svg-icon');
+      if (active) {
+        svg.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        startClock();
       } else {
-        svg.innerHTML = '<path d="M8 5v14l11-7z"/>'; // 播放箭頭
+        svg.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        stopClock();
       }
     }
 
     function formatTime(sec) {
-      const m = Math.floor(sec / 60) || 0;
-      const s = Math.floor(sec % 60) || 0;
-      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      sec = Math.floor(sec) || 0;
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
 
-    /* -------------------------------------------------------------
-     * 4. 精確歌詞同步與流暢滾動
-     * ------------------------------------------------------------*/
-    function startTracking() {
-      stopTracking();
-      timerId = setInterval(() => {
-        if (!ytPlayer || !ytPlayer.getCurrentTime) return;
-        const cur = ytPlayer.getCurrentTime();
-        const total = ytPlayer.getDuration() || 1;
-
-        // 進度條
-        document.getElementById('seek-fill').style.width = `${(cur / total) * 100}%`;
-        document.getElementById('curr-time').textContent = formatTime(cur);
-        document.getElementById('total-time').textContent = formatTime(total);
-
-        // 歌詞段落定位
-        syncLyricsHighlight(cur);
+    function startClock() {
+      stopClock();
+      clockInterval = setInterval(() => {
+        let cur = 0;
+        let dur = 1;
+        if (playType === 'mp3') {
+          cur = nativeAudio.currentTime || 0;
+          dur = nativeAudio.duration || 1;
+        } else if (playType === 'yt' && ytPlayer && ytPlayer.getCurrentTime) {
+          cur = ytPlayer.getCurrentTime() || 0;
+          dur = ytPlayer.getDuration() || 1;
+        }
+        document.getElementById('seek-progress').style.width = `${(cur / dur) * 100}%`;
+        document.getElementById('lbl-curr').textContent = formatTime(cur);
+        document.getElementById('lbl-total').textContent = formatTime(dur);
+        syncLyrics(cur);
       }, 200);
     }
 
-    function stopTracking() {
-      if (timerId) clearInterval(timerId);
+    function stopClock() {
+      if (clockInterval) clearInterval(clockInterval);
     }
 
-    function syncLyricsHighlight(sec) {
-      const song = store[plIndex]?.songs[trackIndex];
+    function syncLyrics(sec) {
+      const song = store[plIdx]?.songs[trackIdx];
       if (!song || !song.lyrics) return;
 
-      let targetIdx = -1;
+      let idx = -1;
       for (let i = 0; i < song.lyrics.length; i++) {
-        if (sec >= song.lyrics[i].time) {
-          targetIdx = i;
-        } else {
-          break;
-        }
+        if (sec >= song.lyrics[i].time) idx = i;
+        else break;
       }
 
-      const items = document.querySelectorAll('.lyric-item');
-      items.forEach((node, i) => {
-        if (i === targetIdx) {
-          if (!node.classList.contains('active')) {
-            node.classList.add('active');
-            // 計算置中滾動
+      const rows = document.querySelectorAll('.lyric-row');
+      rows.forEach((r, i) => {
+        if (i === idx) {
+          if (!r.classList.contains('active')) {
+            r.classList.add('active');
             const scroller = document.getElementById('lyrics-scroller');
-            const offsetTop = node.offsetTop - (scroller.clientHeight / 2) + (node.clientHeight / 2);
-            scroller.scrollTo({ top: offsetTop, behavior: 'smooth' });
+            scroller.scrollTo({ top: r.offsetTop - (scroller.clientHeight / 2) + 10, behavior: 'smooth' });
           }
         } else {
-          node.classList.remove('active');
+          r.classList.remove('active');
         }
       });
     }
 
-    function renderLyrics() {
+    function renderLyricsList() {
       const scroller = document.getElementById('lyrics-scroller');
       scroller.innerHTML = '';
-      const song = store[plIndex]?.songs[trackIndex];
+      const song = store[plIdx]?.songs[trackIdx];
 
       if (!song || !song.lyrics || song.lyrics.length === 0) {
-        scroller.innerHTML = '<div class="lyric-item">Instrumental</div>';
+        scroller.innerHTML = '<div class="lyric-row">Instrumental</div>';
         return;
       }
 
-      song.lyrics.forEach((l) => {
+      song.lyrics.forEach(l => {
         const div = document.createElement('div');
-        div.className = 'lyric-item';
+        div.className = 'lyric-row';
         div.textContent = l.text;
-        div.onclick = () => {
-          if (ytPlayer && ytPlayer.seekTo) {
-            ytPlayer.seekTo(l.time, true);
-          }
-        };
+        div.onclick = () => seekTo(l.time);
         scroller.appendChild(div);
       });
     }
 
-    function renderUI() {
-      const curSong = store[plIndex]?.songs[trackIndex];
-      if (!curSong) return;
-
-      document.getElementById('disp-title').textContent = curSong.title;
-      document.getElementById('disp-artist').textContent = curSong.artist;
-
-      updateCoverTexture(curSong.cover);
-      renderLyrics();
-      refreshDropdowns();
+    function seekTo(sec) {
+      if (playType === 'mp3') {
+        nativeAudio.currentTime = sec;
+      } else if (playType === 'yt' && ytPlayer && ytPlayer.seekTo) {
+        ytPlayer.seekTo(sec, true);
+      }
     }
 
-    function switchSong(pIdx, sIdx) {
-      plIndex = pIdx;
-      trackIndex = sIdx;
-      const song = store[plIndex]?.songs[trackIndex];
+    function playActiveSong() {
+      const song = store[plIdx]?.songs[trackIdx];
       if (!song) return;
 
       renderUI();
-      if (ytPlayer && ytPlayer.loadVideoById) {
-        ytPlayer.loadVideoById(song.ytId);
-      }
-    }
 
-    function handleNext() {
-      const p = store[plIndex];
-      let nIdx = trackIndex + 1;
-      if (nIdx >= p.songs.length) nIdx = 0;
-      switchSong(plIndex, nIdx);
-    }
-
-    function handlePrev() {
-      const p = store[plIndex];
-      let prevIdx = trackIndex - 1;
-      if (prevIdx < 0) prevIdx = p.songs.length - 1;
-      switchSong(plIndex, prevIdx);
-    }
-
-    // 按鍵點擊事件
-    document.getElementById('btn-play').addEventListener('click', () => {
-      if (!ytPlayer) return;
-      if (isPlaying) {
-        ytPlayer.pauseVideo();
+      if (isYouTubeSource(song.source)) {
+        playType = 'yt';
+        nativeAudio.pause();
+        if (ytPlayer && ytPlayer.loadVideoById) {
+          ytPlayer.loadVideoById(extractYtId(song.source));
+        }
       } else {
-        ytPlayer.playVideo();
+        playType = 'mp3';
+        if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+        nativeAudio.src = song.source;
+        nativeAudio.play().catch(e => console.log('Audio autoplay prevented'));
       }
-    });
+    }
 
-    document.getElementById('btn-next').addEventListener('click', handleNext);
-    document.getElementById('btn-prev').addEventListener('click', handlePrev);
+    function renderUI() {
+      const song = store[plIdx]?.songs[trackIdx];
+      if (!song) return;
 
-    // 拖動跳轉
-    document.getElementById('seek-bar').addEventListener('click', (e) => {
-      if (!ytPlayer) return;
+      document.getElementById('disp-title').textContent = song.title;
+      document.getElementById('disp-artist').textContent = song.artist;
+
+      applyCoverTo3D(song.cover);
+      renderLyricsList();
+      populateDropdowns();
+    }
+
+    function playNext() {
+      const pl = store[plIdx];
+      if (!pl) return;
+      trackIdx = (trackIdx + 1) % pl.songs.length;
+      playActiveSong();
+    }
+
+    function playPrev() {
+      const pl = store[plIdx];
+      if (!pl) return;
+      trackIdx = (trackIdx - 1 + pl.songs.length) % pl.songs.length;
+      playActiveSong();
+    }
+
+    // 按鍵操控
+    document.getElementById('btn-play').onclick = () => {
+      if (playType === 'mp3') {
+        if (nativeAudio.paused) nativeAudio.play();
+        else nativeAudio.pause();
+      } else {
+        if (!ytPlayer) return;
+        if (isPlaying) ytPlayer.pauseVideo();
+        else ytPlayer.playVideo();
+      }
+    };
+    document.getElementById('btn-next').onclick = playNext;
+    document.getElementById('btn-prev').onclick = playPrev;
+
+    // 進度條跳轉
+    document.getElementById('seek-container').onclick = (e) => {
       const rect = e.currentTarget.getBoundingClientRect();
       const pct = (e.clientX - rect.left) / rect.width;
-      const duration = ytPlayer.getDuration() || 0;
-      ytPlayer.seekTo(pct * duration, true);
-    });
+      let dur = playType === 'mp3' ? nativeAudio.duration : (ytPlayer?.getDuration() || 0);
+      seekTo(pct * dur);
+    };
 
-    // 下拉選單更新
-    function refreshDropdowns() {
-      const pSel = document.getElementById('playlist-sel');
+    function populateDropdowns() {
+      const pSel = document.getElementById('sel-playlist');
       pSel.innerHTML = '';
-      store.forEach((p, idx) => {
+      store.forEach((p, i) => {
         const opt = document.createElement('option');
-        opt.value = idx;
+        opt.value = i;
         opt.textContent = p.name;
-        if (idx === plIndex) opt.selected = true;
+        if (i === plIdx) opt.selected = true;
         pSel.appendChild(opt);
       });
 
-      const tSel = document.getElementById('track-sel');
-      tSel.innerHTML = '';
-      const songs = store[plIndex]?.songs || [];
-      songs.forEach((s, idx) => {
+      const sSel = document.getElementById('sel-song');
+      sSel.innerHTML = '';
+      const songs = store[plIdx]?.songs || [];
+      songs.forEach((s, i) => {
         const opt = document.createElement('option');
-        opt.value = idx;
+        opt.value = i;
         opt.textContent = s.title;
-        if (idx === trackIndex) opt.selected = true;
-        tSel.appendChild(opt);
+        if (i === trackIdx) opt.selected = true;
+        sSel.appendChild(opt);
       });
     }
 
-    document.getElementById('playlist-sel').addEventListener('change', (e) => {
-      switchSong(parseInt(e.target.value), 0);
-    });
-
-    document.getElementById('track-sel').addEventListener('change', (e) => {
-      switchSong(plIndex, parseInt(e.target.value));
-    });
+    document.getElementById('sel-playlist').onchange = (e) => {
+      plIdx = parseInt(e.target.value);
+      trackIdx = 0;
+      playActiveSong();
+    };
+    document.getElementById('sel-song').onchange = (e) => {
+      trackIdx = parseInt(e.target.value);
+      playActiveSong();
+    };
 
     /* -------------------------------------------------------------
-     * 5. 隱藏管理者模式 (密碼 0401)
+     * 5. 管理者模式 (指定歌曲/歌單編輯、相簿上傳、程式碼下載)
      * ------------------------------------------------------------*/
     const authModal = document.getElementById('auth-modal');
     const adminModal = document.getElementById('admin-modal');
-    const passField = document.getElementById('pass-field');
+    const authInput = document.getElementById('auth-input');
 
-    function promptAuth() {
-      passField.value = '';
+    function openAuth() {
+      authInput.value = '';
       authModal.style.display = 'flex';
-      passField.focus();
+      authInput.focus();
     }
+    document.getElementById('btn-open-auth').onclick = openAuth;
+    document.getElementById('logo-trigger').onclick = openAuth;
 
-    document.getElementById('admin-trigger').addEventListener('click', promptAuth);
-    document.getElementById('logo-trigger').addEventListener('click', promptAuth);
-
-    document.getElementById('btn-auth-cancel').addEventListener('click', () => {
-      authModal.style.display = 'none';
-    });
-
-    document.getElementById('btn-auth-confirm').addEventListener('click', () => {
-      if (passField.value === '0401') {
+    document.getElementById('btn-auth-close').onclick = () => authModal.style.display = 'none';
+    document.getElementById('btn-auth-submit').onclick = () => {
+      if (authInput.value === '0401') {
         authModal.style.display = 'none';
         adminModal.style.display = 'flex';
         renderAdminUI();
       } else {
         alert('密碼錯誤！');
       }
-    });
-
-    document.getElementById('btn-close-admin').addEventListener('click', () => {
+    };
+    document.getElementById('btn-close-admin').onclick = () => {
       adminModal.style.display = 'none';
-      syncStorage();
+      persistData();
       renderUI();
-    });
+    };
+
+    // 手機相簿圖片選取 (壓縮為 Data URL)
+    document.getElementById('local-img-picker').onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        document.getElementById('form-song-cover').value = event.target.result;
+        document.getElementById('img-picker-status').textContent = `已載入: ${file.name}`;
+      };
+      reader.readAsDataURL(file);
+    };
 
     function renderAdminUI() {
-      const list = document.getElementById('admin-pl-list');
-      list.innerHTML = '';
+      // 填入所屬歌單選項
+      const targetPlSel = document.getElementById('form-pl-target');
+      targetPlSel.innerHTML = '';
+      store.forEach((p, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = p.name;
+        targetPlSel.appendChild(opt);
+      });
+
+      // 渲染歌單與歌曲列表
+      const tree = document.getElementById('admin-tree-view');
+      tree.innerHTML = '';
       store.forEach((p, pI) => {
-        const row = document.createElement('div');
-        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:0.85rem; border-bottom:1px solid #222;";
-        row.innerHTML = `
-          <span>📁 ${p.name} (${p.songs.length})</span>
-          <button style="background:#ef4444; border:none; color:#fff; padding:3px 8px; border-radius:4px; cursor:pointer;" data-p="${pI}">刪除歌單</button>
+        const pBox = document.createElement('div');
+        pBox.style.cssText = "margin-bottom:12px; background:#101117; padding:8px; border-radius:6px; border:1px solid #20222f;";
+        pBox.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:var(--brass-light); font-size:0.85rem;">📁 ${p.name} (${p.songs.length})</strong>
+            <button class="btn-act btn-del" onclick="deletePlaylist(${pI})">刪除歌單</button>
+          </div>
         `;
-        list.appendChild(row);
 
         p.songs.forEach((s, sI) => {
           const sRow = document.createElement('div');
-          sRow.style.cssText = "display:flex; justify-content:space-between; padding:3px 0 3px 18px; font-size:0.75rem; color:#888;";
+          sRow.className = 'song-item-row';
           sRow.innerHTML = `
-            <span>↳ ${s.title}</span>
-            <button style="background:#444; border:none; color:#ddd; padding:2px 6px; border-radius:4px; cursor:pointer;" data-p="${pI}" data-s="${sI}">刪除歌曲</button>
+            <span>🎵 ${s.title} - ${s.artist}</span>
+            <div class="song-actions">
+              <button class="btn-act btn-edit" onclick="editSong(${pI}, ${sI})">編輯 ✎</button>
+              <button class="btn-act btn-del" onclick="deleteSong(${pI}, ${sI})">刪除</button>
+            </div>
           `;
-          list.appendChild(sRow);
+          pBox.appendChild(sRow);
         });
-      });
-
-      list.querySelectorAll('button').forEach(btn => {
-        btn.onclick = (e) => {
-          const pI = e.target.getAttribute('data-p');
-          const sI = e.target.getAttribute('data-s');
-          if (sI !== null) {
-            store[pI].songs.splice(sI, 1);
-          } else {
-            if (store.length <= 1) return alert('請至少保留一個歌單');
-            store.splice(pI, 1);
-            if (plIndex >= store.length) plIndex = 0;
-          }
-          syncStorage();
-          renderAdminUI();
-          renderUI();
-        };
+        tree.appendChild(pBox);
       });
     }
 
-    document.getElementById('btn-create-pl').addEventListener('click', () => {
-      const val = document.getElementById('new-pl-input').value.trim();
-      if (!val) return;
-      store.push({ id: 'pl_' + Date.now(), name: val, songs: [] });
-      document.getElementById('new-pl-input').value = '';
-      syncStorage();
+    window.deletePlaylist = function(pI) {
+      if (store.length <= 1) return alert('請至少保留一個歌單！');
+      if (confirm(`確定要刪除歌單《${store[pI].name}》嗎？`)) {
+        store.splice(pI, 1);
+        if (plIdx >= store.length) plIdx = 0;
+        persistData();
+        renderAdminUI();
+        renderUI();
+      }
+    };
+
+    window.deleteSong = function(pI, sI) {
+      store[pI].songs.splice(sI, 1);
+      persistData();
       renderAdminUI();
       renderUI();
-    });
+    };
 
-    function parseLyrics(str) {
-      if (!str.trim()) return [];
-      return str.split('\n').map(l => {
+    // 編輯特定歌曲
+    window.editSong = function(pI, sI) {
+      const s = store[pI].songs[sI];
+      document.getElementById('form-mode-title').textContent = `✦ 正在編輯歌曲: ${s.title}`;
+      document.getElementById('edit-song-id').value = `${pI}_${sI}`;
+      document.getElementById('form-pl-target').value = pI;
+      document.getElementById('form-song-title').value = s.title;
+      document.getElementById('form-song-artist').value = s.artist;
+      document.getElementById('form-song-source').value = s.source;
+      document.getElementById('form-song-cover').value = s.cover;
+
+      const lyricsStr = (s.lyrics || []).map(l => {
+        const m = Math.floor(l.time / 60);
+        const sec = Math.floor(l.time % 60);
+        return `[${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}] ${l.text}`;
+      }).join('\n');
+      document.getElementById('form-song-lyrics').value = lyricsStr;
+
+      document.getElementById('btn-cancel-edit').style.display = 'inline-block';
+      document.getElementById('admin-modal').scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    document.getElementById('btn-cancel-edit').onclick = () => {
+      resetSongForm();
+    };
+
+    function resetSongForm() {
+      document.getElementById('form-mode-title').textContent = '✦ 新增歌曲';
+      document.getElementById('edit-song-id').value = '';
+      document.getElementById('form-song-title').value = '';
+      document.getElementById('form-song-artist').value = '';
+      document.getElementById('form-song-source').value = '';
+      document.getElementById('form-song-cover').value = '';
+      document.getElementById('form-song-lyrics').value = '';
+      document.getElementById('img-picker-status').textContent = '';
+      document.getElementById('btn-cancel-edit').style.display = 'none';
+    }
+
+    // 儲存（新增或更新）歌曲
+    document.getElementById('btn-save-song').onclick = () => {
+      const editKey = document.getElementById('edit-song-id').value;
+      const targetPl = parseInt(document.getElementById('form-pl-target').value);
+      const title = document.getElementById('form-song-title').value.trim();
+      const artist = document.getElementById('form-song-artist').value.trim() || 'Unknown';
+      const source = document.getElementById('form-song-source').value.trim();
+      const rawCover = document.getElementById('form-song-cover').value.trim();
+      const cover = normalizeImageUrl(rawCover) || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800';
+      const lyricsRaw = document.getElementById('form-song-lyrics').value;
+
+      if (!title || !source) return alert('請填寫完整歌名與音訊來源！');
+
+      const lyricsParsed = lyricsRaw.split('\n').map(l => {
         const m = l.match(/\[(\d+)(?::(\d+))?\]\s*(.*)/);
         if (m) {
-          const t = m[2] !== undefined ? parseInt(m[1]) * 60 + parseFloat(m[2]) : parseFloat(m[1]);
+          const t = m[2] !== undefined ? parseInt(m[1])*60 + parseFloat(m[2]) : parseFloat(m[1]);
           return { time: t, text: m[3] || '' };
         }
         return null;
       }).filter(Boolean).sort((a,b) => a.time - b.time);
-    }
 
-    function extractYtId(url) {
-      const m = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-      return (m && m[2].length === 11) ? m[2] : url;
-    }
+      const songObj = {
+        id: editKey ? store[editKey.split('_')[0]].songs[editKey.split('_')[1]].id : 's_' + Date.now(),
+        title,
+        artist,
+        source,
+        cover,
+        lyrics: lyricsParsed
+      };
 
-    document.getElementById('btn-add-song').addEventListener('click', () => {
-      const t = document.getElementById('in-song-title').value.trim();
-      const a = document.getElementById('in-song-artist').value.trim() || 'aespa';
-      const yt = document.getElementById('in-song-yt').value.trim();
-      const c = document.getElementById('in-song-cover').value.trim() || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800';
-      const l = document.getElementById('in-song-lyrics').value;
+      if (editKey) {
+        // 更新現有歌曲
+        const [oldPI, oldSI] = editKey.split('_').map(Number);
+        if (oldPI === targetPl) {
+          store[oldPI].songs[oldSI] = songObj;
+        } else {
+          store[oldPI].songs.splice(oldSI, 1);
+          store[targetPl].songs.push(songObj);
+        }
+      } else {
+        // 新增
+        store[targetPl].songs.push(songObj);
+      }
 
-      if (!t || !yt) return alert('請填寫歌名與 YouTube 連結！');
-
-      store[plIndex].songs.push({
-        id: 's_' + Date.now(),
-        title: t,
-        artist: a,
-        ytId: extractYtId(yt),
-        cover: c,
-        lyrics: parseLyrics(l)
-      });
-
-      syncStorage();
+      persistData();
       renderAdminUI();
       renderUI();
-      alert(`已將《${t}》加入歌單！`);
+      resetSongForm();
+      alert(`歌曲《${title}》已成功儲存！`);
+    };
 
-      document.getElementById('in-song-title').value = '';
-      document.getElementById('in-song-artist').value = '';
-      document.getElementById('in-song-yt').value = '';
-      document.getElementById('in-song-cover').value = '';
-      document.getElementById('in-song-lyrics').value = '';
-    });
+    // 新增歌單
+    document.getElementById('btn-add-pl').onclick = () => {
+      const name = document.getElementById('admin-new-pl-name').value.trim();
+      if (!name) return alert('請輸入歌單名稱！');
+      store.push({ id: 'pl_' + Date.now(), name, songs: [] });
+      document.getElementById('admin-new-pl-name').value = '';
+      persistData();
+      renderAdminUI();
+      renderUI();
+    };
+
+    // 程式碼複製與導出 (管理者可隨時將修改後完整代碼保存回 GitHub)
+    document.getElementById('btn-copy-code').onclick = () => {
+      const fullHtml = document.documentElement.outerHTML;
+      navigator.clipboard.writeText(fullHtml).then(() => {
+        alert('已將當前完整 HTML 程式碼複製到剪貼簿！可直接覆蓋 GitHub index.html');
+      });
+    };
+
+    document.getElementById('btn-dl-html').onclick = () => {
+      const fullHtml = document.documentElement.outerHTML;
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'index.html';
+      a.click();
+    };
+
+    renderUI();
   </script>
 </body>
 </html>
