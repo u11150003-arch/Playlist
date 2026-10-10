@@ -63,7 +63,7 @@
       height: 100dvh;
       background: var(--bg) !important;
       color: var(--steel);
-      font-family: 'Syne', 'Noto Sans TC', sans-serif;
+      font-family: 'Syne', 'Chocolate Classical Sans', 'Noto Sans TC', sans-serif;
       overflow: hidden;
       position: fixed;
       inset: 0;
@@ -90,20 +90,26 @@
       cursor: pointer;
     }
 
-    .admin-dot-btn {
+    /* 右上角白色五角星按鈕 (降透明度) */
+    .admin-star-btn {
       background: none;
       border: none;
       outline: none;
       cursor: pointer;
       display: flex;
-      gap: 4px;
-      padding: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 1.15rem;
+      line-height: 1;
+      transition: all 0.25s ease;
+      text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
     }
-    .admin-dot-btn span {
-      width: 4px;
-      height: 4px;
-      background: #6b7280;
-      border-radius: 50%;
+    .admin-star-btn:hover, .admin-star-btn:active {
+      color: rgba(255, 255, 255, 0.95);
+      transform: scale(1.15);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
     }
 
     main {
@@ -145,7 +151,7 @@
       z-index: 10;
     }
     .track-meta h1 {
-      font-family: 'Orbitron', 'Syne', sans-serif;
+      font-family: 'Orbitron', 'Syne', 'Chocolate Classical Sans', sans-serif;
       font-size: 1.05rem;
       letter-spacing: 1px;
       color: #ffffff;
@@ -154,6 +160,8 @@
       font-size: 0.75rem;
       color: var(--steel-dim);
       margin-top: 2px;
+      font-family: 'Syne', sans-serif;
+      letter-spacing: 1px;
     }
 
     .lyrics-view {
@@ -185,12 +193,12 @@
     }
     .lyric-primary {
       font-size: 0.85rem;
-      font-family: 'Syne', 'Noto Sans TC', sans-serif;
+      font-family: 'Syne', 'Chocolate Classical Sans', sans-serif;
     }
     .lyric-trans {
-      font-size: 0.76rem;
-      color: #525666;
-      font-family: 'Chocolate Classical Sans', 'Noto Sans TC', sans-serif;
+      font-size: 0.78rem;
+      color: #585c6d;
+      font-family: 'Chocolate Classical Sans', sans-serif;
       letter-spacing: 0.5px;
     }
 
@@ -205,7 +213,7 @@
     }
     .lyric-row.active .lyric-trans {
       color: #e4e4e7;
-      font-size: 0.86rem;
+      font-size: 0.88rem;
       font-weight: 500;
     }
 
@@ -286,20 +294,33 @@
       flex-shrink: 1;
       min-width: 0;
     }
+
+    /* 下排選擇歌曲專輯區域字體統一為 Syne */
     .steel-select {
       background: #1c1d24;
       border: 1px solid #333642;
       color: #e4e4e7;
-      font-size: 0.7rem;
-      padding: 5px 6px;
+      font-family: 'Syne', sans-serif !important;
+      font-size: 0.78rem;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      padding: 6px 8px;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
-      width: 84px;
+      width: 88px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      transition: width 0.2s ease;
+      transition: width 0.2s ease, border-color 0.2s ease;
+    }
+    .steel-select:focus, .steel-select:hover {
+      border-color: #555869;
+    }
+    .steel-select option {
+      font-family: 'Syne', sans-serif !important;
+      background: #1c1d24;
+      color: #fff;
     }
 
     @media (min-width: 768px) {
@@ -307,8 +328,8 @@
         max-width: 620px;
       }
       .steel-select {
-        width: 130px;
-        font-size: 0.78rem;
+        width: 135px;
+        font-size: 0.82rem;
         padding: 6px 10px;
       }
       #sel-song {
@@ -379,7 +400,7 @@
       max-height: 85vh;
       overflow-y: auto;
       padding: 20px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Syne', 'Chocolate Classical Sans', sans-serif;
     }
     .modal-inner h3 {
       font-family: 'Orbitron', sans-serif;
@@ -413,6 +434,7 @@
     .menu-link-item span.desc {
       font-size: 0.72rem;
       color: #9ca3af;
+      font-family: 'Chocolate Classical Sans', sans-serif;
     }
 
     .field-row {
@@ -523,9 +545,8 @@
 
   <header>
     <div class="brand-title" id="logo-trigger">WINTER PLAYLIST</div>
-    <button class="admin-dot-btn" id="btn-open-menu" title="Navigation & Settings">
-      <span></span><span></span><span></span>
-    </button>
+    <!-- 右上角按鈕：白色微透五角星 -->
+    <button class="admin-star-btn" id="btn-open-menu" title="Navigation & Settings">★</button>
   </header>
 
   <main>
@@ -572,7 +593,7 @@
     </div>
   </footer>
 
-  <!-- 右上角導覽選單 (更新 Desktop 網址、icon 與文字) -->
+  <!-- 右上角導覽選單 -->
   <div class="modal-veil" id="nav-modal">
     <div class="modal-inner" style="max-width: 360px;">
       <h3>WINTER SPACE</h3>
@@ -888,10 +909,9 @@
 用雙手摀住耳朵
 [03:35.90]그냥 내 입술을 읽어봐
 試著讀懂我的唇語
-[03:40.15]아주 천천히 말海줄게
+[03:40.15]아주 천천히 말해줄게
 我會慢慢地告訴你`;
 
-    // 專屬雙歌單預設資料庫（升級音量倍率、修復 Voyage 音檔及中心位移）
     const TWO_PLAYLISTS_DATA = [
       {
         id: "pl_solo",
@@ -1014,7 +1034,7 @@
             imgOffsetX: 0.0,
             imgOffsetY: 0.0,
             duration: 220,
-            volume: 1.6, // 提高增益
+            volume: 1.6,
             lyrics: []
           },
           {
@@ -1119,12 +1139,12 @@
       }
     ];
 
-    // 升級 Storage Key 至 v14 以確保最新曲目設定、音量與 Voyage 圖片完全生效
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v14')) || TWO_PLAYLISTS_DATA;
+    // 升級 Storage Key 至 v16，保證新曲目屬性與即時載入邏輯生效
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v16')) || TWO_PLAYLISTS_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('winter_playlist_store_v14', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_v16', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -1139,33 +1159,6 @@
 
     const nativeAudio = document.getElementById('native-audio');
     const ytIframe = document.getElementById('yt-hidden-player');
-
-    // 透過 Web Audio API 建立 GainNode，實質突破音量上限
-    let audioCtx = null;
-    let gainNode = null;
-    let sourceNode = null;
-
-    function initWebAudioGain() {
-      if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContext();
-        gainNode = audioCtx.createGain();
-        sourceNode = audioCtx.createMediaElementSource(nativeAudio);
-        sourceNode.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    function setVolumeGain(vol) {
-      if (gainNode) {
-        gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
-      } else {
-        nativeAudio.volume = Math.min(1.0, vol);
-      }
-    }
 
     function normalizeImageUrl(url) {
       if (!url) return '';
@@ -1194,7 +1187,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (黑膠轉速調慢、自動邊緣包邊收邊)
+     * 3. Three.js 3D (邊緣自動收邊、沉穩慢速自轉、換曲展示)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -1304,12 +1297,12 @@
 
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverSideMat = [
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 右側
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 左側
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 頂部
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 底部
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 }), // 正面
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 })  // 背面
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 })
     ];
     const coverMesh = new THREE.Mesh(coverGeo, coverSideMat);
     coverMesh.position.set(-0.55, 0, 0);
@@ -1415,7 +1408,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 慢速自體旋轉 15 秒展示 (僅限換歌時觸發)
+     * 旋轉展示動態控制 (僅在換曲時慢轉 15 秒)
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1510,7 +1503,7 @@
         turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
       }
 
-      // 黑膠旋轉速度調慢 (0.010，沉穩自然)
+      // 黑膠平穩沉靜轉速 (0.010)
       if (isPlaying) {
         discGroup.rotation.z -= 0.010;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
@@ -1523,7 +1516,7 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 音訊系統 (精確歸零重頭播放與增益支援)
+     * 4. 音訊系統 (重構消除延遲與進度殘留)
      * ------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
@@ -1569,22 +1562,20 @@
       }, 250);
     }
 
-    // 播放功能：isNewTrack 為 true 時才旋轉 15 秒展示背面
+    // 播放邏輯：只有換新歌曲時才旋轉一圈
     function playActiveSong(isNewTrack = false) {
-      initWebAudioGain();
-
       const curPl = store[plIdx];
       if (!curPl || !curPl.songs[trackIdx]) return;
       const song = curPl.songs[trackIdx];
 
       renderUI();
       if (isNewTrack) {
-        triggerSlow15sSpin(); // 僅在切換歌曲時旋轉
+        triggerSlow15sSpin();
       }
 
       totalDuration = song.duration || 211;
       const ytId = extractYoutubeId(song.source);
-      const targetVolume = (typeof song.volume === 'number') ? song.volume : (plIdx === 1 ? 1.6 : 0.75);
+      const targetVolume = (typeof song.volume === 'number') ? song.volume : (plIdx === 1 ? 1.0 : 0.75);
 
       if (ytId) {
         playMode = 'yt';
@@ -1607,21 +1598,40 @@
           directSrc = directSrc.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
         }
 
-        setVolumeGain(targetVolume);
+        nativeAudio.volume = Math.min(1.0, Math.max(0, targetVolume));
 
-        if (nativeAudio.src !== directSrc) {
+        // 換歌時確保乾淨從頭載入
+        if (isNewTrack || nativeAudio.src !== directSrc) {
+          nativeAudio.pause();
           nativeAudio.src = directSrc;
-          nativeAudio.currentTime = currentSec;
-        } else if (Math.abs(nativeAudio.currentTime - currentSec) > 0.5) {
-          nativeAudio.currentTime = currentSec;
-        }
+          currentSec = 0;
+          updateProgressUI(0, totalDuration);
 
-        const p = nativeAudio.play();
-        if (p !== undefined) {
-          p.then(() => setPlayState(true)).catch(err => {
-            console.log("等待手勢點擊播放:", err);
-            setPlayState(false);
-          });
+          const onMetaLoaded = () => {
+            nativeAudio.removeEventListener('loadedmetadata', onMetaLoaded);
+            nativeAudio.currentTime = 0;
+            const p = nativeAudio.play();
+            if (p !== undefined) {
+              p.then(() => setPlayState(true)).catch(err => {
+                console.log("Waiting for user gesture:", err);
+                setPlayState(false);
+              });
+            }
+          };
+          nativeAudio.addEventListener('loadedmetadata', onMetaLoaded);
+          nativeAudio.load();
+        } else {
+          // 原地繼續播放（不重複觸發旋轉）
+          if (currentSec > 0 && Math.abs(nativeAudio.currentTime - currentSec) > 1) {
+            nativeAudio.currentTime = currentSec;
+          }
+          const p = nativeAudio.play();
+          if (p !== undefined) {
+            p.then(() => setPlayState(true)).catch(err => {
+              console.log("Waiting for gesture:", err);
+              setPlayState(false);
+            });
+          }
         }
       }
     }
@@ -1764,13 +1774,12 @@
       populateDropdowns();
     }
 
-    // 切換歌曲時強制進度歸零並旋轉一圈
+    // 換曲強制重頭開始且旋轉一整圈
     function playNext() {
       const pl = store[plIdx];
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx + 1) % pl.songs.length;
       currentSec = 0;
-      nativeAudio.currentTime = 0;
       playActiveSong(true);
     }
 
@@ -1779,11 +1788,10 @@
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx - 1 + pl.songs.length) % pl.songs.length;
       currentSec = 0;
-      nativeAudio.currentTime = 0;
       playActiveSong(true);
     }
 
-    // 播放鍵控制：暫停時不旋轉一圈
+    // 播放/暫停鍵：暫停後再播放不重複旋轉一圈
     document.getElementById('btn-play').onclick = () => {
       if (isPlaying) {
         pauseActiveSong();
@@ -1817,20 +1825,18 @@
       });
     }
 
-    // 切換歌單：進度歸零重播並旋轉
+    // 切換歌單：強制歸零重播並旋轉
     document.getElementById('sel-playlist').onchange = (e) => {
       plIdx = parseInt(e.target.value);
       trackIdx = 0;
       currentSec = 0;
-      nativeAudio.currentTime = 0;
       playActiveSong(true);
     };
 
-    // 切換曲目：進度歸零重播並旋轉
+    // 切換曲目：強制歸零重播並旋轉
     document.getElementById('sel-song').onchange = (e) => {
       trackIdx = parseInt(e.target.value);
       currentSec = 0;
-      nativeAudio.currentTime = 0;
       playActiveSong(true);
     };
 
@@ -2029,7 +2035,7 @@
         p.songs.forEach((s, sI) => {
           const isFirstSong = sI === 0;
           const isLastSong = sI === p.songs.length - 1;
-          const volDisplay = typeof s.volume === 'number' ? s.volume : (pI === 1 ? 1.6 : 0.75);
+          const volDisplay = typeof s.volume === 'number' ? s.volume : (pI === 1 ? 1.0 : 0.75);
 
           const sRow = document.createElement('div');
           sRow.className = 'song-item-row';
@@ -2108,7 +2114,7 @@
       document.getElementById('form-song-artist').value = s.artist || 'WINTER';
       document.getElementById('form-song-source').value = s.source;
 
-      const currentVol = (typeof s.volume === 'number') ? s.volume : (pI === 1 ? 1.6 : 0.75);
+      const currentVol = (typeof s.volume === 'number') ? s.volume : (pI === 1 ? 1.0 : 0.75);
       document.getElementById('form-song-vol').value = currentVol;
       document.getElementById('form-vol-lbl').textContent = `${currentVol.toFixed(2)}x`;
 
