@@ -94,7 +94,6 @@
       color: #ffffff;
     }
 
-    /* 右上角白色五角星按鈕 (低透明度) */
     .admin-star-btn {
       background: none;
       border: none;
@@ -289,7 +288,6 @@
       padding: 0 2px;
     }
 
-    /* 彈性自適應寬度，徹底防遮擋 */
     .steel-select-group {
       display: flex;
       gap: 6px;
@@ -313,7 +311,6 @@
       overflow: hidden;
       transition: all 0.2s ease;
     }
-    /* 手機上左側歌單框分配足夠比例，WINTER SOLO 不被擋住 */
     #sel-playlist {
       flex: 0 0 120px;
       min-width: 110px;
@@ -595,7 +592,6 @@
     </div>
   </footer>
 
-  <!-- 右上角導覽選單 -->
   <div class="modal-veil" id="nav-modal">
     <div class="modal-inner" style="max-width: 360px;">
       <h3>WINTER SPACE</h3>
@@ -914,6 +910,118 @@
 [03:40.15]아주 천천히 말해줄게
 我會慢慢地告訴你`;
 
+    // 匯入 Saddle Up 完整雙語動態歌詞
+    const SADDLE_LRC_TEXT = `[00:00.20]Oh-oh, oh-oh, oh-oh, oh-oh
+[00:03.00]Oh-oh, oh-oh, oh-oh, oh-oh-oh (Ah)
+[00:05.76]Oh-oh, oh-oh, oh-oh, oh-oh
+[00:08.22]Oh-oh, oh-oh, oh-oh, oh-oh-oh (Yeah, ah)
+[00:11.05]Watch me, if you see something that you like
+看著我，若我恰好是你心之所向
+[00:15.17]Oh, I like how you want me
+我喜歡你為我心動的模樣
+[00:17.76]Heavy on the heat when we hit the lights (Participate)
+燈光亮起，曖昧便在熱度之中蔓延
+[00:21.21]Warning
+警告
+[00:22.98]When I play, no, I don't play nice
+這場遊戲一旦開始，我從不手下留情
+[00:25.44]Boy, I wanna see you risk it all (Participate)
+我要看你是否有膽量，為我孤注一擲
+[00:31.81]You’re my man for the moment
+此刻，你是我欽定的人選
+[00:34.59]Are you man enough to hold it down? (Ho-hold it down, hold it down; Ah)
+你有沒有足夠的膽識，接住這場局面？
+[00:42.06]You’re my man for the moment
+此刻，你是我欽定的人選
+[00:44.53]Guess you act like you own it now
+看來，你已經開始展露主場氣勢
+[00:50.94]If you walk it like you talk it, baby, please stand up
+若你真能言出必行，就大方站到我面前
+[00:56.13]If you down and if you with it, baby, we go up (So show me)
+若你心意已決，也敢與我同行，我們便一同登頂
+[01:01.88]You’re grown, we ain’t gonna go home alone
+你我皆已成熟，今夜何必各自歸去
+[01:06.53]So if I like your energy, then the rest is up to me, come saddle up
+若你的氣場正合我意，往後的一切便由我定奪，來吧，準備迎戰
+[01:12.18]Oh-oh, oh-oh, oh-oh, oh-oh
+[01:14.77]Oh-oh, oh-oh, oh-oh, oh-oh-oh (Oh, saddle up)
+準備迎戰
+[01:17.12]Oh-oh, oh-oh, oh-oh, oh-oh
+[01:19.74]Oh-oh, oh-oh, oh-oh (Oh, come saddle up)
+準備迎戰
+[01:22.34]Yeah, I need a man with ice in the big black tee
+我要的是黑色寬版 T 恤下，那份冷冽不羈的氣場
+[01:25.47]Shut it down when he steps out
+一經登場，便足以令全場失色
+[01:27.52]He makes sure that I got everything I need
+我所求的一切，都能被妥善安放
+[01:30.65]He knows it’s me they keep talkin’ about, uh
+對方心知肚明，眾人談論的焦點始終是我
+[01:32.73]Oh, he lovin’ it, he wanna stay with me
+對方沉醉其中，渴望繼續留在我身旁
+[01:35.32]But I had enough, so I move onto the next thing
+可惜熱情已盡，我便轉身奔赴下一場際遇
+[01:37.64]You gotta prove to me, why I should stick with ya
+你得拿出足以讓我留下的理由
+[01:40.51]Boy, if you don’t, yeah, it’s you who’s gonna lose
+若你做不到，最終錯失良機的只會是你
+[01:43.39]You’re my man for the moment (Oh)
+此刻，你是我欽定的人選
+[01:45.77]Are you man enough to hold it down (Oh, I wanna see you hold it down for me; Woah)
+你有沒有本事，為我穩住這場局面
+[01:53.68]You’re my man for the moment (Oh, yeah)
+此刻，你是我欽定的人選
+[01:56.02]Can’t you act like you own it, down (Oh)
+就不能展現出掌控全局的氣勢嗎
+[02:02.33]If you walk it like you talk it, baby, please stand up (Oh)
+若你真能言出必行，就大方站到我面前
+[02:07.58]If you down and if you with it, baby, we go up (Ooh-oh, so show me)
+若你心意已決，也敢與我同行，我們便一同登頂
+[02:13.66]You’re grown, we ain’t gonna go home alone (Ooh)
+你我皆已成熟，今夜何必各自歸去
+[02:17.33]So if I like your energy, then the rest is up to me (Oh), come saddle up
+若你的氣場正合我意，往後的一切便由我定奪，來吧，準備迎戰
+[02:23.62]Give me what I want or get back in line
+給我所要的一切，否則便退回人群之中
+[02:25.65]Show me what you got, better show me that you ride for me
+亮出你的本事，更要讓我看見，你是否願為我挺身而出
+[02:28.75]It just ain’t enough, I’m speaking my mind
+這些還遠遠不夠，我只是在坦然表明心意
+[02:31.08]Keepin’ it a buck with you, what comes next is up to you
+我對你從不拐彎抹角，接下來如何，全憑你的選擇
+[02:33.92]Be careful what you pray for
+許下心願之前，最好先想清楚
+[02:35.98]I’m way more than you can handle, oh-woah
+我的分量，遠非你所能輕易駕馭
+[02:38.84]Boy, saddle up, don’t waste my time
+若要入局，就即刻上場，別再虛耗我的時間
+[02:41.45]Show me what you want, baby, show me that you ride for me, yeah
+讓我看清你的渴望，也讓我知道，你是否願為我赴湯蹈火
+[02:45.88]If you walk it like you talk it, baby, please stand up (Like you talk it, oh, woah-woah-woah)
+若你真能言出必行，就大方站到我面前
+[02:50.86]If you down and if you with it, baby, we go up (Oh, oh, come on, oh-yeah)
+若你心意已決，也敢與我同行，我們便一同登頂
+[02:55.85]So show me, you’re grown, we ain’t gonna go home alone (Oh)
+那就讓我看見你的決心，你我皆已成熟，今夜何必各自歸去
+[03:00.55]So if I like your energy, then the rest is up to me, come saddle up (Woah)
+若你的氣場正合我意，往後的一切便由我定奪，來吧，準備迎戰
+[03:07.13]If you walk it like you talk it, baby, please stand up (Get up, up, here with me, take the reins, buckle up, my baby)
+若你真能言出必行，就大方站到我面前 (起身到我身邊，握緊韁繩、繫好安全帶，親愛的)
+[03:11.31]If you down and if you with it, baby, we go up (I want it, take me, don’t be shy, come and drive me crazy)
+若你心意已決，也敢與我同行，我們便一同登頂 (我渴望這一切，帶我走吧，別害羞，讓我為你瘋狂)
+[03:17.61]You’re grown, we ain’t gonna go home alone (Put your money where your mouth is when you talk, boy)
+你我皆已成熟，今夜何必各自歸去 (既然話說得漂亮，就拿出實際行動來證明，別只會說)
+[03:20.99]So if I like your energy, then the rest is up to me, come saddle up
+若你的氣場正合我意，往後的一切便由我定奪，來吧，準備迎戰
+[03:29.16](Ah)
+[03:36.52]Come saddle up
+來吧，準備迎戰
+[03:37.52]Oh-oh, oh-oh, oh-oh, oh-oh
+[03:40.10]Oh-oh, oh-oh-oh (Ah)
+[03:42.76]Oh-oh, oh-oh, oh-oh, oh-oh
+[03:45.15]Oh-oh, oh-oh, oh-oh
+[03:47.27]Saddle up`;
+
     const TWO_PLAYLISTS_DATA = [
       {
         id: "pl_solo",
@@ -972,9 +1080,9 @@
             imgScale: 1.0,
             imgOffsetX: 0.0,
             imgOffsetY: 0.0,
-            duration: 201,
+            duration: 230,
             volume: 0.70,
-            lyrics: []
+            lyrics: parseLrc(SADDLE_LRC_TEXT) // 載入新歌詞
           },
           {
             title: "Speed of Summer",
@@ -1141,11 +1249,12 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v22')) || TWO_PLAYLISTS_DATA;
+    // 升級 Storage Key 至 v24，確保 Saddle Up 全新歌詞即時載入生效
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v24')) || TWO_PLAYLISTS_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('winter_playlist_store_v22', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_v24', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -1436,7 +1545,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 旋轉展示動態控制 (僅在換曲時慢轉 15 秒)
+     * 旋轉展示動態控制
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1543,7 +1652,7 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 音訊系統 (無阻塞串流、鎖屏播放支援)
+     * 4. 音訊系統
      * ------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
