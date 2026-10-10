@@ -358,6 +358,7 @@
       fill: #ffffff;
     }
 
+    /* 彈出視窗與選單 */
     .modal-veil {
       position: fixed;
       inset: 0;
@@ -387,6 +388,33 @@
       margin-bottom: 12px;
       letter-spacing: 1px;
     }
+
+    /* 快捷導覽選單樣式 */
+    .menu-link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: #111216;
+      border: 1px solid #282a35;
+      border-radius: 8px;
+      color: #f4f4f5;
+      text-decoration: none;
+      font-size: 0.88rem;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .menu-link-item:hover {
+      background: #1d1f27;
+      border-color: #4b4e5d;
+      transform: translateX(2px);
+    }
+    .menu-link-item span.desc {
+      font-size: 0.72rem;
+      color: #9ca3af;
+    }
+
     .field-row {
       margin-bottom: 12px;
     }
@@ -472,7 +500,7 @@
 
   <header>
     <div class="brand-title" id="logo-trigger">WINTER PLAYLIST</div>
-    <button class="admin-dot-btn" id="btn-open-auth" title="Settings">
+    <button class="admin-dot-btn" id="btn-open-menu" title="Navigation & Settings">
       <span></span><span></span><span></span>
     </button>
   </header>
@@ -520,6 +548,46 @@
       </div>
     </div>
   </footer>
+
+  <!-- 點擊右上角跳出的導覽與管理入口選單 -->
+  <div class="modal-veil" id="nav-modal">
+    <div class="modal-inner" style="max-width: 360px;">
+      <h3>WINTER SPACE</h3>
+      <div style="display:flex; flex-direction:column; gap:4px; margin-top:14px;">
+        <a class="menu-link-item" href="https://github.com/u11150003-arch/2027-winter-bday-desktop" target="_blank" rel="noopener">
+          <div>
+            <div>💻 WINTER Desktop</div>
+            <span class="desc">回到生日電腦桌面網站</span>
+          </div>
+          <span>➔</span>
+        </a>
+        <a class="menu-link-item" href="https://u11150003-arch.github.io/winter-cd-player/" target="_blank" rel="noopener">
+          <div>
+            <div>💿 Retro CD Player</div>
+            <span class="desc">前往復古 CD 隨身聽</span>
+          </div>
+          <span>➔</span>
+        </a>
+        <a class="menu-link-item" href="https://u11150003-arch.github.io/winter-wildwest/" target="_blank" rel="noopener">
+          <div>
+            <div>🤠 WINTER WILD WEST</div>
+            <span class="desc">前往荒野西部主題企劃</span>
+          </div>
+          <span>➔</span>
+        </a>
+        <div class="menu-link-item" id="menu-btn-admin" style="border-color: #3b82f6; background: rgba(59,130,246,0.08);">
+          <div>
+            <div style="color: #60a5fa;">⚙️ 核心管理者後台</div>
+            <span class="desc">System Access (曲目/排序/音量)</span>
+          </div>
+          <span style="color: #60a5fa;">🔒</span>
+        </div>
+      </div>
+      <div style="text-align:right; margin-top:14px;">
+        <button class="btn-cancel" id="btn-close-nav">關閉選單</button>
+      </div>
+    </div>
+  </div>
 
   <div id="admin-mount-point"></div>
 
@@ -603,11 +671,11 @@
           </div>
 
           <div class="field-row">
-            <label>黑膠中央圓形貼標照片 (留空則預設跟專輯封面相同)</label>
-            <input type="text" id="form-song-label-img" placeholder="留空預設與封面相同">
+            <label>黑膠中央圓形貼標 (留空則預設同正面封面)</label>
+            <input type="text" id="form-song-label-img" placeholder="留空則預設跟正面相同">
             <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
               <input type="file" id="local-label-img-picker" accept="image/*" style="display:none;">
-              <button type="button" class="btn-cancel" id="btn-pick-label-img" style="font-size:0.72rem;">📁 從圖庫挑選黑膠貼標</button>
+              <button type="button" class="btn-cancel" id="btn-pick-label-img" style="font-size:0.72rem;">📁 從手機圖庫挑選貼標</button>
               <span id="label-img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
             </div>
           </div>
@@ -938,11 +1006,12 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_two_pl_v3')) || TWO_PLAYLISTS_DATA;
+    // 升級 Storage Key 以強制套用全新完整資料
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v10')) || TWO_PLAYLISTS_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('winter_playlist_store_two_pl_v3', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_v10', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -985,7 +1054,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (黑膠中心獨立貼標、自體緩慢旋轉 15 秒展示背面)
+     * 3. Three.js 3D (邊緣取樣自動收邊 + 15 秒旋轉)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -1093,15 +1162,17 @@
 
     const texLoader = new THREE.TextureLoader();
 
+    // 專輯外殼材質初始化：側邊材質允許動態調整底色收邊
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
-    const coverMesh = new THREE.Mesh(coverGeo, [
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
-      new THREE.MeshStandardMaterial({ color: 0x1f2026, roughness: 0.4 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 }),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 })
-    ]);
+    const coverSideMat = [
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 右側
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 左側 (書脊)
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 頂部
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 底部
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 }), // 正面
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 })  // 背面
+    ];
+    const coverMesh = new THREE.Mesh(coverGeo, coverSideMat);
     coverMesh.position.set(-0.55, 0, 0);
     turntableGroup.add(coverMesh);
 
@@ -1117,7 +1188,6 @@
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
-    // 唱片中央獨立圓形貼標
     const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
     const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 }));
     labelMesh.rotation.x = Math.PI / 2;
@@ -1137,17 +1207,60 @@
       tex.needsUpdate = true;
     }
 
-    // 正面封面、背面外殼、黑膠中央貼標獨立自訂
+    // 智能提取圖片邊緣色，替換專輯上下左右 4 個側面，模擬真實印刷包邊
+    function sampleEdgeColorAndApplySides(img) {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width || 64;
+        canvas.height = img.height || 64;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // 取左側邊界色彩 (書脊)
+        const leftPixel = ctx.getImageData(2, Math.floor(canvas.height / 2), 1, 1).data;
+        const leftColor = new THREE.Color(leftPixel[0]/255, leftPixel[1]/255, leftPixel[2]/255);
+
+        // 取頂部邊界色彩
+        const topPixel = ctx.getImageData(Math.floor(canvas.width / 2), 2, 1, 1).data;
+        const topColor = new THREE.Color(topPixel[0]/255, topPixel[1]/255, topPixel[2]/255);
+
+        // 取底部邊界色彩
+        const btmPixel = ctx.getImageData(Math.floor(canvas.width / 2), canvas.height - 3, 1, 1).data;
+        const btmColor = new THREE.Color(btmPixel[0]/255, btmPixel[1]/255, btmPixel[2]/255);
+
+        // 取右邊開口色彩
+        const rightPixel = ctx.getImageData(canvas.width - 3, Math.floor(canvas.height / 2), 1, 1).data;
+        const rightColor = new THREE.Color(rightPixel[0]/255, rightPixel[1]/255, rightPixel[2]/255);
+
+        coverMesh.material[0].color.copy(rightColor);
+        coverMesh.material[1].color.copy(leftColor);
+        coverMesh.material[2].color.copy(topColor);
+        coverMesh.material[3].color.copy(btmColor);
+
+        for (let i = 0; i < 4; i++) {
+          coverMesh.material[i].needsUpdate = true;
+        }
+      } catch (err) {
+        // 若跨域無法提取則使用主色微光收邊
+        const fallbackColor = new THREE.Color(0x0a0c12);
+        for (let i = 0; i < 4; i++) {
+          coverMesh.material[i].color.copy(fallbackColor);
+          coverMesh.material[i].needsUpdate = true;
+        }
+      }
+    }
+
     function applyCoverTo3D(frontUrl, backUrl, labelUrl) {
       if (!frontUrl) return;
       const directFront = normalizeImageUrl(frontUrl);
       const directBack = backUrl ? normalizeImageUrl(backUrl) : directFront;
-      const directLabel = labelUrl ? normalizeImageUrl(labelUrl) : directFront; // 預設同封面
+      const directLabel = labelUrl ? normalizeImageUrl(labelUrl) : directFront;
 
       texLoader.load(directFront, (tex) => {
         setupHighQualityTexture(tex);
         coverMesh.material[4].map = tex;
         coverMesh.material[4].needsUpdate = true;
+        sampleEdgeColorAndApplySides(tex.image);
       });
 
       texLoader.load(directBack, (tex) => {
@@ -1164,7 +1277,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 慢速自體旋轉一圈動態 (整整 15 秒，完整展示背面)
+     * 慢速自體旋轉 15 秒動態
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1176,7 +1289,7 @@
     let isAutoRotating = false;
     let autoRotStartTime = 0;
     let autoRotStartAngle = 0;
-    const AUTO_ROT_DURATION = 15000; // 精準 15 秒
+    const AUTO_ROT_DURATION = 15000;
 
     function triggerSlow15sSpin() {
       isAutoRotating = true;
@@ -1186,7 +1299,7 @@
     }
 
     function onPointerDown(e) {
-      isAutoRotating = false; // 手勢介入立即取消自動轉
+      isAutoRotating = false;
       isTouching = true;
       hasMoved = false;
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1216,7 +1329,7 @@
 
     function onPointerUp() {
       if (!hasMoved && isTouching) {
-        triggerResetView(); // 點擊恢復正面
+        triggerResetView();
       }
       isTouching = false;
     }
@@ -1245,7 +1358,6 @@
       if (isAutoRotating) {
         const elapsed = performance.now() - autoRotStartTime;
         const progress = Math.min(1, elapsed / AUTO_ROT_DURATION);
-        // 等速平順旋轉一整圈 (Math.PI * 2)
         turntableGroup.rotation.y = autoRotStartAngle + progress * (Math.PI * 2);
         turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, 0, 0.08);
 
@@ -1260,7 +1372,6 @@
         turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
       }
 
-      // 黑膠播放時音軌旋轉與探出
       if (isPlaying) {
         discGroup.rotation.z -= 0.024;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
@@ -1273,8 +1384,8 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 音訊系統 (秒點秒播優化)
-     * -------------------------------------------------------------*/
+     * 4. 音訊系統
+     * ------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
       const svg = document.getElementById('play-svg-icon');
@@ -1319,14 +1430,13 @@
       }, 250);
     }
 
-    // 播放當前歌曲：立即啟動、旋轉 15 秒
     function playActiveSong(isUserInitiated = true) {
       const curPl = store[plIdx];
       if (!curPl || !curPl.songs[trackIdx]) return;
       const song = curPl.songs[trackIdx];
 
       renderUI();
-      triggerSlow15sSpin(); // 啟動 15 秒整圈展示旋轉
+      triggerSlow15sSpin();
 
       totalDuration = song.duration || 211;
       const ytId = extractYoutubeId(song.source);
@@ -1355,7 +1465,6 @@
 
         nativeAudio.volume = Math.min(1.0, Math.max(0, targetVolume));
 
-        // 避免重複重新請求相同網址造成延遲
         if (nativeAudio.src !== directSrc) {
           nativeAudio.src = directSrc;
         }
@@ -1367,7 +1476,7 @@
         const p = nativeAudio.play();
         if (p !== undefined) {
           p.then(() => setPlayState(true)).catch(err => {
-            console.log("等待手勢點擊觸發:", err);
+            console.log("等待手勢點擊播放:", err);
             setPlayState(false);
           });
         }
@@ -1386,7 +1495,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 5. 進度條拖曳控制
+     * 5. 進度條拖曳
      * ------------------------------------------------------------*/
     const seekContainer = document.getElementById('seek-container');
     const seekProgress = document.getElementById('seek-progress');
@@ -1431,7 +1540,7 @@
     window.addEventListener('touchend', handleSeekEnd);
 
     /* -------------------------------------------------------------
-     * 6. 歌詞與切換渲染 (中韓雙行渲染)
+     * 6. 歌詞渲染
      * ------------------------------------------------------------*/
     function syncLyrics(sec) {
       const song = store[plIdx]?.songs[trackIdx];
@@ -1500,7 +1609,6 @@
       document.getElementById('disp-title').textContent = song.title;
       document.getElementById('disp-artist').textContent = song.artist || "WINTER";
 
-      // 傳入封面、封底、以及黑膠貼標圖
       applyCoverTo3D(song.cover || curPl.cover, song.backCover, song.labelImg);
       renderLyricsList();
       populateDropdowns();
@@ -1511,7 +1619,7 @@
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx + 1) % pl.songs.length;
       currentSec = 0;
-      playActiveSong(true); // 自動播放下一首
+      playActiveSong(true);
     }
 
     function playPrev() {
@@ -1519,14 +1627,14 @@
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx - 1 + pl.songs.length) % pl.songs.length;
       currentSec = 0;
-      playActiveSong(true); // 自動播放上一首
+      playActiveSong(true);
     }
 
     document.getElementById('btn-play').onclick = () => {
       if (isPlaying) {
         pauseActiveSong();
       } else {
-        playActiveSong(true); // 點擊播放鍵立即撥放並旋轉 15 秒
+        playActiveSong(true);
       }
     };
     document.getElementById('btn-next').onclick = playNext;
@@ -1555,7 +1663,6 @@
       });
     }
 
-    // 點擊切換歌單時，自動換首並立即播放
     document.getElementById('sel-playlist').onchange = (e) => {
       plIdx = parseInt(e.target.value);
       trackIdx = 0;
@@ -1563,7 +1670,6 @@
       playActiveSong(true);
     };
 
-    // 點擊下拉選單選歌時，立即自動播放
     document.getElementById('sel-song').onchange = (e) => {
       trackIdx = parseInt(e.target.value);
       currentSec = 0;
@@ -1571,9 +1677,22 @@
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式（支援黑膠圓標圖片、排序、編輯、新增、刪除、音量）
+     * 7. 導覽選單與管理後台控制
      * ------------------------------------------------------------*/
+    const navModal = document.getElementById('nav-modal');
     const mountPoint = document.getElementById('admin-mount-point');
+
+    document.getElementById('btn-open-menu').onclick = () => {
+      navModal.style.display = 'flex';
+    };
+    document.getElementById('btn-close-nav').onclick = () => {
+      navModal.style.display = 'none';
+    };
+
+    document.getElementById('menu-btn-admin').onclick = () => {
+      navModal.style.display = 'none';
+      openAuthModal();
+    };
 
     function openAuthModal() {
       mountPoint.innerHTML = document.getElementById('auth-tpl').innerHTML;
@@ -1590,7 +1709,6 @@
       };
     }
 
-    document.getElementById('btn-open-auth').onclick = openAuthModal;
     document.getElementById('logo-trigger').onclick = openAuthModal;
 
     function openAdminDashboard() {
@@ -1610,7 +1728,6 @@
         document.getElementById('form-vol-lbl').textContent = `${parseFloat(e.target.value).toFixed(2)}x`;
       };
 
-      // 正面挑選
       document.getElementById('btn-pick-img').onclick = () => document.getElementById('local-img-picker').click();
       document.getElementById('local-img-picker').onchange = (e) => {
         const file = e.target.files[0];
@@ -1623,7 +1740,6 @@
         reader.readAsDataURL(file);
       };
 
-      // 黑膠中央圓形貼標挑選
       document.getElementById('btn-pick-label-img').onclick = () => document.getElementById('local-label-img-picker').click();
       document.getElementById('local-label-img-picker').onchange = (e) => {
         const file = e.target.files[0];
@@ -1636,7 +1752,6 @@
         reader.readAsDataURL(file);
       };
 
-      // 背面挑選
       document.getElementById('btn-pick-back-img').onclick = () => document.getElementById('local-back-img-picker').click();
       document.getElementById('local-back-img-picker').onchange = (e) => {
         const file = e.target.files[0];
@@ -1838,7 +1953,7 @@
       const rawBackCover = document.getElementById('form-song-back-cover').value.trim();
       
       const cover = normalizeImageUrl(rawCover) || store[targetPl]?.cover || COVER_SOLO;
-      const labelImg = normalizeImageUrl(rawLabelImg) || ''; // 留空時自動跟隨封面
+      const labelImg = normalizeImageUrl(rawLabelImg) || '';
       const backCover = normalizeImageUrl(rawBackCover) || '';
       const lyricsRaw = document.getElementById('form-song-lyrics').value;
 
@@ -1885,10 +2000,10 @@
       renderUI();
     }
 
-    // 啟動初始化渲染
+    // 初始化渲染
     renderUI();
     
-    // 預先帶入音訊以確保第一次點擊即可瞬時秒播
+    // 預先掛載音訊資源，點擊播放即時發聲
     if (store[plIdx] && store[plIdx].songs[trackIdx]) {
       const firstSong = store[plIdx].songs[trackIdx];
       let firstSrc = firstSong.source.replace(/^\.\//, '');
