@@ -587,7 +587,7 @@
           <div class="field-row">
             <label style="display:flex; justify-content:space-between;">
               <span>音量增益調整 (Volume Gain)</span>
-              <span id="form-vol-lbl">1.0x</span>
+              <span id="form-vol-lbl">1.00x</span>
             </label>
             <input type="range" id="form-song-vol" min="0.3" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:4px;">
           </div>
@@ -599,6 +599,16 @@
               <input type="file" id="local-img-picker" accept="image/*" style="display:none;">
               <button type="button" class="btn-cancel" id="btn-pick-img" style="font-size:0.72rem;">📁 從手機圖庫挑選正面</button>
               <span id="img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label>黑膠中央圓形貼標照片 (留空則預設跟專輯封面相同)</label>
+            <input type="text" id="form-song-label-img" placeholder="留空預設與封面相同">
+            <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+              <input type="file" id="local-label-img-picker" accept="image/*" style="display:none;">
+              <button type="button" class="btn-cancel" id="btn-pick-label-img" style="font-size:0.72rem;">📁 從圖庫挑選黑膠貼標</button>
+              <span id="label-img-picker-status" style="font-size:0.72rem; color:#71717a;"></span>
             </div>
           </div>
 
@@ -757,6 +767,7 @@
             artist: "WINTER",
             source: "lips (online-audio-converter.com).mp3",
             cover: COVER_SOLO,
+            labelImg: "",
             backCover: "",
             duration: 230,
             volume: 0.72,
@@ -767,9 +778,10 @@
             artist: "WINTER",
             source: "spark (online-audio-converter.com).mp3",
             cover: COVER_SOLO,
+            labelImg: "",
             backCover: "",
             duration: 195,
-            volume: 0.72,
+            volume: 0.70,
             lyrics: []
           },
           {
@@ -777,9 +789,10 @@
             artist: "WINTER",
             source: "blue (online-audio-converter.com).mp3",
             cover: COVER_SOLO,
+            labelImg: "",
             backCover: "",
             duration: 211,
-            volume: 0.72,
+            volume: 0.70,
             lyrics: []
           },
           {
@@ -787,9 +800,10 @@
             artist: "WINTER",
             source: "Saddle Up (online-audio-converter.com).mp3",
             cover: COVER_SOLO,
+            labelImg: "",
             backCover: "",
             duration: 201,
-            volume: 0.72,
+            volume: 0.70,
             lyrics: []
           },
           {
@@ -797,9 +811,10 @@
             artist: "WINTER",
             source: "speed of summer (online-audio-converter.com).mp3",
             cover: COVER_SOLO,
+            labelImg: "",
             backCover: "",
             duration: 210,
-            volume: 0.72,
+            volume: 0.70,
             lyrics: []
           },
           {
@@ -807,9 +822,10 @@
             artist: "WINTER",
             source: "time walking on memories (online-audio-converter.com).mp3",
             cover: COVER_SOLO,
+            labelImg: "",
             backCover: "",
             duration: 208,
-            volume: 0.72,
+            volume: 0.70,
             lyrics: []
           },
           {
@@ -817,6 +833,7 @@
             artist: "WINTER",
             source: "YTeFLKMnwjg",
             cover: COVER_SOLO,
+            labelImg: "",
             backCover: "",
             duration: 215,
             volume: 0.72,
@@ -834,6 +851,7 @@
             artist: "WINTER",
             source: "01 Be Be Your Love.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 220,
             volume: 1.0,
@@ -844,6 +862,7 @@
             artist: "WINTER",
             source: "02 What You Won_t Do For Love.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 210,
             volume: 1.0,
@@ -854,6 +873,7 @@
             artist: "WINTER",
             source: "03 YUKON.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 198,
             volume: 1.0,
@@ -864,6 +884,7 @@
             artist: "WINTER",
             source: "04.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 245,
             volume: 1.0,
@@ -874,6 +895,7 @@
             artist: "WINTER",
             source: "05 Only Wanna Give It To You.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 215,
             volume: 1.0,
@@ -884,6 +906,7 @@
             artist: "WINTER",
             source: "06 21.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 190,
             volume: 1.0,
@@ -894,6 +917,7 @@
             artist: "WINTER",
             source: "07 imperfect for you.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 202,
             volume: 1.0,
@@ -904,6 +928,7 @@
             artist: "WINTER",
             source: "08 BLUE - WINTER Solo.mp3",
             cover: COVER_BLUES,
+            labelImg: "",
             backCover: "",
             duration: 215,
             volume: 1.0,
@@ -913,12 +938,11 @@
       }
     ];
 
-    // 全新結構：若無儲存或為舊版直接載入雙歌單
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_two_pl')) || TWO_PLAYLISTS_DATA;
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_two_pl_v3')) || TWO_PLAYLISTS_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('winter_playlist_store_two_pl', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_two_pl_v3', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -961,7 +985,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D (自體旋轉一圈動態展示)
+     * 3. Three.js 3D (黑膠中心獨立貼標、自體緩慢旋轉 15 秒展示背面)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -1093,6 +1117,7 @@
     discMesh.rotation.x = Math.PI / 2;
     discGroup.add(discMesh);
 
+    // 唱片中央獨立圓形貼標
     const labelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.025, 32);
     const labelMesh = new THREE.Mesh(labelGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 }));
     labelMesh.rotation.x = Math.PI / 2;
@@ -1112,17 +1137,17 @@
       tex.needsUpdate = true;
     }
 
-    function applyCoverTo3D(frontUrl, backUrl) {
+    // 正面封面、背面外殼、黑膠中央貼標獨立自訂
+    function applyCoverTo3D(frontUrl, backUrl, labelUrl) {
       if (!frontUrl) return;
       const directFront = normalizeImageUrl(frontUrl);
       const directBack = backUrl ? normalizeImageUrl(backUrl) : directFront;
+      const directLabel = labelUrl ? normalizeImageUrl(labelUrl) : directFront; // 預設同封面
 
       texLoader.load(directFront, (tex) => {
         setupHighQualityTexture(tex);
         coverMesh.material[4].map = tex;
         coverMesh.material[4].needsUpdate = true;
-        labelMesh.material.map = tex;
-        labelMesh.material.needsUpdate = true;
       });
 
       texLoader.load(directBack, (tex) => {
@@ -1130,10 +1155,16 @@
         coverMesh.material[5].map = tex;
         coverMesh.material[5].needsUpdate = true;
       });
+
+      texLoader.load(directLabel, (tex) => {
+        setupHighQualityTexture(tex);
+        labelMesh.material.map = tex;
+        labelMesh.material.needsUpdate = true;
+      });
     }
 
     /* -------------------------------------------------------------
-     * 手勢旋轉操作與換曲 360° 自體旋轉動畫
+     * 慢速自體旋轉一圈動態 (整整 15 秒，完整展示背面)
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1142,13 +1173,12 @@
     let targetRotX = 0;
     let hasMoved = false;
 
-    // 自體旋轉動畫狀態變數
     let isAutoRotating = false;
     let autoRotStartTime = 0;
     let autoRotStartAngle = 0;
-    const AUTO_ROT_DURATION = 1400; // 毫秒
+    const AUTO_ROT_DURATION = 15000; // 精準 15 秒
 
-    function triggerFullSpinAnimation() {
+    function triggerSlow15sSpin() {
       isAutoRotating = true;
       autoRotStartTime = performance.now();
       autoRotStartAngle = turntableGroup.rotation.y;
@@ -1156,7 +1186,7 @@
     }
 
     function onPointerDown(e) {
-      isAutoRotating = false;
+      isAutoRotating = false; // 手勢介入立即取消自動轉
       isTouching = true;
       hasMoved = false;
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1186,7 +1216,7 @@
 
     function onPointerUp() {
       if (!hasMoved && isTouching) {
-        triggerResetView();
+        triggerResetView(); // 點擊恢復正面
       }
       isTouching = false;
     }
@@ -1215,10 +1245,9 @@
       if (isAutoRotating) {
         const elapsed = performance.now() - autoRotStartTime;
         const progress = Math.min(1, elapsed / AUTO_ROT_DURATION);
-        // smooth easeInOutQuad
-        const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
-        turntableGroup.rotation.y = autoRotStartAngle + ease * (Math.PI * 2);
-        turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, 0, 0.1);
+        // 等速平順旋轉一整圈 (Math.PI * 2)
+        turntableGroup.rotation.y = autoRotStartAngle + progress * (Math.PI * 2);
+        turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, 0, 0.08);
 
         if (progress >= 1) {
           isAutoRotating = false;
@@ -1231,6 +1260,7 @@
         turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
       }
 
+      // 黑膠播放時音軌旋轉與探出
       if (isPlaying) {
         discGroup.rotation.z -= 0.024;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
@@ -1243,8 +1273,8 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 音訊系統與音量增益配置
-     * ------------------------------------------------------------*/
+     * 4. 音訊系統 (秒點秒播優化)
+     * -------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
       const svg = document.getElementById('play-svg-icon');
@@ -1289,18 +1319,17 @@
       }, 250);
     }
 
-    function playActiveSong() {
+    // 播放當前歌曲：立即啟動、旋轉 15 秒
+    function playActiveSong(isUserInitiated = true) {
       const curPl = store[plIdx];
       if (!curPl || !curPl.songs[trackIdx]) return;
       const song = curPl.songs[trackIdx];
 
       renderUI();
-      triggerFullSpinAnimation();
+      triggerSlow15sSpin(); // 啟動 15 秒整圈展示旋轉
 
       totalDuration = song.duration || 211;
       const ytId = extractYoutubeId(song.source);
-
-      // 套用該歌曲的音量設定 (若未設定則第一歌單 0.72，第二歌單 1.0)
       const targetVolume = (typeof song.volume === 'number') ? song.volume : (plIdx === 1 ? 1.0 : 0.72);
 
       if (ytId) {
@@ -1324,12 +1353,11 @@
           directSrc = directSrc.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
         }
 
-        nativeAudio.muted = false;
         nativeAudio.volume = Math.min(1.0, Math.max(0, targetVolume));
 
-        if (!nativeAudio.src.endsWith(directSrc)) {
+        // 避免重複重新請求相同網址造成延遲
+        if (nativeAudio.src !== directSrc) {
           nativeAudio.src = directSrc;
-          nativeAudio.load();
         }
 
         if (currentSec > 0 && Math.abs(nativeAudio.currentTime - currentSec) > 1) {
@@ -1339,7 +1367,7 @@
         const p = nativeAudio.play();
         if (p !== undefined) {
           p.then(() => setPlayState(true)).catch(err => {
-            console.log("等待點擊播放:", err);
+            console.log("等待手勢點擊觸發:", err);
             setPlayState(false);
           });
         }
@@ -1389,7 +1417,7 @@
       if (playMode === 'file') {
         nativeAudio.currentTime = currentSec;
       } else {
-        if (isPlaying) playActiveSong();
+        if (isPlaying) playActiveSong(true);
       }
       updateProgressUI(currentSec, totalDuration);
     }
@@ -1458,7 +1486,7 @@
         div.onclick = () => {
           currentSec = l.time;
           if (playMode === 'file') nativeAudio.currentTime = currentSec;
-          else playActiveSong();
+          else playActiveSong(true);
         };
         scroller.appendChild(div);
       });
@@ -1472,7 +1500,8 @@
       document.getElementById('disp-title').textContent = song.title;
       document.getElementById('disp-artist').textContent = song.artist || "WINTER";
 
-      applyCoverTo3D(song.cover || curPl.cover, song.backCover);
+      // 傳入封面、封底、以及黑膠貼標圖
+      applyCoverTo3D(song.cover || curPl.cover, song.backCover, song.labelImg);
       renderLyricsList();
       populateDropdowns();
     }
@@ -1482,7 +1511,7 @@
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx + 1) % pl.songs.length;
       currentSec = 0;
-      playActiveSong();
+      playActiveSong(true); // 自動播放下一首
     }
 
     function playPrev() {
@@ -1490,12 +1519,15 @@
       if (!pl || pl.songs.length === 0) return;
       trackIdx = (trackIdx - 1 + pl.songs.length) % pl.songs.length;
       currentSec = 0;
-      playActiveSong();
+      playActiveSong(true); // 自動播放上一首
     }
 
     document.getElementById('btn-play').onclick = () => {
-      if (isPlaying) pauseActiveSong();
-      else playActiveSong();
+      if (isPlaying) {
+        pauseActiveSong();
+      } else {
+        playActiveSong(true); // 點擊播放鍵立即撥放並旋轉 15 秒
+      }
     };
     document.getElementById('btn-next').onclick = playNext;
     document.getElementById('btn-prev').onclick = playPrev;
@@ -1523,20 +1555,23 @@
       });
     }
 
+    // 點擊切換歌單時，自動換首並立即播放
     document.getElementById('sel-playlist').onchange = (e) => {
       plIdx = parseInt(e.target.value);
       trackIdx = 0;
       currentSec = 0;
-      playActiveSong();
+      playActiveSong(true);
     };
+
+    // 點擊下拉選單選歌時，立即自動播放
     document.getElementById('sel-song').onchange = (e) => {
       trackIdx = parseInt(e.target.value);
       currentSec = 0;
-      playActiveSong();
+      playActiveSong(true);
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式（支援排序、編輯、新增、刪除、音量）
+     * 7. 管理者模式（支援黑膠圓標圖片、排序、編輯、新增、刪除、音量）
      * ------------------------------------------------------------*/
     const mountPoint = document.getElementById('admin-mount-point');
 
@@ -1575,6 +1610,7 @@
         document.getElementById('form-vol-lbl').textContent = `${parseFloat(e.target.value).toFixed(2)}x`;
       };
 
+      // 正面挑選
       document.getElementById('btn-pick-img').onclick = () => document.getElementById('local-img-picker').click();
       document.getElementById('local-img-picker').onchange = (e) => {
         const file = e.target.files[0];
@@ -1587,6 +1623,20 @@
         reader.readAsDataURL(file);
       };
 
+      // 黑膠中央圓形貼標挑選
+      document.getElementById('btn-pick-label-img').onclick = () => document.getElementById('local-label-img-picker').click();
+      document.getElementById('local-label-img-picker').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById('form-song-label-img').value = event.target.result;
+          document.getElementById('label-img-picker-status').textContent = `已載入: ${file.name}`;
+        };
+        reader.readAsDataURL(file);
+      };
+
+      // 背面挑選
       document.getElementById('btn-pick-back-img').onclick = () => document.getElementById('local-back-img-picker').click();
       document.getElementById('local-back-img-picker').onchange = (e) => {
         const file = e.target.files[0];
@@ -1679,7 +1729,6 @@
       });
     }
 
-    // 歌單與曲目排序邏輯
     window.movePl = (pI, dir) => {
       const targetIndex = pI + dir;
       if (targetIndex < 0 || targetIndex >= store.length) return;
@@ -1745,6 +1794,7 @@
       document.getElementById('form-vol-lbl').textContent = `${currentVol.toFixed(2)}x`;
 
       document.getElementById('form-song-cover').value = s.cover || '';
+      document.getElementById('form-song-label-img').value = s.labelImg || '';
       document.getElementById('form-song-back-cover').value = s.backCover || '';
 
       const lyricsStr = (s.lyrics || []).map(l => {
@@ -1767,9 +1817,11 @@
       document.getElementById('form-song-vol').value = 1.0;
       document.getElementById('form-vol-lbl').textContent = '1.00x';
       document.getElementById('form-song-cover').value = '';
+      document.getElementById('form-song-label-img').value = '';
       document.getElementById('form-song-back-cover').value = '';
       document.getElementById('form-song-lyrics').value = '';
       document.getElementById('img-picker-status').textContent = '';
+      document.getElementById('label-img-picker-status').textContent = '';
       document.getElementById('back-img-picker-status').textContent = '';
       document.getElementById('btn-cancel-edit').style.display = 'none';
     }
@@ -1782,8 +1834,11 @@
       const source = document.getElementById('form-song-source').value.trim();
       const volume = parseFloat(document.getElementById('form-song-vol').value) || 1.0;
       const rawCover = document.getElementById('form-song-cover').value.trim();
+      const rawLabelImg = document.getElementById('form-song-label-img').value.trim();
       const rawBackCover = document.getElementById('form-song-back-cover').value.trim();
+      
       const cover = normalizeImageUrl(rawCover) || store[targetPl]?.cover || COVER_SOLO;
+      const labelImg = normalizeImageUrl(rawLabelImg) || ''; // 留空時自動跟隨封面
       const backCover = normalizeImageUrl(rawBackCover) || '';
       const lyricsRaw = document.getElementById('form-song-lyrics').value;
 
@@ -1795,6 +1850,7 @@
         source,
         volume,
         cover,
+        labelImg,
         backCover,
         duration: 210,
         lyrics: parseLrc(lyricsRaw)
@@ -1829,7 +1885,18 @@
       renderUI();
     }
 
+    // 啟動初始化渲染
     renderUI();
+    
+    // 預先帶入音訊以確保第一次點擊即可瞬時秒播
+    if (store[plIdx] && store[plIdx].songs[trackIdx]) {
+      const firstSong = store[plIdx].songs[trackIdx];
+      let firstSrc = firstSong.source.replace(/^\.\//, '');
+      if (!firstSrc.startsWith('http')) {
+        firstSrc = CD_PROJECT_BASE + encodeURI(firstSrc);
+      }
+      nativeAudio.src = firstSrc;
+    }
   </script>
 </body>
 </html>
