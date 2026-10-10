@@ -47,7 +47,6 @@
       --steel-dim: #9ca3af;
       --steel-border: #2a2c35;
       --accent-glow: rgba(244, 244, 245, 0.25);
-      /* 白色五角星游標 (降低透明度) */
       --star-cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="rgba(255,255,255,0.65)" stroke="rgba(0,0,0,0.5)" stroke-width="0.8" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>') 12 12, pointer;
     }
 
@@ -59,7 +58,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* 所有可點擊按鈕與互動控制項滑鼠懸停時變為五角星游標 */
     button, select, input[type="range"], .menu-link-item, .seek-groove, .lyric-row, .brand-title {
       cursor: var(--star-cursor) !important;
     }
@@ -96,7 +94,6 @@
       color: #ffffff;
     }
 
-    /* 右上角白色五角星按鈕 (低透明度) */
     .admin-star-btn {
       background: none;
       border: none;
@@ -298,13 +295,12 @@
       min-width: 0;
     }
 
-    /* 下排選擇歌曲專輯區域字體微調縮小，增加寬度防截斷 */
     .steel-select {
       background: #1c1d24;
       border: 1px solid #333642;
       color: #e4e4e7;
       font-family: 'Syne', sans-serif !important;
-      font-size: 0.7rem; /* 字體稍微縮小 */
+      font-size: 0.7rem;
       letter-spacing: 0.2px;
       font-weight: 600;
       padding: 5px 6px;
@@ -316,7 +312,7 @@
       transition: width 0.2s ease, border-color 0.2s ease;
     }
     #sel-playlist {
-      width: 115px; /* 加寬避免 WINTER Blues 被縮成 WINTER B... */
+      width: 115px;
     }
     #sel-song {
       width: 125px;
@@ -340,7 +336,7 @@
         padding: 6px 10px;
       }
       #sel-playlist {
-        width: 155px; /* 電腦版寬度充足 */
+        width: 155px;
       }
       #sel-song {
         width: 240px;
@@ -388,7 +384,6 @@
       fill: #ffffff;
     }
 
-    /* 彈出視窗與選單 */
     .modal-veil {
       position: fixed;
       inset: 0;
@@ -419,7 +414,6 @@
       letter-spacing: 1px;
     }
 
-    /* 快捷導覽選單樣式 */
     .menu-link-item {
       display: flex;
       align-items: center;
@@ -511,7 +505,6 @@
     .btn-order { background: #27272a; color: #d4d4d8; border: 1px solid #3f3f46; font-size: 0.7rem; padding: 2px 5px; }
     .btn-order:disabled { opacity: 0.3; cursor: not-allowed; }
 
-    /* 即時預覽卡片樣式 */
     .preview-card-box {
       background: #101115;
       border: 1px dashed #3f4252;
@@ -545,6 +538,7 @@
 </head>
 <body>
 
+  <!-- 原生音訊：開啟跨域串流、自動預載以支援鎖屏與背景播放 -->
   <audio id="native-audio" playsinline preload="auto" crossorigin="anonymous"></audio>
   <iframe id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;" frameborder="0" allow="autoplay; encrypted-media"></iframe>
 
@@ -597,7 +591,6 @@
     </div>
   </footer>
 
-  <!-- 右上角導覽選單 -->
   <div class="modal-veil" id="nav-modal">
     <div class="modal-inner" style="max-width: 360px;">
       <h3>WINTER SPACE</h3>
@@ -896,7 +889,7 @@
 在我們互相喜歡的時刻
 [02:55.34]어려운 확률 속에
 在艱難的機率中
-[02:59.02]다 들어온 것 같app
+[02:59.02]다 들어온 것 같아
 好像一切都發生了
 [03:05.63]밤새워 반복해줄게
 徹夜重複此話題
@@ -1143,12 +1136,11 @@
       }
     ];
 
-    // 升級 Storage Key 至 v18，確保新音量增益與修復邏輯即時生效
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v18')) || TWO_PLAYLISTS_DATA;
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v20')) || TWO_PLAYLISTS_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('winter_playlist_store_v18', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_v20', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -1164,35 +1156,31 @@
     const nativeAudio = document.getElementById('native-audio');
     const ytIframe = document.getElementById('yt-hidden-player');
 
-    // 完善 Web Audio API 音量增益節點 (跨平台且不堵塞)
-    let audioCtx = null;
-    let gainNode = null;
-    let sourceNode = null;
+    // 實裝手機/系統控制中心 MediaSession API (鎖定螢幕與通知欄顯示封面、歌名、歌手)
+    function updateMediaSession(song, pl) {
+      if ('mediaSession' in navigator) {
+        const coverUrl = normalizeImageUrl(song.cover || pl.cover);
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: song.title,
+          artist: song.artist || "WINTER",
+          album: pl.name || "WINTER PLAYLIST",
+          artwork: [
+            { src: coverUrl, sizes: '512x512', type: 'image/jpeg' }
+          ]
+        });
 
-    function ensureGainNode() {
-      if (!audioCtx) {
-        try {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          audioCtx = new AudioContext();
-          gainNode = audioCtx.createGain();
-          sourceNode = audioCtx.createMediaElementSource(nativeAudio);
-          sourceNode.connect(gainNode);
-          gainNode.connect(audioCtx.destination);
-        } catch (e) {
-          console.warn("Web Audio GainNode 初始化回退:", e);
-        }
-      }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    function setVolumeGain(vol) {
-      if (gainNode && audioCtx) {
-        gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
-        nativeAudio.volume = 1.0;
-      } else {
-        nativeAudio.volume = Math.min(1.0, vol);
+        navigator.mediaSession.setActionHandler('play', () => {
+          playActiveSong(false);
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+          pauseActiveSong();
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+          playPrev();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+          playNext();
+        });
       }
     }
 
@@ -1333,12 +1321,12 @@
 
     const coverGeo = new THREE.BoxGeometry(2.0, 2.0, 0.05);
     const coverSideMat = [
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 右側
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 左側
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 頂部
-      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }), // 底部
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 }), // 正面
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 })  // 背面
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 }),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 })
     ];
     const coverMesh = new THREE.Mesh(coverGeo, coverSideMat);
     coverMesh.position.set(-0.55, 0, 0);
@@ -1444,7 +1432,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 慢速自體旋轉 15 秒展示 (僅限換歌時觸發)
+     * 旋轉展示動態控制 (僅在換曲時慢轉 15 秒)
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1539,7 +1527,6 @@
         turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
       }
 
-      // 黑膠平穩沉靜轉速 (0.010)
       if (isPlaying) {
         discGroup.rotation.z -= 0.010;
         discGroup.position.x = THREE.MathUtils.lerp(discGroup.position.x, VINYL_OUT_X, 0.06);
@@ -1552,7 +1539,7 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 音訊系統 (精確換歌、重設時間、即時加載)
+     * 4. 音訊系統 (無阻塞串流、鎖屏播放支援)
      * ------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
@@ -1598,22 +1585,21 @@
       }, 250);
     }
 
-    // 換曲/播放主函數
     function playActiveSong(isNewTrack = false) {
-      ensureGainNode();
-
       const curPl = store[plIdx];
       if (!curPl || !curPl.songs[trackIdx]) return;
       const song = curPl.songs[trackIdx];
 
       renderUI();
+      updateMediaSession(song, curPl);
+
       if (isNewTrack) {
         triggerSlow15sSpin();
       }
 
       totalDuration = song.duration || 211;
       const ytId = extractYoutubeId(song.source);
-      const targetVolume = (typeof song.volume === 'number') ? song.volume : (plIdx === 1 ? 1.6 : 0.75);
+      const targetVolume = (typeof song.volume === 'number') ? song.volume : (plIdx === 1 ? 1.0 : 0.75);
 
       if (ytId) {
         playMode = 'yt';
@@ -1636,43 +1622,32 @@
           directSrc = directSrc.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
         }
 
-        setVolumeGain(targetVolume);
+        nativeAudio.volume = Math.min(1.0, Math.max(0, targetVolume));
 
         if (isNewTrack || nativeAudio.src !== directSrc) {
-          // 換新歌：徹底歸零，避免殘留前一首歌的時間進度
           nativeAudio.pause();
           currentSec = 0;
           updateProgressUI(0, totalDuration);
 
           nativeAudio.src = directSrc;
+          nativeAudio.currentTime = 0;
 
-          const onReadyToPlay = () => {
-            nativeAudio.removeEventListener('loadedmetadata', onReadyToPlay);
-            nativeAudio.currentTime = 0;
-            const p = nativeAudio.play();
-            if (p !== undefined) {
-              p.then(() => setPlayState(true)).catch(err => {
-                console.log("等待手勢點擊播放:", err);
-                setPlayState(false);
-              });
-            }
-          };
-
-          // 若瀏覽器已緩存好 metadata 則直接歸零播，否則等待事件完成
-          if (nativeAudio.readyState >= 1) {
-            onReadyToPlay();
-          } else {
-            nativeAudio.addEventListener('loadedmetadata', onReadyToPlay);
+          // 立即執行 play()，由瀏覽器進行背景串流緩衝，杜絕卡頓
+          const p = nativeAudio.play();
+          if (p !== undefined) {
+            p.then(() => setPlayState(true)).catch(err => {
+              console.log("Waiting for user gesture:", err);
+              setPlayState(false);
+            });
           }
         } else {
-          // 原曲繼續播放
           if (currentSec > 0 && Math.abs(nativeAudio.currentTime - currentSec) > 1) {
             nativeAudio.currentTime = currentSec;
           }
           const p = nativeAudio.play();
           if (p !== undefined) {
             p.then(() => setPlayState(true)).catch(err => {
-              console.log("等待手勢播放:", err);
+              console.log("Waiting for gesture:", err);
               setPlayState(false);
             });
           }
@@ -1818,7 +1793,6 @@
       populateDropdowns();
     }
 
-    // 切換歌曲：強制時間歸零、切新曲、旋轉展示一圈
     function playNext() {
       const pl = store[plIdx];
       if (!pl || pl.songs.length === 0) return;
@@ -1835,7 +1809,6 @@
       playActiveSong(true);
     }
 
-    // 播放/暫停鍵：暫停後原地繼續播放，不觸發展示旋轉
     document.getElementById('btn-play').onclick = () => {
       if (isPlaying) {
         pauseActiveSong();
@@ -1869,7 +1842,6 @@
       });
     }
 
-    // 切換歌單：進度歸零重播
     document.getElementById('sel-playlist').onchange = (e) => {
       plIdx = parseInt(e.target.value);
       trackIdx = 0;
@@ -1877,7 +1849,6 @@
       playActiveSong(true);
     };
 
-    // 切換曲目：進度歸零重播
     document.getElementById('sel-song').onchange = (e) => {
       trackIdx = parseInt(e.target.value);
       currentSec = 0;
@@ -2079,7 +2050,7 @@
         p.songs.forEach((s, sI) => {
           const isFirstSong = sI === 0;
           const isLastSong = sI === p.songs.length - 1;
-          const volDisplay = typeof s.volume === 'number' ? s.volume : (pI === 1 ? 1.6 : 0.75);
+          const volDisplay = typeof s.volume === 'number' ? s.volume : (pI === 1 ? 1.0 : 0.75);
 
           const sRow = document.createElement('div');
           sRow.className = 'song-item-row';
@@ -2158,7 +2129,7 @@
       document.getElementById('form-song-artist').value = s.artist || 'WINTER';
       document.getElementById('form-song-source').value = s.source;
 
-      const currentVol = (typeof s.volume === 'number') ? s.volume : (pI === 1 ? 1.6 : 0.75);
+      const currentVol = (typeof s.volume === 'number') ? s.volume : (pI === 1 ? 1.0 : 0.75);
       document.getElementById('form-song-vol').value = currentVol;
       document.getElementById('form-vol-lbl').textContent = `${currentVol.toFixed(2)}x`;
 
@@ -2295,6 +2266,7 @@
         firstSrc = CD_PROJECT_BASE + encodeURI(firstSrc);
       }
       nativeAudio.src = firstSrc;
+      updateMediaSession(firstSong, store[plIdx]);
     }
   </script>
 </body>
