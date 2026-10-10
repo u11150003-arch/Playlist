@@ -295,14 +295,13 @@
       border-radius: 6px;
       outline: none;
       cursor: pointer;
-      width: 82px;
+      width: 84px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
       transition: width 0.2s ease;
     }
 
-    /* 電腦版 / 平板端加寬控制項 */
     @media (min-width: 768px) {
       .timeline-strip, .deck-controls {
         max-width: 620px;
@@ -313,7 +312,7 @@
         padding: 6px 10px;
       }
       #sel-song {
-        width: 220px; /* 歌曲名稱加寬以容納長歌名 */
+        width: 220px;
       }
     }
 
@@ -442,17 +441,20 @@
     }
     .song-actions {
       display: flex;
-      gap: 6px;
+      gap: 4px;
+      align-items: center;
     }
     .btn-act {
       border: none;
       border-radius: 3px;
-      padding: 3px 8px;
+      padding: 3px 6px;
       font-size: 0.72rem;
       cursor: pointer;
     }
     .btn-edit { background: #3b82f6; color: #fff; }
     .btn-del { background: #ef4444; color: #fff; }
+    .btn-order { background: #27272a; color: #d4d4d8; border: 1px solid #3f3f46; font-size: 0.7rem; padding: 2px 5px; }
+    .btn-order:disabled { opacity: 0.3; cursor: not-allowed; }
   </style>
 
   <script type="importmap">
@@ -480,7 +482,7 @@
     <div class="info-lyrics-container">
       <div class="track-meta">
         <h1 id="disp-title">Lips</h1>
-        <p id="disp-artist">Winter</p>
+        <p id="disp-artist">WINTER</p>
       </div>
       <div class="lyrics-view" id="lyrics-scroller"></div>
     </div>
@@ -576,11 +578,18 @@
           </div>
           <div class="field-row">
             <label>演唱者 / 專輯名稱</label>
-            <input type="text" id="form-song-artist" placeholder="例如：Winter">
+            <input type="text" id="form-song-artist" placeholder="WINTER" value="WINTER">
           </div>
           <div class="field-row">
             <label>音訊來源 (本機檔名、GitHub 網址 或 YouTube 連結)</label>
             <input type="text" id="form-song-source" placeholder="如：lips (online-audio-converter.com).mp3 或 YouTube 網址">
+          </div>
+          <div class="field-row">
+            <label style="display:flex; justify-content:space-between;">
+              <span>音量增益調整 (Volume Gain)</span>
+              <span id="form-vol-lbl">1.0x</span>
+            </label>
+            <input type="range" id="form-song-vol" min="0.3" max="1.5" step="0.05" value="1.0" style="width:100%; margin-top:4px;">
           </div>
 
           <div class="field-row">
@@ -615,7 +624,7 @@
         </div>
 
         <div>
-          <label style="font-size:0.75rem; color:#71717a; margin-bottom:6px; display:block;">歌單與歌曲細項</label>
+          <label style="font-size:0.75rem; color:#71717a; margin-bottom:6px; display:block;">歌單與歌曲排序管理</label>
           <div id="admin-tree-view"></div>
         </div>
 
@@ -630,6 +639,8 @@
     import * as THREE from 'three';
 
     const CD_PROJECT_BASE = "https://u11150003-arch.github.io/winter-cd-player/";
+    const COVER_SOLO = "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6";
+    const COVER_BLUES = "https://lh3.googleusercontent.com/d/1m0rcmkTEsJ3lKawRlObJM2uqfZABrTud";
 
     function parseLrc(txt) {
       if (!txt) return [];
@@ -735,232 +746,179 @@
 [03:40.15]아주 천천히 말해줄게
 我會慢慢地告訴你`;
 
-    const DEFAULT_DATA = [
+    const TWO_PLAYLISTS_DATA = [
       {
-        id: "pl_lips",
-        name: "Lips",
+        id: "pl_solo",
+        name: "WINTER SOLO",
+        cover: COVER_SOLO,
         songs: [
           {
             title: "Lips",
-            artist: "Winter",
+            artist: "WINTER",
             source: "lips (online-audio-converter.com).mp3",
-            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
+            cover: COVER_SOLO,
             backCover: "",
             duration: 230,
+            volume: 0.72,
             lyrics: parseLrc(LIPS_LRC_TEXT)
           },
           {
-            title: "Time Walking On Memories기억을 걷는 시간",
-            artist: "Winter",
-            source: "time walking on memories (online-audio-converter.com).mp3",
-            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
-            backCover: "",
-            duration: 208,
-            lyrics: []
-          },
-          {
-            title: "Winter - What you want do for love",
-            artist: "Winter",
-            source: "YTeFLKMnwjg",
-            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
-            backCover: "",
-            duration: 210,
-            lyrics: []
-          },
-          {
-            title: "aespa - Life's Too Short",
-            artist: "aespa",
-            source: "z2AHnk76PDU",
-            cover: "https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6",
-            backCover: "",
-            duration: 178,
-            lyrics: []
-          }
-        ]
-      },
-      {
-        id: "pl_spark",
-        name: "Spark",
-        songs: [
-          {
             title: "Spark",
-            artist: "Winter",
+            artist: "WINTER",
             source: "spark (online-audio-converter.com).mp3",
-            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
+            cover: COVER_SOLO,
             backCover: "",
             duration: 195,
+            volume: 0.72,
             lyrics: []
           },
-          {
-            title: "aespa - Supernova",
-            artist: "aespa",
-            source: "phuiAIQAxZ4",
-            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
-            duration: 181,
-            lyrics: []
-          },
-          {
-            title: "aespa - Mine",
-            artist: "aespa",
-            source: "nFYwcndNuZY",
-            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
-            duration: 194,
-            lyrics: []
-          },
-          {
-            title: "aespa - Licorice",
-            artist: "aespa",
-            source: "phuiAIQAxZ4",
-            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
-            duration: 160,
-            lyrics: []
-          },
-          {
-            title: "aespa - Live My Life",
-            artist: "aespa",
-            source: "nFYwcndNuZY",
-            cover: "https://lh3.googleusercontent.com/d/1XSzga0t8grbH0Ez_NIeTrc3c17ud4CiB",
-            duration: 212,
-            lyrics: []
-          }
-        ]
-      },
-      {
-        id: "pl_blue",
-        name: "BLUE",
-        songs: [
           {
             title: "BLUE",
-            artist: "Winter",
+            artist: "WINTER",
             source: "blue (online-audio-converter.com).mp3",
-            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
+            cover: COVER_SOLO,
             backCover: "",
             duration: 211,
+            volume: 0.72,
             lyrics: []
           },
           {
-            title: "Winter - With You (OST)",
-            artist: "Winter",
-            source: "YTeFLKMnwjg",
-            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
-            duration: 220,
-            lyrics: []
-          },
-          {
-            title: "Winter - Fly Away (Live Ver)",
-            artist: "Winter",
-            source: "YTeFLKMnwjg",
-            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
-            duration: 240,
-            lyrics: []
-          },
-          {
-            title: "Winter - Voyage",
-            artist: "Winter",
-            source: "YTeFLKMnwjg",
-            cover: "https://lh3.googleusercontent.com/d/17-sGD8zhNCLqU_cNCDeXovJ8-Ww6ZcK7",
-            duration: 215,
-            lyrics: []
-          }
-        ]
-      },
-      {
-        id: "pl_saddle",
-        name: "Saddle Up",
-        songs: [
-          {
-            title: "Saddle Up",
-            artist: "Winter",
+            title: "SaddIe Up",
+            artist: "WINTER",
             source: "Saddle Up (online-audio-converter.com).mp3",
-            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
+            cover: COVER_SOLO,
             backCover: "",
             duration: 201,
+            volume: 0.72,
             lyrics: []
           },
           {
-            title: "aespa - Trick or Trick",
-            artist: "aespa",
-            source: "D8VEhcPeSlc",
-            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            duration: 195,
+            title: "Speed of Summer",
+            artist: "WINTER",
+            source: "speed of summer (online-audio-converter.com).mp3",
+            cover: COVER_SOLO,
+            backCover: "",
+            duration: 210,
+            volume: 0.72,
             lyrics: []
           },
           {
-            title: "aespa - Don't Blink",
-            artist: "aespa",
-            source: "D8VEhcPeSlc",
-            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            duration: 172,
+            title: "Time Walking On Memories기억을 걷는 시간",
+            artist: "WINTER",
+            source: "time walking on memories (online-audio-converter.com).mp3",
+            cover: COVER_SOLO,
+            backCover: "",
+            duration: 208,
+            volume: 0.72,
             lyrics: []
           },
           {
-            title: "aespa - Hot Air Balloon",
-            artist: "aespa",
-            source: "D8VEhcPeSlc",
-            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            duration: 204,
-            lyrics: []
-          },
-          {
-            title: "aespa - YOLO",
-            artist: "aespa",
-            source: "D8VEhcPeSlc",
-            cover: "https://lh3.googleusercontent.com/d/1smNAdV5IfQNN8C2o1x7uK4POeFz95sYi",
-            duration: 189,
+            title: "Voyage",
+            artist: "WINTER",
+            source: "YTeFLKMnwjg",
+            cover: COVER_SOLO,
+            backCover: "",
+            duration: 215,
+            volume: 0.72,
             lyrics: []
           }
         ]
       },
       {
-        id: "pl_summer",
-        name: "Speed of Summer",
+        id: "pl_blues",
+        name: "WINTER Blues",
+        cover: COVER_BLUES,
         songs: [
           {
-            title: "Speed of Summer",
-            artist: "Winter",
-            source: "speed of summer (online-audio-converter.com).mp3",
-            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
+            title: "Be Be Your Love",
+            artist: "WINTER",
+            source: "01 Be Be Your Love.mp3",
+            cover: COVER_BLUES,
+            backCover: "",
+            duration: 220,
+            volume: 1.0,
+            lyrics: []
+          },
+          {
+            title: "What You Won’t Do For Love",
+            artist: "WINTER",
+            source: "02 What You Won_t Do For Love.mp3",
+            cover: COVER_BLUES,
             backCover: "",
             duration: 210,
+            volume: 1.0,
             lyrics: []
           },
           {
-            title: "aespa - Flights, Not Feelings",
-            artist: "aespa",
-            source: "jWQx2f-CErU",
-            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
-            duration: 182,
+            title: "YUKON",
+            artist: "WINTER",
+            source: "03 YUKON.mp3",
+            cover: COVER_BLUES,
+            backCover: "",
+            duration: 198,
+            volume: 1.0,
             lyrics: []
           },
           {
-            title: "aespa - Pink Hoodie",
-            artist: "aespa",
-            source: "jWQx2f-CErU",
-            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
-            duration: 175,
+            title: "거짓말 거짓말 거짓말",
+            artist: "WINTER",
+            source: "04.mp3",
+            cover: COVER_BLUES,
+            backCover: "",
+            duration: 245,
+            volume: 1.0,
             lyrics: []
           },
           {
-            title: "aespa - Just Another Girl",
-            artist: "aespa",
-            source: "jWQx2f-CErU",
-            cover: "https://lh3.googleusercontent.com/d/1R3m2fbip6zXRkHx0ujIQtW4VcoOkDnax",
-            duration: 196,
+            title: "Only Wanna Give It To You",
+            artist: "WINTER",
+            source: "05 Only Wanna Give It To You.mp3",
+            cover: COVER_BLUES,
+            backCover: "",
+            duration: 215,
+            volume: 1.0,
+            lyrics: []
+          },
+          {
+            title: "21",
+            artist: "WINTER",
+            source: "06 21.mp3",
+            cover: COVER_BLUES,
+            backCover: "",
+            duration: 190,
+            volume: 1.0,
+            lyrics: []
+          },
+          {
+            title: "imperfect for you",
+            artist: "WINTER",
+            source: "07 imperfect for you.mp3",
+            cover: COVER_BLUES,
+            backCover: "",
+            duration: 202,
+            volume: 1.0,
+            lyrics: []
+          },
+          {
+            title: "BLUE",
+            artist: "WINTER",
+            source: "08 BLUE - WINTER Solo.mp3",
+            cover: COVER_BLUES,
+            backCover: "",
+            duration: 215,
+            volume: 1.0,
             lyrics: []
           }
         ]
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v6')) || DEFAULT_DATA;
+    // 全新結構：若無儲存或為舊版直接載入雙歌單
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_two_pl')) || TWO_PLAYLISTS_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
-    if (store[0] && store[0].songs[0] && store[0].songs[0].title === 'Lips') {
-      store[0].songs[0].lyrics = parseLrc(LIPS_LRC_TEXT);
-    }
-
     function persistData() {
-      localStorage.setItem('winter_playlist_store_v6', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_two_pl', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -1003,7 +961,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 3. Three.js 3D
+     * 3. Three.js 3D (自體旋轉一圈動態展示)
      * ------------------------------------------------------------*/
     const container = document.getElementById('threejs-box');
     const scene = new THREE.Scene();
@@ -1175,7 +1133,7 @@
     }
 
     /* -------------------------------------------------------------
-     * 手勢旋轉操作
+     * 手勢旋轉操作與換曲 360° 自體旋轉動畫
      * ------------------------------------------------------------*/
     let isTouching = false;
     let prevPointerX = 0;
@@ -1184,7 +1142,21 @@
     let targetRotX = 0;
     let hasMoved = false;
 
+    // 自體旋轉動畫狀態變數
+    let isAutoRotating = false;
+    let autoRotStartTime = 0;
+    let autoRotStartAngle = 0;
+    const AUTO_ROT_DURATION = 1400; // 毫秒
+
+    function triggerFullSpinAnimation() {
+      isAutoRotating = true;
+      autoRotStartTime = performance.now();
+      autoRotStartAngle = turntableGroup.rotation.y;
+      targetRotX = 0;
+    }
+
     function onPointerDown(e) {
+      isAutoRotating = false;
       isTouching = true;
       hasMoved = false;
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1229,6 +1201,7 @@
     window.addEventListener('touchend', onPointerUp);
 
     function triggerResetView() {
+      isAutoRotating = false;
       targetRotX = 0;
       targetRotY = 0;
     }
@@ -1239,8 +1212,24 @@
     function renderLoop() {
       requestAnimationFrame(renderLoop);
 
-      turntableGroup.rotation.y = THREE.MathUtils.lerp(turntableGroup.rotation.y, targetRotY, 0.1);
-      turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
+      if (isAutoRotating) {
+        const elapsed = performance.now() - autoRotStartTime;
+        const progress = Math.min(1, elapsed / AUTO_ROT_DURATION);
+        // smooth easeInOutQuad
+        const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+        turntableGroup.rotation.y = autoRotStartAngle + ease * (Math.PI * 2);
+        turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, 0, 0.1);
+
+        if (progress >= 1) {
+          isAutoRotating = false;
+          turntableGroup.rotation.y = 0;
+          targetRotY = 0;
+          targetRotX = 0;
+        }
+      } else {
+        turntableGroup.rotation.y = THREE.MathUtils.lerp(turntableGroup.rotation.y, targetRotY, 0.1);
+        turntableGroup.rotation.x = THREE.MathUtils.lerp(turntableGroup.rotation.x, targetRotX, 0.1);
+      }
 
       if (isPlaying) {
         discGroup.rotation.z -= 0.024;
@@ -1254,7 +1243,7 @@
     renderLoop();
 
     /* -------------------------------------------------------------
-     * 4. 音訊系統
+     * 4. 音訊系統與音量增益配置
      * ------------------------------------------------------------*/
     function setPlayState(active) {
       isPlaying = active;
@@ -1306,10 +1295,13 @@
       const song = curPl.songs[trackIdx];
 
       renderUI();
-      triggerResetView();
+      triggerFullSpinAnimation();
 
       totalDuration = song.duration || 211;
       const ytId = extractYoutubeId(song.source);
+
+      // 套用該歌曲的音量設定 (若未設定則第一歌單 0.72，第二歌單 1.0)
+      const targetVolume = (typeof song.volume === 'number') ? song.volume : (plIdx === 1 ? 1.0 : 0.72);
 
       if (ytId) {
         playMode = 'yt';
@@ -1333,7 +1325,7 @@
         }
 
         nativeAudio.muted = false;
-        nativeAudio.volume = 1.0;
+        nativeAudio.volume = Math.min(1.0, Math.max(0, targetVolume));
 
         if (!nativeAudio.src.endsWith(directSrc)) {
           nativeAudio.src = directSrc;
@@ -1478,7 +1470,7 @@
       if (!song) return;
 
       document.getElementById('disp-title').textContent = song.title;
-      document.getElementById('disp-artist').textContent = song.artist;
+      document.getElementById('disp-artist').textContent = song.artist || "WINTER";
 
       applyCoverTo3D(song.cover || curPl.cover, song.backCover);
       renderLyricsList();
@@ -1544,7 +1536,7 @@
     };
 
     /* -------------------------------------------------------------
-     * 7. 管理者模式
+     * 7. 管理者模式（支援排序、編輯、新增、刪除、音量）
      * ------------------------------------------------------------*/
     const mountPoint = document.getElementById('admin-mount-point');
 
@@ -1576,6 +1568,11 @@
         modelScale = parseFloat(e.target.value);
         document.getElementById('scale-val-lbl').textContent = `${modelScale}x`;
         turntableGroup.scale.set(modelScale, modelScale, modelScale);
+      };
+
+      const volSlider = document.getElementById('form-song-vol');
+      volSlider.oninput = (e) => {
+        document.getElementById('form-vol-lbl').textContent = `${parseFloat(e.target.value).toFixed(2)}x`;
       };
 
       document.getElementById('btn-pick-img').onclick = () => document.getElementById('local-img-picker').click();
@@ -1644,21 +1641,35 @@
       tree.innerHTML = '';
       store.forEach((p, pI) => {
         const pBox = document.createElement('div');
-        pBox.style.cssText = "margin-bottom:10px; background:#111216; padding:8px; border-radius:6px; border:1px solid #282a35;";
+        pBox.style.cssText = "margin-bottom:12px; background:#111216; padding:10px; border-radius:6px; border:1px solid #282a35;";
+        
+        const isFirstPl = pI === 0;
+        const isLastPl = pI === store.length - 1;
+
         pBox.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <strong style="color:#e4e4e7; font-size:0.82rem;">📁 ${p.name} (${p.songs.length})</strong>
-            <button class="btn-act btn-del" onclick="window.delPl(${pI})">刪除歌單</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #222530; padding-bottom:6px;">
+            <strong style="color:#e4e4e7; font-size:0.84rem;">📁 ${p.name} (${p.songs.length} 首)</strong>
+            <div style="display:flex; gap:4px;">
+              <button class="btn-order" onclick="window.movePl(${pI}, -1)" ${isFirstPl ? 'disabled' : ''} title="上移歌單">⬆</button>
+              <button class="btn-order" onclick="window.movePl(${pI}, 1)" ${isLastPl ? 'disabled' : ''} title="下移歌單">⬇</button>
+              <button class="btn-act btn-del" onclick="window.delPl(${pI})" style="margin-left:4px;">刪除歌單</button>
+            </div>
           </div>
         `;
 
         p.songs.forEach((s, sI) => {
+          const isFirstSong = sI === 0;
+          const isLastSong = sI === p.songs.length - 1;
+          const volDisplay = typeof s.volume === 'number' ? s.volume : (pI === 1 ? 1.0 : 0.72);
+
           const sRow = document.createElement('div');
           sRow.className = 'song-item-row';
           sRow.innerHTML = `
-            <span>🎵 ${s.title}</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;">🎵 ${sI + 1}. ${s.title} <small style="color:#71717a;">(${volDisplay.toFixed(2)}x)</small></span>
             <div class="song-actions">
-              <button class="btn-act btn-edit" onclick="window.editS(${pI}, ${sI})">編輯 ✎</button>
+              <button class="btn-order" onclick="window.moveSong(${pI}, ${sI}, -1)" ${isFirstSong ? 'disabled' : ''} title="上移">⬆</button>
+              <button class="btn-order" onclick="window.moveSong(${pI}, ${sI}, 1)" ${isLastSong ? 'disabled' : ''} title="下移">⬇</button>
+              <button class="btn-act btn-edit" onclick="window.editS(${pI}, ${sI})">編輯</button>
               <button class="btn-act btn-del" onclick="window.delS(${pI}, ${sI})">刪除</button>
             </div>
           `;
@@ -1668,11 +1679,42 @@
       });
     }
 
+    // 歌單與曲目排序邏輯
+    window.movePl = (pI, dir) => {
+      const targetIndex = pI + dir;
+      if (targetIndex < 0 || targetIndex >= store.length) return;
+      const temp = store[pI];
+      store[pI] = store[targetIndex];
+      store[targetIndex] = temp;
+      if (plIdx === pI) plIdx = targetIndex;
+      else if (plIdx === targetIndex) plIdx = pI;
+      persistData();
+      renderAdminTree();
+      renderUI();
+    };
+
+    window.moveSong = (pI, sI, dir) => {
+      const songs = store[pI].songs;
+      const targetIndex = sI + dir;
+      if (targetIndex < 0 || targetIndex >= songs.length) return;
+      const temp = songs[sI];
+      songs[sI] = songs[targetIndex];
+      songs[targetIndex] = temp;
+      if (plIdx === pI) {
+        if (trackIdx === sI) trackIdx = targetIndex;
+        else if (trackIdx === targetIndex) trackIdx = sI;
+      }
+      persistData();
+      renderAdminTree();
+      renderUI();
+    };
+
     window.delPl = (pI) => {
       if (store.length <= 1) return alert('請至少保留一個歌單！');
       if (confirm(`確定刪除歌單《${store[pI].name}》？`)) {
         store.splice(pI, 1);
         if (plIdx >= store.length) plIdx = 0;
+        trackIdx = 0;
         persistData();
         renderAdminTree();
         renderUI();
@@ -1681,6 +1723,9 @@
 
     window.delS = (pI, sI) => {
       store[pI].songs.splice(sI, 1);
+      if (plIdx === pI && trackIdx >= store[pI].songs.length) {
+        trackIdx = Math.max(0, store[pI].songs.length - 1);
+      }
       persistData();
       renderAdminTree();
       renderUI();
@@ -1692,8 +1737,13 @@
       document.getElementById('edit-song-id').value = `${pI}_${sI}`;
       document.getElementById('form-pl-target').value = pI;
       document.getElementById('form-song-title').value = s.title;
-      document.getElementById('form-song-artist').value = s.artist;
+      document.getElementById('form-song-artist').value = s.artist || 'WINTER';
       document.getElementById('form-song-source').value = s.source;
+
+      const currentVol = (typeof s.volume === 'number') ? s.volume : (pI === 1 ? 1.0 : 0.72);
+      document.getElementById('form-song-vol').value = currentVol;
+      document.getElementById('form-vol-lbl').textContent = `${currentVol.toFixed(2)}x`;
+
       document.getElementById('form-song-cover').value = s.cover || '';
       document.getElementById('form-song-back-cover').value = s.backCover || '';
 
@@ -1712,8 +1762,10 @@
       document.getElementById('form-mode-title').textContent = '✦ 新增歌曲';
       document.getElementById('edit-song-id').value = '';
       document.getElementById('form-song-title').value = '';
-      document.getElementById('form-song-artist').value = '';
+      document.getElementById('form-song-artist').value = 'WINTER';
       document.getElementById('form-song-source').value = '';
+      document.getElementById('form-song-vol').value = 1.0;
+      document.getElementById('form-vol-lbl').textContent = '1.00x';
       document.getElementById('form-song-cover').value = '';
       document.getElementById('form-song-back-cover').value = '';
       document.getElementById('form-song-lyrics').value = '';
@@ -1726,11 +1778,12 @@
       const editKey = document.getElementById('edit-song-id').value;
       const targetPl = parseInt(document.getElementById('form-pl-target').value);
       const title = document.getElementById('form-song-title').value.trim();
-      const artist = document.getElementById('form-song-artist').value.trim() || 'Winter';
+      const artist = document.getElementById('form-song-artist').value.trim() || 'WINTER';
       const source = document.getElementById('form-song-source').value.trim();
+      const volume = parseFloat(document.getElementById('form-song-vol').value) || 1.0;
       const rawCover = document.getElementById('form-song-cover').value.trim();
       const rawBackCover = document.getElementById('form-song-back-cover').value.trim();
-      const cover = normalizeImageUrl(rawCover) || store[targetPl]?.cover || 'https://lh3.googleusercontent.com/d/1uaaVb_4JOQ9dF7wSlNxtIVHKMViueEa6';
+      const cover = normalizeImageUrl(rawCover) || store[targetPl]?.cover || COVER_SOLO;
       const backCover = normalizeImageUrl(rawBackCover) || '';
       const lyricsRaw = document.getElementById('form-song-lyrics').value;
 
@@ -1740,9 +1793,10 @@
         title,
         artist,
         source,
+        volume,
         cover,
         backCover,
-        duration: 230,
+        duration: 210,
         lyrics: parseLrc(lyricsRaw)
       };
 
@@ -1768,7 +1822,7 @@
     function addPlaylistHandler() {
       const name = document.getElementById('admin-new-pl-name').value.trim();
       if (!name) return alert('請輸入歌單名稱！');
-      store.push({ id: 'pl_' + Date.now(), name, songs: [] });
+      store.push({ id: 'pl_' + Date.now(), name, cover: COVER_SOLO, songs: [] });
       document.getElementById('admin-new-pl-name').value = '';
       persistData();
       renderAdminTree();
