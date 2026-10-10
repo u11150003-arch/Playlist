@@ -94,6 +94,7 @@
       color: #ffffff;
     }
 
+    /* 右上角白色五角星按鈕 (低透明度) */
     .admin-star-btn {
       background: none;
       border: none;
@@ -284,14 +285,15 @@
       justify-content: space-between;
       max-width: 480px;
       margin: 0 auto;
-      gap: 6px;
+      gap: 8px;
       padding: 0 2px;
     }
 
+    /* 彈性自適應寬度，徹底防遮擋 */
     .steel-select-group {
       display: flex;
       gap: 6px;
-      flex-shrink: 1;
+      flex: 1;
       min-width: 0;
     }
 
@@ -309,13 +311,16 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      transition: width 0.2s ease, border-color 0.2s ease;
+      transition: all 0.2s ease;
     }
+    /* 手機上左側歌單框分配足夠比例，WINTER SOLO 不被擋住 */
     #sel-playlist {
-      width: 115px;
+      flex: 0 0 120px;
+      min-width: 110px;
     }
     #sel-song {
-      width: 125px;
+      flex: 1;
+      min-width: 0;
     }
 
     .steel-select:focus, .steel-select:hover {
@@ -332,21 +337,21 @@
         max-width: 640px;
       }
       .steel-select {
-        font-size: 0.76rem;
+        font-size: 0.78rem;
         padding: 6px 10px;
       }
       #sel-playlist {
-        width: 155px;
+        flex: 0 0 155px;
       }
       #sel-song {
-        width: 240px;
+        flex: 0 0 240px;
       }
     }
 
     .buttons-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-shrink: 0;
     }
     .steel-knob-btn {
@@ -538,7 +543,6 @@
 </head>
 <body>
 
-  <!-- 原生音訊：開啟跨域串流、自動預載以支援鎖屏與背景播放 -->
   <audio id="native-audio" playsinline preload="auto" crossorigin="anonymous"></audio>
   <iframe id="yt-hidden-player" style="position:absolute; top:-9999px; left:-9999px; width:1px; height:1px;" frameborder="0" allow="autoplay; encrypted-media"></iframe>
 
@@ -591,6 +595,7 @@
     </div>
   </footer>
 
+  <!-- 右上角導覽選單 -->
   <div class="modal-veil" id="nav-modal">
     <div class="modal-inner" style="max-width: 360px;">
       <h3>WINTER SPACE</h3>
@@ -1136,11 +1141,11 @@
       }
     ];
 
-    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v20')) || TWO_PLAYLISTS_DATA;
+    let store = JSON.parse(localStorage.getItem('winter_playlist_store_v22')) || TWO_PLAYLISTS_DATA;
     let modelScale = parseFloat(localStorage.getItem('winter_model_scale')) || 1.0;
 
     function persistData() {
-      localStorage.setItem('winter_playlist_store_v20', JSON.stringify(store));
+      localStorage.setItem('winter_playlist_store_v22', JSON.stringify(store));
       localStorage.setItem('winter_model_scale', modelScale);
     }
 
@@ -1156,7 +1161,6 @@
     const nativeAudio = document.getElementById('native-audio');
     const ytIframe = document.getElementById('yt-hidden-player');
 
-    // 實裝手機/系統控制中心 MediaSession API (鎖定螢幕與通知欄顯示封面、歌名、歌手)
     function updateMediaSession(song, pl) {
       if ('mediaSession' in navigator) {
         const coverUrl = normalizeImageUrl(song.cover || pl.cover);
@@ -1632,7 +1636,6 @@
           nativeAudio.src = directSrc;
           nativeAudio.currentTime = 0;
 
-          // 立即執行 play()，由瀏覽器進行背景串流緩衝，杜絕卡頓
           const p = nativeAudio.play();
           if (p !== undefined) {
             p.then(() => setPlayState(true)).catch(err => {
